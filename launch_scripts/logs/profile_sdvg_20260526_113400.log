@@ -1,0 +1,37 @@
+[2026-05-26 11:34:00] Profiling target_only vs SDVG
+[2026-05-26 11:34:00] Router: heuristic tau=0.02
+[2026-05-26 11:34:00] Blocks: 9
+[2026-05-26 11:34:00] Output: /root/Self-Forcing/outputs/sdvg/profile_20260526_113400
+Loading target: Wan2.1-T2V-14B /mnt/lanxiangh/models/realtime-video/checkpoints/krea-realtime-video-14b.safetensors
+KV inference with 3 frames per block
+Loading drafter: Wan2.1-T2V-1.3B /mnt/lanxiangh/models/Self-Forcing/checkpoints/self_forcing_dmd.pt
+KV inference with 3 frames per block
+prompts:   0%|          | 0/1 [00:00<?, ?it/s]
+target_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_only blocks:  11%|█         | 1/9 [00:02<00:16,  2.09s/it][A
+target_only blocks:  22%|██▏       | 2/9 [00:04<00:15,  2.18s/it][A
+target_only blocks:  33%|███▎      | 3/9 [00:06<00:14,  2.34s/it][A
+target_only blocks:  44%|████▍     | 4/9 [00:09<00:12,  2.53s/it][A
+target_only blocks:  56%|█████▌    | 5/9 [00:12<00:10,  2.75s/it][A
+target_only blocks:  67%|██████▋   | 6/9 [00:16<00:08,  2.98s/it][A
+target_only blocks:  78%|███████▊  | 7/9 [00:19<00:06,  3.23s/it][A
+target_only blocks:  89%|████████▉ | 8/9 [00:23<00:03,  3.39s/it][A
+target_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.49s/it][Atarget_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.05s/it]
+
+sdvg blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+sdvg blocks:  11%|█         | 1/9 [00:02<00:19,  2.39s/it][A
+sdvg blocks:  22%|██▏       | 2/9 [00:03<00:11,  1.59s/it][A
+sdvg blocks:  33%|███▎      | 3/9 [00:04<00:08,  1.39s/it][A
+sdvg blocks:  44%|████▍     | 4/9 [00:05<00:06,  1.35s/it][A
+sdvg blocks:  56%|█████▌    | 5/9 [00:07<00:05,  1.36s/it][A
+sdvg blocks:  67%|██████▋   | 6/9 [00:08<00:04,  1.41s/it][A
+sdvg blocks:  78%|███████▊  | 7/9 [00:10<00:02,  1.49s/it][A
+sdvg blocks:  89%|████████▉ | 8/9 [00:12<00:01,  1.54s/it][A
+sdvg blocks: 100%|██████████| 9/9 [00:13<00:00,  1.57s/it][Asdvg blocks: 100%|██████████| 9/9 [00:13<00:00,  1.52s/it]
+prompts: 100%|██████████| 1/1 [00:48<00:00, 48.17s/it]prompts: 100%|██████████| 1/1 [00:48<00:00, 48.18s/it]
+Average SDVG speedup vs target: 1.880x
+Wrote profile: /root/Self-Forcing/outputs/sdvg/profile_20260526_113400/profile.json
+target_only: 29.75s -> /root/Self-Forcing/outputs/sdvg/profile_20260526_113400/prompt_single_target_only.mp4
+sdvg: 15.83s -> /root/Self-Forcing/outputs/sdvg/profile_20260526_113400/prompt_single_sdvg.mp4
+[2026-05-26 11:36:09] Profile JSON: /root/Self-Forcing/outputs/sdvg/profile_20260526_113400/profile.json
+[2026-05-26 11:36:09] Videos: /root/Self-Forcing/outputs/sdvg/profile_20260526_113400/target_only.mp4 and /root/Self-Forcing/outputs/sdvg/profile_20260526_113400/sdvg.mp4

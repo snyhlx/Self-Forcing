@@ -1,0 +1,15 @@
+[2026-06-10 10:35:33] Bidirectional prompt-anchor video diagnostic
+[2026-06-10 10:35:33] Checkpoint: /root/Self-Forcing/outputs/draft_head/checkpoints/flow_unroll10_20260610_051405_bidirectional_prompt_anchor_wan_targetinit_tempmix2_unrolled_h5120_l6_st1000_750_500_250_0_dense10_overfit0_bs1_g4_lr1e-5_fl1_0_dt0_0_td0_0_bd0_0/final.pt
+[2026-06-10 10:35:33] Output:     /root/Self-Forcing/outputs/draft_head/test_runs/flow_unroll10_head50_prompt002_20260610_103533
+[2026-06-10 10:35:33] Blocks:     9
+[2026-06-10 10:35:33] Prompts:    /root/Self-Forcing/prompts/MovieGenVideoBench.txt start=2 max=1
+[2026-06-10 10:35:33] Manifest:   off dataset_index=default prompt_index=off split=all split_index=0
+[2026-06-10 10:35:33] Prediction: flow
+[2026-06-10 10:35:33] Head steps: 50
+[2026-06-10 10:35:33] Refine:     target_timestep=0 save_raw=0 save_target=1
+video prompts:   0%|          | 0/1 [00:00<?, ?it/s]
+  0%|          | 0/50 [00:00<?, ?it/s][A
+  2%|▏         | 1/50 [00:12<10:07, 12.41s/it][A
+  4%|▍         | 2/50 [00:24<09:51, 12.33s/it][A
+  6%|▌         | 3/50 [00:36<09:39, 12.32s/it][A
+  8%|▊         | 4/50 [00:49<09:26, 12.32s/it][A

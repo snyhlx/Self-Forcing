@@ -1,0 +1,18 @@
+[2026-06-09 11:15:41] Bidirectional prompt-anchor video diagnostic
+[2026-06-09 11:15:41] Checkpoint: /root/Self-Forcing/outputs/draft_head/checkpoints/20260609_092217_bidirectional_prompt_anchor_wan_targetinit_tempmix2_unrolled_h5120_l6_st1000_750_500_250_0_bs1_g4_lr1e-5_fl1_0_dt0_0_td0_0_bd0_0/final.pt
+[2026-06-09 11:15:41] Output:     /root/Self-Forcing/outputs/draft_head/test_runs/bidirectional_prompt_anchor_20260609_111540
+[2026-06-09 11:15:41] Blocks:     9
+[2026-06-09 11:15:41] Prompts:    /root/Self-Forcing/prompts/MovieGenVideoBench.txt start=2 max=1
+[2026-06-09 11:15:41] Refine:     target_timestep=0 save_raw=0
+Traceback (most recent call last):
+  File "/root/Self-Forcing/eval_bidirectional_draft_head.py", line 445, in <module>
+    main()
+  File "/root/Self-Forcing/eval_bidirectional_draft_head.py", line 336, in main
+    profile = generate_videos(
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/utils/_contextlib.py", line 124, in decorate_context
+    return func(*args, **kwargs)
+  File "/root/Self-Forcing/eval_bidirectional_draft_head.py", line 116, in generate_videos
+    scheduler = target_pipeline.scheduler
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1967, in __getattr__
+    raise AttributeError(
+AttributeError: 'BidirectionalDiffusionInferencePipeline' object has no attribute 'scheduler'

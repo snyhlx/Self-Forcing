@@ -1,0 +1,110 @@
+[2026-06-10 01:03:34] Bidirectional prompt-anchor video diagnostic
+[2026-06-10 01:03:34] Checkpoint: /root/Self-Forcing/outputs/draft_head/checkpoints/20260609_optionb_unrolled10_flow1_clean0p5_detail0p05/final.pt
+[2026-06-10 01:03:34] Output:     /root/Self-Forcing/outputs/draft_head/test_runs/bidirectional_prompt_anchor_20260610_010334
+[2026-06-10 01:03:34] Blocks:     9
+[2026-06-10 01:03:34] Prompts:    /root/Self-Forcing/prompts/MovieGenVideoBench.txt start=2 max=1
+[2026-06-10 01:03:34] Head steps: 10
+[2026-06-10 01:03:34] Refine:     target_timestep=0 save_raw=0 save_target=1
+video prompts:   0%|          | 0/1 [00:00<?, ?it/s]
+  0%|          | 0/50 [00:00<?, ?it/s][A
+  2%|▏         | 1/50 [00:12<10:09, 12.43s/it][A
+  4%|▍         | 2/50 [00:24<09:53, 12.37s/it][A
+  6%|▌         | 3/50 [00:37<09:40, 12.36s/it][A
+  8%|▊         | 4/50 [00:49<09:27, 12.34s/it][A
+ 10%|█         | 5/50 [01:01<09:15, 12.34s/it][A
+ 12%|█▏        | 6/50 [01:14<09:02, 12.34s/it][A
+ 14%|█▍        | 7/50 [01:26<08:50, 12.34s/it][A
+ 16%|█▌        | 8/50 [01:38<08:38, 12.35s/it][A
+ 18%|█▊        | 9/50 [01:51<08:26, 12.35s/it][A
+ 20%|██        | 10/50 [02:03<08:13, 12.35s/it][A
+ 22%|██▏       | 11/50 [02:15<08:01, 12.35s/it][A
+ 24%|██▍       | 12/50 [02:28<07:49, 12.35s/it][A
+ 26%|██▌       | 13/50 [02:40<07:37, 12.35s/it][A
+ 28%|██▊       | 14/50 [02:52<07:24, 12.35s/it][A
+ 30%|███       | 15/50 [03:05<07:12, 12.35s/it][A
+ 32%|███▏      | 16/50 [03:17<07:00, 12.36s/it][A
+ 34%|███▍      | 17/50 [03:29<06:47, 12.36s/it][A
+ 36%|███▌      | 18/50 [03:42<06:35, 12.36s/it][A
+ 38%|███▊      | 19/50 [03:54<06:23, 12.35s/it][A
+ 40%|████      | 20/50 [04:07<06:10, 12.36s/it][A
+ 42%|████▏     | 21/50 [04:19<05:58, 12.36s/it][A
+ 44%|████▍     | 22/50 [04:31<05:45, 12.36s/it][A
+ 46%|████▌     | 23/50 [04:44<05:33, 12.35s/it][A
+ 48%|████▊     | 24/50 [04:56<05:21, 12.35s/it][A
+ 50%|█████     | 25/50 [05:08<05:08, 12.36s/it][A
+ 52%|█████▏    | 26/50 [05:21<04:56, 12.36s/it][A
+ 54%|█████▍    | 27/50 [05:33<04:44, 12.36s/it][A
+ 56%|█████▌    | 28/50 [05:45<04:31, 12.36s/it][A
+ 58%|█████▊    | 29/50 [05:58<04:19, 12.36s/it][A
+ 60%|██████    | 30/50 [06:10<04:07, 12.36s/it][A
+ 62%|██████▏   | 31/50 [06:22<03:54, 12.35s/it][A
+ 64%|██████▍   | 32/50 [06:35<03:42, 12.36s/it][A
+ 66%|██████▌   | 33/50 [06:47<03:30, 12.36s/it][A
+ 68%|██████▊   | 34/50 [07:00<03:17, 12.36s/it][A
+ 70%|███████   | 35/50 [07:12<03:05, 12.36s/it][A
+ 72%|███████▏  | 36/50 [07:24<02:53, 12.36s/it][A
+ 74%|███████▍  | 37/50 [07:37<02:40, 12.36s/it][A
+ 76%|███████▌  | 38/50 [07:49<02:28, 12.36s/it][A
+ 78%|███████▊  | 39/50 [08:01<02:15, 12.36s/it][A
+ 80%|████████  | 40/50 [08:14<02:03, 12.35s/it][A
+ 82%|████████▏ | 41/50 [08:26<01:51, 12.35s/it][A
+ 84%|████████▍ | 42/50 [08:38<01:38, 12.35s/it][A
+ 86%|████████▌ | 43/50 [08:51<01:26, 12.34s/it][A
+ 88%|████████▊ | 44/50 [09:03<01:14, 12.35s/it][A
+ 90%|█████████ | 45/50 [09:15<01:01, 12.34s/it][A
+ 92%|█████████▏| 46/50 [09:28<00:49, 12.34s/it][A
+ 94%|█████████▍| 47/50 [09:40<00:37, 12.34s/it][A
+ 96%|█████████▌| 48/50 [09:52<00:24, 12.34s/it][A
+ 98%|█████████▊| 49/50 [10:05<00:12, 12.33s/it][A
+100%|██████████| 50/50 [10:17<00:00, 12.33s/it][A100%|██████████| 50/50 [10:17<00:00, 12.35s/it]
+
+draft head denoise:   0%|          | 0/10 [00:00<?, ?it/s][A
+draft head denoise:  10%|█         | 1/10 [00:00<00:04,  1.85it/s][A
+draft head denoise:  20%|██        | 2/10 [00:00<00:03,  2.13it/s][A
+draft head denoise:  30%|███       | 3/10 [00:01<00:03,  2.19it/s][A
+draft head denoise:  40%|████      | 4/10 [00:01<00:02,  2.26it/s][A
+draft head denoise:  50%|█████     | 5/10 [00:02<00:02,  2.26it/s][A
+draft head denoise:  60%|██████    | 6/10 [00:02<00:01,  2.30it/s][A
+draft head denoise:  70%|███████   | 7/10 [00:03<00:01,  2.31it/s][A
+draft head denoise:  80%|████████  | 8/10 [00:03<00:00,  2.32it/s][A
+draft head denoise:  90%|█████████ | 9/10 [00:03<00:00,  2.33it/s][A
+draft head denoise: 100%|██████████| 10/10 [00:04<00:00,  2.33it/s][A
+                                                                   [Avideo prompts: 100%|██████████| 1/1 [10:29<00:00, 629.24s/it]video prompts: 100%|██████████| 1/1 [10:29<00:00, 629.24s/it]
+{
+  "checkpoint_path": "/root/Self-Forcing/outputs/draft_head/checkpoints/20260609_optionb_unrolled10_flow1_clean0p5_detail0p05/final.pt",
+  "num_prompts": 2,
+  "training_mode": "unrolled",
+  "denoising_step_list": [
+    1000,
+    889,
+    778,
+    667,
+    556,
+    444,
+    333,
+    222,
+    111,
+    0
+  ],
+  "unroll_noise_mode": "fixed",
+  "target_refine_timestep": 0,
+  "runs": [
+    {
+      "mode": "bidirectional_target_teacher",
+      "prompt_index": 2,
+      "prompt": "A movie trailer featuring the adventures of the 30 year old space man wearing a red wool knitted motorcycle helmet, blue sky, salt desert, cinematic style, shot on 35mm film, vivid colors.",
+      "video_path": "/root/Self-Forcing/outputs/draft_head/test_runs/bidirectional_prompt_anchor_20260610_010334/prompt_0002_bidirectional_target_teacher.mp4",
+      "num_blocks": 9,
+      "target_refine_timestep": 0
+    },
+    {
+      "mode": "bidirectional_draft_head",
+      "prompt_index": 2,
+      "prompt": "A movie trailer featuring the adventures of the 30 year old space man wearing a red wool knitted motorcycle helmet, blue sky, salt desert, cinematic style, shot on 35mm film, vivid colors.",
+      "video_path": "/root/Self-Forcing/outputs/draft_head/test_runs/bidirectional_prompt_anchor_20260610_010334/prompt_0002_bidirectional_draft_head.mp4",
+      "num_blocks": 9,
+      "target_refine_timestep": 0
+    }
+  ]
+}
+[2026-06-10 01:15:22] Done. Profile: /root/Self-Forcing/outputs/draft_head/test_runs/bidirectional_prompt_anchor_20260610_010334/profile.json

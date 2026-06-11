@@ -1,0 +1,45 @@
+[2026-05-26 06:43:51] Project: /root/Self-Forcing
+[2026-05-26 06:43:51] Python:  /root/Self-Forcing/sf_venv/bin/python (Python 3.10.20)
+[2026-05-26 06:43:51] GPU:     CUDA_VISIBLE_DEVICES=0
+[2026-05-26 06:43:51] Config:  /root/Self-Forcing/configs/self_forcing_dmd.yaml
+[2026-05-26 06:43:51] Ckpt:    /mnt/lanxiangh/models/Self-Forcing/checkpoints/self_forcing_dmd.pt
+[2026-05-26 06:43:51] Wan:     /mnt/lanxiangh/models/wan_models/Wan2.1-T2V-1.3B
+[2026-05-26 06:43:51] Prompt:  /root/Self-Forcing/prompts/test_single.txt
+[2026-05-26 06:43:51] Output:  /root/Self-Forcing/outputs/test_runs/inference_dmd_20260526_064351
+Free VRAM 139.29632568359375 GB
+KV inference with 3 frames per block
+Number of prompts: 1
+0it [00:00, ?it/s]1it [00:06,  6.96s/it]1it [00:06,  6.96s/it]
+current_timestep: 1000.0
+current_timestep: 937.5
+current_timestep: 833.3333129882812
+current_timestep: 625.0
+current_timestep: 1000.0
+current_timestep: 937.5
+current_timestep: 833.3333129882812
+current_timestep: 625.0
+current_timestep: 1000.0
+current_timestep: 937.5
+current_timestep: 833.3333129882812
+current_timestep: 625.0
+current_timestep: 1000.0
+current_timestep: 937.5
+current_timestep: 833.3333129882812
+current_timestep: 625.0
+current_timestep: 1000.0
+current_timestep: 937.5
+current_timestep: 833.3333129882812
+current_timestep: 625.0
+current_timestep: 1000.0
+current_timestep: 937.5
+current_timestep: 833.3333129882812
+current_timestep: 625.0
+current_timestep: 1000.0
+current_timestep: 937.5
+current_timestep: 833.3333129882812
+current_timestep: 625.0
+[2026-05-26 06:45:09] Done. Videos in /root/Self-Forcing/outputs/test_runs/inference_dmd_20260526_064351
+total 1512
+drwxr-xr-x 2 root root    4096 May 26 06:45 .
+drwxr-xr-x 4 root root    4096 May 26 06:43 ..
+-rw-r--r-- 1 root root 1538727 May 26 06:45 A hyperrealistic close-up of ocean waves shimmering at sunset, golden hour light.-0.mp4

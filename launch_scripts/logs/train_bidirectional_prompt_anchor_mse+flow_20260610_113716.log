@@ -1,0 +1,17 @@
+[2026-06-10 11:37:16] Training bidirectional prompt-anchor draft head
+[2026-06-10 11:37:16] Teacher setup: bidirectional_wan
+[2026-06-10 11:37:16] Manifest: /mnt/lanxiangh/data/ff_exec/bidirectional_wan_draft_head_dataset/tau_delta_0p0/manifest.json
+[2026-06-10 11:37:16] Dataset cache: /mnt/lanxiangh/data/cache/specgen index_workers=8 wait_seconds=3600
+[2026-06-10 11:37:16] Run dir:   /root/Self-Forcing/outputs/draft_head/checkpoints/corrected_flow_20260610_113716_bidirectional_prompt_anchor_wan_targetinit_tempmix2_unrolled_h5120_l6_st1000_750_500_250_0_dense10_overfit0_bs1_g4_lr1e-5_fl1_0_dt0_05_td0_0_bd0_0
+[2026-06-10 11:37:16] Output:    /root/Self-Forcing/outputs/draft_head/checkpoints/corrected_flow_20260610_113716_bidirectional_prompt_anchor_wan_targetinit_tempmix2_unrolled_h5120_l6_st1000_750_500_250_0_dense10_overfit0_bs1_g4_lr1e-5_fl1_0_dt0_05_td0_0_bd0_0/final.pt
+[2026-06-10 11:37:16] GPUs:      4 visible=0,1,2,3
+[2026-06-10 11:37:16] Anchor:    online_target target=Wan2.1-T2V-14B seed=42
+[2026-06-10 11:37:16] Model:     wan hidden=5120 layers=6 heads=40 ffn_dim=13824 prompt_dim=4096 temporal_mixer_layers=2 temporal_mixer_ffn_dim=2048 gradient_checkpointing=1
+[2026-06-10 11:37:16] Parallel:  strategy=fsdp fsdp_min_num_params=100000000 fsdp_mixed_precision=none
+[2026-06-10 11:37:16] Init:      target_blocks=[0 8 16 24 32 39]
+[2026-06-10 11:37:16] Training:  mode=unrolled prediction_type=flow steps=[1000 750 500 250 0] dense_schedule_steps=10 random_sampling=uniform_schedule logit_mean=0.0 logit_std=1.0 unroll_noise=fixed weights=auto overfit_num=0 overfit_start=0 num_workers=0
+[2026-06-10 11:37:16] Loss:      clean=0.1 flow=1.0 detail=0.05 temporal_delta=0.0 boundary=0.0
+[startup rank0 2026-06-10 11:37:22] building/loading bidirectional dataset index
+[startup rank0 2026-06-10 11:37:22] dataset index ready in 0.0s examples=1003
+[startup rank0 2026-06-10 11:37:22] loading one sample to infer latent shape
+[startup rank0 2026-06-10 11:37:22] sample shape ready in 0.1s latent_channels=16 frames=27

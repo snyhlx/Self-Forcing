@@ -1,0 +1,10 @@
+[2026-06-07 13:04:17] Parallel Option-B bidirectional Wan dataset collection
+[2026-06-07 13:04:17] Output:  /mnt/lanxiangh/data/ff_exec/bidirectional_wan_draft_head_dataset/tau_delta_0p0
+[2026-06-07 13:04:17] Teacher: Wan2.1-T2V-14B
+[2026-06-07 13:04:17] GPUs:    0 1 2 3 num=4
+[2026-06-07 13:04:17] Blocks:  9
+[2026-06-07 13:04:17] Prompts: /root/Self-Forcing/prompts/MovieGenVideoBench.txt start=0 max=1906
+[2026-06-07 13:04:17] Starting collector rank=0 device=0 part=/mnt/lanxiangh/data/ff_exec/bidirectional_wan_draft_head_dataset/tau_delta_0p0/part_000
+[2026-06-07 13:04:17] Starting collector rank=1 device=1 part=/mnt/lanxiangh/data/ff_exec/bidirectional_wan_draft_head_dataset/tau_delta_0p0/part_001
+[2026-06-07 13:04:17] Starting collector rank=2 device=2 part=/mnt/lanxiangh/data/ff_exec/bidirectional_wan_draft_head_dataset/tau_delta_0p0/part_002
+[2026-06-07 13:04:17] Starting collector rank=3 device=3 part=/mnt/lanxiangh/data/ff_exec/bidirectional_wan_draft_head_dataset/tau_delta_0p0/part_003

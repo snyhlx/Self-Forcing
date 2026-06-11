@@ -3,3 +3,8 @@ __pycache__
 
 wan_models
 checkpoints
+outputs
+videos
+
+sf_venv
+tmp

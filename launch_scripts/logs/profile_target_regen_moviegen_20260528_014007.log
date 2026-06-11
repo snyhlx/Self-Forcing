@@ -1,0 +1,2361 @@
+[2026-05-28 01:40:07] Dataset:   /root/Self-Forcing/prompts/MovieGenVideoBench.txt
+[2026-05-28 01:40:07] Prompts:   start=0 max=16
+[2026-05-28 01:40:07] Mode:      target_only vs target_regen
+[2026-05-28 01:40:07] Agreement: rmse tau_delta_sweep=[0.2 0.3 0.4 0.5 0.7 1.0]
+[2026-05-28 01:40:07] Save pairs: 0 (STORE_CONTEXT=0)
+[2026-05-28 01:40:07] Reuse block decodes for output: 1
+[2026-05-28 01:40:07] Blocks:    9
+[2026-05-28 01:40:07] Output:    /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007
+[2026-05-28 01:40:07] === Running tau_delta=0.2 -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p2 ===
+Loading target: Wan2.1-T2V-14B /mnt/lanxiangh/models/realtime-video/checkpoints/krea-realtime-video-14b.safetensors
+KV inference with 3 frames per block
+Loading drafter: Wan2.1-T2V-1.3B /mnt/lanxiangh/models/Self-Forcing/checkpoints/self_forcing_dmd.pt
+KV inference with 3 frames per block
+prompts:   0%|          | 0/16 [00:00<?, ?it/s]
+target_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_only blocks:  11%|█         | 1/9 [00:02<00:16,  2.04s/it][A
+target_only blocks:  22%|██▏       | 2/9 [00:04<00:15,  2.16s/it][A
+target_only blocks:  33%|███▎      | 3/9 [00:06<00:13,  2.33s/it][A
+target_only blocks:  44%|████▍     | 4/9 [00:09<00:12,  2.53s/it][A
+target_only blocks:  56%|█████▌    | 5/9 [00:12<00:11,  2.76s/it][A
+target_only blocks:  67%|██████▋   | 6/9 [00:16<00:08,  2.99s/it][A
+target_only blocks:  78%|███████▊  | 7/9 [00:19<00:06,  3.23s/it][A
+target_only blocks:  89%|████████▉ | 8/9 [00:23<00:03,  3.39s/it][A
+target_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.50s/it][Atarget_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.05s/it]
+
+target_regen blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_regen blocks:  11%|█         | 1/9 [00:02<00:20,  2.62s/it][A
+target_regen blocks:  22%|██▏       | 2/9 [00:05<00:19,  2.85s/it][A
+target_regen blocks:  33%|███▎      | 3/9 [00:09<00:18,  3.09s/it][A
+target_regen blocks:  44%|████▍     | 4/9 [00:12<00:16,  3.36s/it][A
+target_regen blocks:  56%|█████▌    | 5/9 [00:16<00:14,  3.63s/it][A
+target_regen blocks:  67%|██████▋   | 6/9 [00:21<00:11,  3.92s/it][A
+target_regen blocks:  78%|███████▊  | 7/9 [00:26<00:08,  4.22s/it][A
+target_regen blocks:  89%|████████▉ | 8/9 [00:31<00:04,  4.42s/it][A
+target_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.55s/it][Atarget_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  3.99s/it]
+prompts:   6%|▋         | 1/16 [01:07<16:55, 67.68s/it]
+target_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_only blocks:  11%|█         | 1/9 [00:01<00:15,  1.96s/it][A
+target_only blocks:  22%|██▏       | 2/9 [00:04<00:14,  2.13s/it][A
+target_only blocks:  33%|███▎      | 3/9 [00:06<00:13,  2.32s/it][A
+target_only blocks:  44%|████▍     | 4/9 [00:09<00:12,  2.53s/it][A
+target_only blocks:  56%|█████▌    | 5/9 [00:12<00:11,  2.75s/it][A
+target_only blocks:  67%|██████▋   | 6/9 [00:16<00:08,  2.99s/it][A
+target_only blocks:  78%|███████▊  | 7/9 [00:19<00:06,  3.23s/it][A
+target_only blocks:  89%|████████▉ | 8/9 [00:23<00:03,  3.40s/it][A
+target_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.50s/it][Atarget_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.05s/it]
+
+target_regen blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_regen blocks:  11%|█         | 1/9 [00:02<00:20,  2.61s/it][A
+target_regen blocks:  22%|██▏       | 2/9 [00:05<00:19,  2.86s/it][A
+target_regen blocks:  33%|███▎      | 3/9 [00:09<00:18,  3.09s/it][A
+target_regen blocks:  44%|████▍     | 4/9 [00:12<00:16,  3.36s/it][A
+target_regen blocks:  56%|█████▌    | 5/9 [00:16<00:14,  3.64s/it][A
+target_regen blocks:  67%|██████▋   | 6/9 [00:21<00:11,  3.93s/it][A
+target_regen blocks:  78%|███████▊  | 7/9 [00:26<00:08,  4.23s/it][A
+target_regen blocks:  89%|████████▉ | 8/9 [00:31<00:04,  4.42s/it][A
+target_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.56s/it][Atarget_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  3.99s/it]
+prompts:  12%|█▎        | 2/16 [02:15<15:46, 67.60s/it]
+target_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_only blocks:  11%|█         | 1/9 [00:01<00:15,  1.95s/it][A
+target_only blocks:  22%|██▏       | 2/9 [00:04<00:14,  2.12s/it][A
+target_only blocks:  33%|███▎      | 3/9 [00:06<00:13,  2.32s/it][A
+target_only blocks:  44%|████▍     | 4/9 [00:09<00:12,  2.52s/it][A
+target_only blocks:  56%|█████▌    | 5/9 [00:12<00:10,  2.74s/it][A
+target_only blocks:  67%|██████▋   | 6/9 [00:16<00:08,  2.98s/it][A
+target_only blocks:  78%|███████▊  | 7/9 [00:19<00:06,  3.22s/it][A
+target_only blocks:  89%|████████▉ | 8/9 [00:23<00:03,  3.39s/it][A
+target_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.49s/it][Atarget_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.04s/it]
+
+target_regen blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_regen blocks:  11%|█         | 1/9 [00:02<00:20,  2.59s/it][A
+target_regen blocks:  22%|██▏       | 2/9 [00:05<00:19,  2.84s/it][A
+target_regen blocks:  33%|███▎      | 3/9 [00:08<00:18,  3.08s/it][A
+target_regen blocks:  44%|████▍     | 4/9 [00:12<00:16,  3.34s/it][A
+target_regen blocks:  56%|█████▌    | 5/9 [00:16<00:14,  3.62s/it][A
+target_regen blocks:  67%|██████▋   | 6/9 [00:21<00:11,  3.92s/it][A
+target_regen blocks:  78%|███████▊  | 7/9 [00:26<00:08,  4.23s/it][A
+target_regen blocks:  89%|████████▉ | 8/9 [00:31<00:04,  4.43s/it][A
+target_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.56s/it][Atarget_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  3.99s/it]
+prompts:  19%|█▉        | 3/16 [03:22<14:36, 67.45s/it]
+target_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_only blocks:  11%|█         | 1/9 [00:01<00:15,  1.95s/it][A
+target_only blocks:  22%|██▏       | 2/9 [00:04<00:14,  2.13s/it][A
+target_only blocks:  33%|███▎      | 3/9 [00:06<00:13,  2.32s/it][A
+target_only blocks:  44%|████▍     | 4/9 [00:09<00:12,  2.53s/it][A
+target_only blocks:  56%|█████▌    | 5/9 [00:12<00:11,  2.75s/it][A
+target_only blocks:  67%|██████▋   | 6/9 [00:16<00:08,  2.98s/it][A
+target_only blocks:  78%|███████▊  | 7/9 [00:19<00:06,  3.23s/it][A
+target_only blocks:  89%|████████▉ | 8/9 [00:23<00:03,  3.39s/it][A
+target_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.50s/it][Atarget_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.04s/it]
+
+target_regen blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_regen blocks:  11%|█         | 1/9 [00:02<00:20,  2.58s/it][A
+target_regen blocks:  22%|██▏       | 2/9 [00:05<00:19,  2.83s/it][A
+target_regen blocks:  33%|███▎      | 3/9 [00:08<00:18,  3.08s/it][A
+target_regen blocks:  44%|████▍     | 4/9 [00:12<00:16,  3.34s/it][A
+target_regen blocks:  56%|█████▌    | 5/9 [00:16<00:14,  3.62s/it][A
+target_regen blocks:  67%|██████▋   | 6/9 [00:21<00:11,  3.92s/it][A
+target_regen blocks:  78%|███████▊  | 7/9 [00:26<00:08,  4.22s/it][A
+target_regen blocks:  89%|████████▉ | 8/9 [00:31<00:04,  4.42s/it][A
+target_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.55s/it][Atarget_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  3.98s/it]
+prompts:  25%|██▌       | 4/16 [04:29<13:29, 67.47s/it]
+target_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_only blocks:  11%|█         | 1/9 [00:01<00:15,  1.96s/it][A
+target_only blocks:  22%|██▏       | 2/9 [00:04<00:14,  2.13s/it][A
+target_only blocks:  33%|███▎      | 3/9 [00:06<00:13,  2.32s/it][A
+target_only blocks:  44%|████▍     | 4/9 [00:09<00:12,  2.53s/it][A
+target_only blocks:  56%|█████▌    | 5/9 [00:12<00:10,  2.75s/it][A
+target_only blocks:  67%|██████▋   | 6/9 [00:16<00:08,  2.98s/it][A
+target_only blocks:  78%|███████▊  | 7/9 [00:19<00:06,  3.23s/it][A
+target_only blocks:  89%|████████▉ | 8/9 [00:23<00:03,  3.39s/it][A
+target_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.50s/it][Atarget_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.04s/it]
+
+target_regen blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_regen blocks:  11%|█         | 1/9 [00:02<00:20,  2.60s/it][A
+target_regen blocks:  22%|██▏       | 2/9 [00:05<00:19,  2.85s/it][A
+target_regen blocks:  33%|███▎      | 3/9 [00:09<00:18,  3.10s/it][A
+target_regen blocks:  44%|████▍     | 4/9 [00:12<00:16,  3.36s/it][A
+target_regen blocks:  56%|█████▌    | 5/9 [00:16<00:14,  3.64s/it][A
+target_regen blocks:  67%|██████▋   | 6/9 [00:21<00:11,  3.93s/it][A
+target_regen blocks:  78%|███████▊  | 7/9 [00:26<00:08,  4.24s/it][A
+target_regen blocks:  89%|████████▉ | 8/9 [00:31<00:04,  4.44s/it][A
+target_regen blocks: 100%|██████████| 9/9 [00:36<00:00,  4.57s/it][Atarget_regen blocks: 100%|██████████| 9/9 [00:36<00:00,  4.00s/it]
+prompts:  31%|███▏      | 5/16 [05:37<12:22, 67.46s/it]
+target_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_only blocks:  11%|█         | 1/9 [00:01<00:15,  1.97s/it][A
+target_only blocks:  22%|██▏       | 2/9 [00:04<00:15,  2.14s/it][A
+target_only blocks:  33%|███▎      | 3/9 [00:06<00:13,  2.33s/it][A
+target_only blocks:  44%|████▍     | 4/9 [00:09<00:12,  2.53s/it][A
+target_only blocks:  56%|█████▌    | 5/9 [00:12<00:11,  2.76s/it][A
+target_only blocks:  67%|██████▋   | 6/9 [00:16<00:08,  2.99s/it][A
+target_only blocks:  78%|███████▊  | 7/9 [00:19<00:06,  3.23s/it][A
+target_only blocks:  89%|████████▉ | 8/9 [00:23<00:03,  3.39s/it][A
+target_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.50s/it][Atarget_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.05s/it]
+
+target_regen blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_regen blocks:  11%|█         | 1/9 [00:02<00:20,  2.59s/it][A
+target_regen blocks:  22%|██▏       | 2/9 [00:05<00:19,  2.83s/it][A
+target_regen blocks:  33%|███▎      | 3/9 [00:08<00:18,  3.08s/it][A
+target_regen blocks:  44%|████▍     | 4/9 [00:12<00:16,  3.35s/it][A
+target_regen blocks:  56%|█████▌    | 5/9 [00:16<00:14,  3.63s/it][A
+target_regen blocks:  67%|██████▋   | 6/9 [00:21<00:11,  3.92s/it][A
+target_regen blocks:  78%|███████▊  | 7/9 [00:26<00:08,  4.23s/it][A
+target_regen blocks:  89%|████████▉ | 8/9 [00:31<00:04,  4.43s/it][A
+target_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.56s/it][Atarget_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  3.99s/it]
+prompts:  38%|███▊      | 6/16 [06:44<11:14, 67.45s/it]
+target_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_only blocks:  11%|█         | 1/9 [00:01<00:15,  1.96s/it][A
+target_only blocks:  22%|██▏       | 2/9 [00:04<00:14,  2.14s/it][A
+target_only blocks:  33%|███▎      | 3/9 [00:06<00:13,  2.32s/it][A
+target_only blocks:  44%|████▍     | 4/9 [00:09<00:12,  2.53s/it][A
+target_only blocks:  56%|█████▌    | 5/9 [00:12<00:11,  2.75s/it][A
+target_only blocks:  67%|██████▋   | 6/9 [00:16<00:08,  2.99s/it][A
+target_only blocks:  78%|███████▊  | 7/9 [00:19<00:06,  3.23s/it][A
+target_only blocks:  89%|████████▉ | 8/9 [00:23<00:03,  3.39s/it][A
+target_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.50s/it][Atarget_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.04s/it]
+
+target_regen blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_regen blocks:  11%|█         | 1/9 [00:02<00:20,  2.58s/it][A
+target_regen blocks:  22%|██▏       | 2/9 [00:05<00:19,  2.83s/it][A
+target_regen blocks:  33%|███▎      | 3/9 [00:08<00:18,  3.08s/it][A
+target_regen blocks:  44%|████▍     | 4/9 [00:12<00:16,  3.35s/it][A
+target_regen blocks:  56%|█████▌    | 5/9 [00:16<00:14,  3.62s/it][A
+target_regen blocks:  67%|██████▋   | 6/9 [00:21<00:11,  3.91s/it][A
+target_regen blocks:  78%|███████▊  | 7/9 [00:26<00:08,  4.22s/it][A
+target_regen blocks:  89%|████████▉ | 8/9 [00:31<00:04,  4.42s/it][A
+target_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.56s/it][Atarget_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  3.99s/it]
+prompts:  44%|████▍     | 7/16 [07:52<10:06, 67.43s/it]
+target_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_only blocks:  11%|█         | 1/9 [00:01<00:15,  1.95s/it][A
+target_only blocks:  22%|██▏       | 2/9 [00:04<00:14,  2.12s/it][A
+target_only blocks:  33%|███▎      | 3/9 [00:06<00:13,  2.32s/it][A
+target_only blocks:  44%|████▍     | 4/9 [00:09<00:12,  2.52s/it][A
+target_only blocks:  56%|█████▌    | 5/9 [00:12<00:10,  2.75s/it][A
+target_only blocks:  67%|██████▋   | 6/9 [00:16<00:08,  2.98s/it][A
+target_only blocks:  78%|███████▊  | 7/9 [00:19<00:06,  3.23s/it][A
+target_only blocks:  89%|████████▉ | 8/9 [00:23<00:03,  3.39s/it][A
+target_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.50s/it][Atarget_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.04s/it]
+
+target_regen blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_regen blocks:  11%|█         | 1/9 [00:02<00:20,  2.59s/it][A
+target_regen blocks:  22%|██▏       | 2/9 [00:05<00:19,  2.84s/it][A
+target_regen blocks:  33%|███▎      | 3/9 [00:08<00:18,  3.08s/it][A
+target_regen blocks:  44%|████▍     | 4/9 [00:12<00:16,  3.34s/it][A
+target_regen blocks:  56%|█████▌    | 5/9 [00:16<00:14,  3.62s/it][A
+target_regen blocks:  67%|██████▋   | 6/9 [00:21<00:11,  3.92s/it][A
+target_regen blocks:  78%|███████▊  | 7/9 [00:26<00:08,  4.22s/it][A
+target_regen blocks:  89%|████████▉ | 8/9 [00:31<00:04,  4.42s/it][A
+target_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.56s/it][Atarget_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  3.99s/it]
+prompts:  50%|█████     | 8/16 [08:59<08:58, 67.36s/it]
+target_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_only blocks:  11%|█         | 1/9 [00:01<00:15,  1.95s/it][A
+target_only blocks:  22%|██▏       | 2/9 [00:04<00:14,  2.14s/it][A
+target_only blocks:  33%|███▎      | 3/9 [00:06<00:13,  2.33s/it][A
+target_only blocks:  44%|████▍     | 4/9 [00:09<00:12,  2.53s/it][A
+target_only blocks:  56%|█████▌    | 5/9 [00:12<00:11,  2.76s/it][A
+target_only blocks:  67%|██████▋   | 6/9 [00:16<00:08,  2.99s/it][A
+target_only blocks:  78%|███████▊  | 7/9 [00:19<00:06,  3.24s/it][A
+target_only blocks:  89%|████████▉ | 8/9 [00:23<00:03,  3.40s/it][A
+target_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.51s/it][Atarget_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.05s/it]
+
+target_regen blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_regen blocks:  11%|█         | 1/9 [00:02<00:20,  2.58s/it][A
+target_regen blocks:  22%|██▏       | 2/9 [00:05<00:19,  2.84s/it][A
+target_regen blocks:  33%|███▎      | 3/9 [00:08<00:18,  3.09s/it][A
+target_regen blocks:  44%|████▍     | 4/9 [00:12<00:16,  3.35s/it][A
+target_regen blocks:  56%|█████▌    | 5/9 [00:16<00:14,  3.63s/it][A
+target_regen blocks:  67%|██████▋   | 6/9 [00:21<00:11,  3.92s/it][A
+target_regen blocks:  78%|███████▊  | 7/9 [00:26<00:08,  4.23s/it][A
+target_regen blocks:  89%|████████▉ | 8/9 [00:31<00:04,  4.43s/it][A
+target_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.56s/it][Atarget_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  3.99s/it]
+prompts:  56%|█████▋    | 9/16 [10:06<07:51, 67.35s/it]
+target_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_only blocks:  11%|█         | 1/9 [00:01<00:15,  1.96s/it][A
+target_only blocks:  22%|██▏       | 2/9 [00:04<00:14,  2.13s/it][A
+target_only blocks:  33%|███▎      | 3/9 [00:06<00:13,  2.32s/it][A
+target_only blocks:  44%|████▍     | 4/9 [00:09<00:12,  2.53s/it][A
+target_only blocks:  56%|█████▌    | 5/9 [00:12<00:11,  2.75s/it][A
+target_only blocks:  67%|██████▋   | 6/9 [00:16<00:08,  2.99s/it][A
+target_only blocks:  78%|███████▊  | 7/9 [00:19<00:06,  3.24s/it][A
+target_only blocks:  89%|████████▉ | 8/9 [00:23<00:03,  3.40s/it][A
+target_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.50s/it][Atarget_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.05s/it]
+
+target_regen blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_regen blocks:  11%|█         | 1/9 [00:02<00:20,  2.59s/it][A
+target_regen blocks:  22%|██▏       | 2/9 [00:05<00:19,  2.84s/it][A
+target_regen blocks:  33%|███▎      | 3/9 [00:09<00:18,  3.09s/it][A
+target_regen blocks:  44%|████▍     | 4/9 [00:12<00:16,  3.36s/it][A
+target_regen blocks:  56%|█████▌    | 5/9 [00:16<00:14,  3.64s/it][A
+target_regen blocks:  67%|██████▋   | 6/9 [00:21<00:11,  3.92s/it][A
+target_regen blocks:  78%|███████▊  | 7/9 [00:26<00:08,  4.23s/it][A
+target_regen blocks:  89%|████████▉ | 8/9 [00:31<00:04,  4.43s/it][A
+target_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.57s/it][Atarget_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.00s/it]
+prompts:  62%|██████▎   | 10/16 [11:14<06:44, 67.47s/it]
+target_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_only blocks:  11%|█         | 1/9 [00:01<00:15,  1.95s/it][A
+target_only blocks:  22%|██▏       | 2/9 [00:04<00:14,  2.13s/it][A
+target_only blocks:  33%|███▎      | 3/9 [00:06<00:13,  2.32s/it][A
+target_only blocks:  44%|████▍     | 4/9 [00:09<00:12,  2.53s/it][A
+target_only blocks:  56%|█████▌    | 5/9 [00:12<00:11,  2.76s/it][A
+target_only blocks:  67%|██████▋   | 6/9 [00:16<00:08,  2.99s/it][A
+target_only blocks:  78%|███████▊  | 7/9 [00:19<00:06,  3.24s/it][A
+target_only blocks:  89%|████████▉ | 8/9 [00:23<00:03,  3.40s/it][A
+target_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.51s/it][Atarget_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.05s/it]
+
+target_regen blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_regen blocks:  11%|█         | 1/9 [00:02<00:20,  2.59s/it][A
+target_regen blocks:  22%|██▏       | 2/9 [00:05<00:19,  2.85s/it][A
+target_regen blocks:  33%|███▎      | 3/9 [00:09<00:18,  3.09s/it][A
+target_regen blocks:  44%|████▍     | 4/9 [00:12<00:16,  3.35s/it][A
+target_regen blocks:  56%|█████▌    | 5/9 [00:16<00:14,  3.63s/it][A
+target_regen blocks:  67%|██████▋   | 6/9 [00:21<00:11,  3.92s/it][A
+target_regen blocks:  78%|███████▊  | 7/9 [00:26<00:08,  4.23s/it][A
+target_regen blocks:  89%|████████▉ | 8/9 [00:31<00:04,  4.43s/it][A
+target_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.56s/it][Atarget_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  3.99s/it]
+prompts:  69%|██████▉   | 11/16 [12:21<05:37, 67.44s/it]
+target_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_only blocks:  11%|█         | 1/9 [00:01<00:15,  1.96s/it][A
+target_only blocks:  22%|██▏       | 2/9 [00:04<00:14,  2.13s/it][A
+target_only blocks:  33%|███▎      | 3/9 [00:06<00:13,  2.32s/it][A
+target_only blocks:  44%|████▍     | 4/9 [00:09<00:12,  2.52s/it][A
+target_only blocks:  56%|█████▌    | 5/9 [00:12<00:10,  2.75s/it][A
+target_only blocks:  67%|██████▋   | 6/9 [00:16<00:08,  2.98s/it][A
+target_only blocks:  78%|███████▊  | 7/9 [00:19<00:06,  3.23s/it][A
+target_only blocks:  89%|████████▉ | 8/9 [00:23<00:03,  3.39s/it][A
+target_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.49s/it][Atarget_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.04s/it]
+
+target_regen blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_regen blocks:  11%|█         | 1/9 [00:02<00:20,  2.60s/it][A
+target_regen blocks:  22%|██▏       | 2/9 [00:05<00:19,  2.85s/it][A
+target_regen blocks:  33%|███▎      | 3/9 [00:09<00:18,  3.09s/it][A
+target_regen blocks:  44%|████▍     | 4/9 [00:12<00:16,  3.35s/it][A
+target_regen blocks:  56%|█████▌    | 5/9 [00:16<00:14,  3.63s/it][A
+target_regen blocks:  67%|██████▋   | 6/9 [00:21<00:11,  3.93s/it][A
+target_regen blocks:  78%|███████▊  | 7/9 [00:26<00:08,  4.23s/it][A
+target_regen blocks:  89%|████████▉ | 8/9 [00:31<00:04,  4.44s/it][A
+target_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.57s/it][Atarget_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.00s/it]
+prompts:  75%|███████▌  | 12/16 [13:29<04:29, 67.39s/it]
+target_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_only blocks:  11%|█         | 1/9 [00:01<00:15,  1.96s/it][A
+target_only blocks:  22%|██▏       | 2/9 [00:04<00:14,  2.12s/it][A
+target_only blocks:  33%|███▎      | 3/9 [00:06<00:13,  2.32s/it][A
+target_only blocks:  44%|████▍     | 4/9 [00:09<00:12,  2.52s/it][A
+target_only blocks:  56%|█████▌    | 5/9 [00:12<00:10,  2.75s/it][A
+target_only blocks:  67%|██████▋   | 6/9 [00:16<00:08,  2.98s/it][A
+target_only blocks:  78%|███████▊  | 7/9 [00:19<00:06,  3.23s/it][A
+target_only blocks:  89%|████████▉ | 8/9 [00:23<00:03,  3.39s/it][A
+target_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.50s/it][Atarget_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.04s/it]
+
+target_regen blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_regen blocks:  11%|█         | 1/9 [00:02<00:20,  2.60s/it][A
+target_regen blocks:  22%|██▏       | 2/9 [00:05<00:19,  2.84s/it][A
+target_regen blocks:  33%|███▎      | 3/9 [00:08<00:18,  3.09s/it][A
+target_regen blocks:  44%|████▍     | 4/9 [00:12<00:16,  3.35s/it][A
+target_regen blocks:  56%|█████▌    | 5/9 [00:16<00:14,  3.63s/it][A
+target_regen blocks:  67%|██████▋   | 6/9 [00:21<00:11,  3.92s/it][A
+target_regen blocks:  78%|███████▊  | 7/9 [00:26<00:08,  4.22s/it][A
+target_regen blocks:  89%|████████▉ | 8/9 [00:31<00:04,  4.42s/it][A
+target_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.56s/it][Atarget_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  3.99s/it]
+prompts:  81%|████████▏ | 13/16 [14:36<03:22, 67.39s/it]
+target_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_only blocks:  11%|█         | 1/9 [00:01<00:15,  1.95s/it][A
+target_only blocks:  22%|██▏       | 2/9 [00:04<00:14,  2.13s/it][A
+target_only blocks:  33%|███▎      | 3/9 [00:06<00:13,  2.32s/it][A
+target_only blocks:  44%|████▍     | 4/9 [00:09<00:12,  2.53s/it][A
+target_only blocks:  56%|█████▌    | 5/9 [00:12<00:11,  2.75s/it][A
+target_only blocks:  67%|██████▋   | 6/9 [00:16<00:08,  2.99s/it][A
+target_only blocks:  78%|███████▊  | 7/9 [00:19<00:06,  3.23s/it][A
+target_only blocks:  89%|████████▉ | 8/9 [00:23<00:03,  3.39s/it][A
+target_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.50s/it][Atarget_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.05s/it]
+
+target_regen blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_regen blocks:  11%|█         | 1/9 [00:02<00:20,  2.59s/it][A
+target_regen blocks:  22%|██▏       | 2/9 [00:05<00:19,  2.84s/it][A
+target_regen blocks:  33%|███▎      | 3/9 [00:08<00:18,  3.09s/it][A
+target_regen blocks:  44%|████▍     | 4/9 [00:12<00:16,  3.35s/it][A
+target_regen blocks:  56%|█████▌    | 5/9 [00:16<00:14,  3.63s/it][A
+target_regen blocks:  67%|██████▋   | 6/9 [00:21<00:11,  3.92s/it][A
+target_regen blocks:  78%|███████▊  | 7/9 [00:26<00:08,  4.22s/it][A
+target_regen blocks:  89%|████████▉ | 8/9 [00:31<00:04,  4.42s/it][A
+target_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.56s/it][Atarget_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  3.99s/it]
+prompts:  88%|████████▊ | 14/16 [15:44<02:14, 67.42s/it]
+target_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_only blocks:  11%|█         | 1/9 [00:01<00:15,  1.95s/it][A
+target_only blocks:  22%|██▏       | 2/9 [00:04<00:14,  2.12s/it][A
+target_only blocks:  33%|███▎      | 3/9 [00:06<00:13,  2.32s/it][A
+target_only blocks:  44%|████▍     | 4/9 [00:09<00:12,  2.52s/it][A
+target_only blocks:  56%|█████▌    | 5/9 [00:12<00:10,  2.74s/it][A
+target_only blocks:  67%|██████▋   | 6/9 [00:16<00:08,  2.98s/it][A
+target_only blocks:  78%|███████▊  | 7/9 [00:19<00:06,  3.23s/it][A
+target_only blocks:  89%|████████▉ | 8/9 [00:23<00:03,  3.39s/it][A
+target_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.50s/it][Atarget_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.04s/it]
+
+target_regen blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_regen blocks:  11%|█         | 1/9 [00:02<00:20,  2.60s/it][A
+target_regen blocks:  22%|██▏       | 2/9 [00:05<00:19,  2.84s/it][A
+target_regen blocks:  33%|███▎      | 3/9 [00:08<00:18,  3.08s/it][A
+target_regen blocks:  44%|████▍     | 4/9 [00:12<00:16,  3.34s/it][A
+target_regen blocks:  56%|█████▌    | 5/9 [00:16<00:14,  3.62s/it][A
+target_regen blocks:  67%|██████▋   | 6/9 [00:21<00:11,  3.91s/it][A
+target_regen blocks:  78%|███████▊  | 7/9 [00:26<00:08,  4.22s/it][A
+target_regen blocks:  89%|████████▉ | 8/9 [00:31<00:04,  4.42s/it][A
+target_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.55s/it][Atarget_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  3.98s/it]
+prompts:  94%|█████████▍| 15/16 [16:51<01:07, 67.38s/it]
+target_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_only blocks:  11%|█         | 1/9 [00:01<00:15,  1.97s/it][A
+target_only blocks:  22%|██▏       | 2/9 [00:04<00:14,  2.13s/it][A
+target_only blocks:  33%|███▎      | 3/9 [00:06<00:13,  2.32s/it][A
+target_only blocks:  44%|████▍     | 4/9 [00:09<00:12,  2.53s/it][A
+target_only blocks:  56%|█████▌    | 5/9 [00:12<00:11,  2.75s/it][A
+target_only blocks:  67%|██████▋   | 6/9 [00:16<00:08,  2.99s/it][A
+target_only blocks:  78%|███████▊  | 7/9 [00:19<00:06,  3.23s/it][A
+target_only blocks:  89%|████████▉ | 8/9 [00:23<00:03,  3.39s/it][A
+target_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.50s/it][Atarget_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.05s/it]
+
+target_regen blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_regen blocks:  11%|█         | 1/9 [00:02<00:20,  2.59s/it][A
+target_regen blocks:  22%|██▏       | 2/9 [00:05<00:19,  2.84s/it][A
+target_regen blocks:  33%|███▎      | 3/9 [00:08<00:18,  3.09s/it][A
+target_regen blocks:  44%|████▍     | 4/9 [00:12<00:16,  3.35s/it][A
+target_regen blocks:  56%|█████▌    | 5/9 [00:16<00:14,  3.63s/it][A
+target_regen blocks:  67%|██████▋   | 6/9 [00:21<00:11,  3.92s/it][A
+target_regen blocks:  78%|███████▊  | 7/9 [00:26<00:08,  4.23s/it][A
+target_regen blocks:  89%|████████▉ | 8/9 [00:31<00:04,  4.43s/it][A
+target_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.56s/it][Atarget_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  3.99s/it]
+prompts: 100%|██████████| 16/16 [17:58<00:00, 67.40s/it]prompts: 100%|██████████| 16/16 [17:58<00:00, 67.42s/it]
+Wrote profile: /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p2/profile.json
+target_only: 29.69s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p2/prompt_0000_target_only.mp4
+target_regen: 35.89s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p2/prompt_0000_target_regen.mp4
+target_only: 29.58s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p2/prompt_0001_target_only.mp4
+target_regen: 35.94s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p2/prompt_0001_target_regen.mp4
+target_only: 29.52s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p2/prompt_0002_target_only.mp4
+target_regen: 35.91s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p2/prompt_0002_target_regen.mp4
+target_only: 29.52s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p2/prompt_0003_target_only.mp4
+target_regen: 35.85s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p2/prompt_0003_target_regen.mp4
+target_only: 29.53s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p2/prompt_0004_target_only.mp4
+target_regen: 36.02s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p2/prompt_0004_target_regen.mp4
+target_only: 29.58s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p2/prompt_0005_target_only.mp4
+target_regen: 35.92s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p2/prompt_0005_target_regen.mp4
+target_only: 29.54s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p2/prompt_0006_target_only.mp4
+target_regen: 35.88s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p2/prompt_0006_target_regen.mp4
+target_only: 29.51s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p2/prompt_0007_target_only.mp4
+target_regen: 35.89s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p2/prompt_0007_target_regen.mp4
+target_only: 29.60s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p2/prompt_0008_target_only.mp4
+target_regen: 35.90s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p2/prompt_0008_target_regen.mp4
+target_only: 29.57s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p2/prompt_0009_target_only.mp4
+target_regen: 35.98s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p2/prompt_0009_target_regen.mp4
+target_only: 29.62s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p2/prompt_0010_target_only.mp4
+target_regen: 35.93s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p2/prompt_0010_target_regen.mp4
+target_only: 29.51s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p2/prompt_0011_target_only.mp4
+target_regen: 35.99s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p2/prompt_0011_target_regen.mp4
+target_only: 29.53s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p2/prompt_0012_target_only.mp4
+target_regen: 35.89s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p2/prompt_0012_target_regen.mp4
+target_only: 29.55s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p2/prompt_0013_target_only.mp4
+target_regen: 35.90s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p2/prompt_0013_target_regen.mp4
+target_only: 29.51s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p2/prompt_0014_target_only.mp4
+target_regen: 35.87s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p2/prompt_0014_target_regen.mp4
+target_only: 29.57s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p2/prompt_0015_target_only.mp4
+target_regen: 35.91s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p2/prompt_0015_target_regen.mp4
+[2026-05-28 01:59:23] Profile JSON: /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p2/profile.json
+[2026-05-28 01:59:23] === Running tau_delta=0.3 -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p3 ===
+Loading target: Wan2.1-T2V-14B /mnt/lanxiangh/models/realtime-video/checkpoints/krea-realtime-video-14b.safetensors
+KV inference with 3 frames per block
+Loading drafter: Wan2.1-T2V-1.3B /mnt/lanxiangh/models/Self-Forcing/checkpoints/self_forcing_dmd.pt
+KV inference with 3 frames per block
+prompts:   0%|          | 0/16 [00:00<?, ?it/s]
+target_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_only blocks:  11%|█         | 1/9 [00:02<00:16,  2.10s/it][A
+target_only blocks:  22%|██▏       | 2/9 [00:04<00:15,  2.19s/it][A
+target_only blocks:  33%|███▎      | 3/9 [00:06<00:14,  2.35s/it][A
+target_only blocks:  44%|████▍     | 4/9 [00:09<00:12,  2.54s/it][A
+target_only blocks:  56%|█████▌    | 5/9 [00:12<00:11,  2.76s/it][A
+target_only blocks:  67%|██████▋   | 6/9 [00:16<00:08,  2.99s/it][A
+target_only blocks:  78%|███████▊  | 7/9 [00:20<00:06,  3.23s/it][A
+target_only blocks:  89%|████████▉ | 8/9 [00:23<00:03,  3.40s/it][A
+target_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.51s/it][Atarget_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.06s/it]
+
+target_regen blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_regen blocks:  11%|█         | 1/9 [00:02<00:21,  2.65s/it][A
+target_regen blocks:  22%|██▏       | 2/9 [00:05<00:20,  2.88s/it][A
+target_regen blocks:  33%|███▎      | 3/9 [00:09<00:18,  3.11s/it][A
+target_regen blocks:  44%|████▍     | 4/9 [00:12<00:16,  3.37s/it][A
+target_regen blocks:  56%|█████▌    | 5/9 [00:16<00:14,  3.64s/it][A
+target_regen blocks:  67%|██████▋   | 6/9 [00:21<00:11,  3.93s/it][A
+target_regen blocks:  78%|███████▊  | 7/9 [00:26<00:08,  4.23s/it][A
+target_regen blocks:  89%|████████▉ | 8/9 [00:31<00:04,  4.43s/it][A
+target_regen blocks: 100%|██████████| 9/9 [00:36<00:00,  4.57s/it][Atarget_regen blocks: 100%|██████████| 9/9 [00:36<00:00,  4.00s/it]
+prompts:   6%|▋         | 1/16 [01:08<17:04, 68.28s/it]
+target_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_only blocks:  11%|█         | 1/9 [00:01<00:15,  1.97s/it][A
+target_only blocks:  22%|██▏       | 2/9 [00:04<00:14,  2.14s/it][A
+target_only blocks:  33%|███▎      | 3/9 [00:06<00:13,  2.33s/it][A
+target_only blocks:  44%|████▍     | 4/9 [00:09<00:12,  2.54s/it][A
+target_only blocks:  56%|█████▌    | 5/9 [00:12<00:11,  2.76s/it][A
+target_only blocks:  67%|██████▋   | 6/9 [00:16<00:08,  2.99s/it][A
+target_only blocks:  78%|███████▊  | 7/9 [00:19<00:06,  3.23s/it][A
+target_only blocks:  89%|████████▉ | 8/9 [00:23<00:03,  3.39s/it][A
+target_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.50s/it][Atarget_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.05s/it]
+
+target_regen blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_regen blocks:  11%|█         | 1/9 [00:02<00:20,  2.61s/it][A
+target_regen blocks:  22%|██▏       | 2/9 [00:05<00:19,  2.85s/it][A
+target_regen blocks:  33%|███▎      | 3/9 [00:09<00:18,  3.09s/it][A
+target_regen blocks:  44%|████▍     | 4/9 [00:12<00:16,  3.36s/it][A
+target_regen blocks:  56%|█████▌    | 5/9 [00:16<00:14,  3.63s/it][A
+target_regen blocks:  67%|██████▋   | 6/9 [00:21<00:11,  3.93s/it][A
+target_regen blocks:  78%|███████▊  | 7/9 [00:26<00:08,  4.23s/it][A
+target_regen blocks:  89%|████████▉ | 8/9 [00:31<00:04,  4.44s/it][A
+target_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.57s/it][Atarget_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.00s/it]
+prompts:  12%|█▎        | 2/16 [02:15<15:50, 67.86s/it]
+target_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_only blocks:  11%|█         | 1/9 [00:01<00:15,  1.96s/it][A
+target_only blocks:  22%|██▏       | 2/9 [00:04<00:14,  2.14s/it][A
+target_only blocks:  33%|███▎      | 3/9 [00:06<00:13,  2.32s/it][A
+target_only blocks:  44%|████▍     | 4/9 [00:09<00:12,  2.53s/it][A
+target_only blocks:  56%|█████▌    | 5/9 [00:12<00:10,  2.75s/it][A
+target_only blocks:  67%|██████▋   | 6/9 [00:16<00:08,  2.98s/it][A
+target_only blocks:  78%|███████▊  | 7/9 [00:19<00:06,  3.23s/it][A
+target_only blocks:  89%|████████▉ | 8/9 [00:23<00:03,  3.39s/it][A
+target_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.50s/it][Atarget_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.04s/it]
+
+target_regen blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_regen blocks:  11%|█         | 1/9 [00:02<00:20,  2.61s/it][A
+target_regen blocks:  22%|██▏       | 2/9 [00:05<00:19,  2.85s/it][A
+target_regen blocks:  33%|███▎      | 3/9 [00:09<00:18,  3.09s/it][A
+target_regen blocks:  44%|████▍     | 4/9 [00:12<00:16,  3.35s/it][A
+target_regen blocks:  56%|█████▌    | 5/9 [00:16<00:14,  3.63s/it][A
+target_regen blocks:  67%|██████▋   | 6/9 [00:21<00:11,  3.92s/it][A
+target_regen blocks:  78%|███████▊  | 7/9 [00:26<00:08,  4.23s/it][A
+target_regen blocks:  89%|████████▉ | 8/9 [00:31<00:04,  4.43s/it][A
+target_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.56s/it][Atarget_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  3.99s/it]
+prompts:  19%|█▉        | 3/16 [03:23<14:38, 67.60s/it]
+target_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_only blocks:  11%|█         | 1/9 [00:01<00:15,  1.96s/it][A
+target_only blocks:  22%|██▏       | 2/9 [00:04<00:14,  2.13s/it][A
+target_only blocks:  33%|███▎      | 3/9 [00:06<00:13,  2.32s/it][A
+target_only blocks:  44%|████▍     | 4/9 [00:09<00:12,  2.53s/it][A
+target_only blocks:  56%|█████▌    | 5/9 [00:12<00:10,  2.75s/it][A
+target_only blocks:  67%|██████▋   | 6/9 [00:16<00:08,  2.98s/it][A
+target_only blocks:  78%|███████▊  | 7/9 [00:19<00:06,  3.23s/it][A
+target_only blocks:  89%|████████▉ | 8/9 [00:23<00:03,  3.39s/it][A
+target_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.50s/it][Atarget_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.04s/it]
+
+target_regen blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_regen blocks:  11%|█         | 1/9 [00:02<00:20,  2.59s/it][A
+target_regen blocks:  22%|██▏       | 2/9 [00:05<00:19,  2.84s/it][A
+target_regen blocks:  33%|███▎      | 3/9 [00:08<00:18,  3.09s/it][A
+target_regen blocks:  44%|████▍     | 4/9 [00:12<00:16,  3.35s/it][A
+target_regen blocks:  56%|█████▌    | 5/9 [00:16<00:14,  3.62s/it][A
+target_regen blocks:  67%|██████▋   | 6/9 [00:21<00:11,  3.91s/it][A
+target_regen blocks:  78%|███████▊  | 7/9 [00:26<00:08,  4.22s/it][A
+target_regen blocks:  89%|████████▉ | 8/9 [00:31<00:04,  4.42s/it][A
+target_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.55s/it][Atarget_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  3.99s/it]
+prompts:  25%|██▌       | 4/16 [04:30<13:30, 67.55s/it]
+target_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_only blocks:  11%|█         | 1/9 [00:01<00:15,  1.96s/it][A
+target_only blocks:  22%|██▏       | 2/9 [00:04<00:14,  2.14s/it][A
+target_only blocks:  33%|███▎      | 3/9 [00:06<00:13,  2.33s/it][A
+target_only blocks:  44%|████▍     | 4/9 [00:09<00:12,  2.53s/it][A
+target_only blocks:  56%|█████▌    | 5/9 [00:12<00:11,  2.76s/it][A
+target_only blocks:  67%|██████▋   | 6/9 [00:16<00:08,  2.99s/it][A
+target_only blocks:  78%|███████▊  | 7/9 [00:19<00:06,  3.23s/it][A
+target_only blocks:  89%|████████▉ | 8/9 [00:23<00:03,  3.39s/it][A
+target_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.50s/it][Atarget_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.05s/it]
+
+target_regen blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_regen blocks:  11%|█         | 1/9 [00:02<00:20,  2.59s/it][A
+target_regen blocks:  22%|██▏       | 2/9 [00:05<00:19,  2.83s/it][A
+target_regen blocks:  33%|███▎      | 3/9 [00:08<00:18,  3.08s/it][A
+target_regen blocks:  44%|████▍     | 4/9 [00:12<00:16,  3.34s/it][A
+target_regen blocks:  56%|█████▌    | 5/9 [00:16<00:14,  3.62s/it][A
+target_regen blocks:  67%|██████▋   | 6/9 [00:21<00:11,  3.92s/it][A
+target_regen blocks:  78%|███████▊  | 7/9 [00:26<00:08,  4.22s/it][A
+target_regen blocks:  89%|████████▉ | 8/9 [00:31<00:04,  4.43s/it][A
+target_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.56s/it][Atarget_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  3.99s/it]
+prompts:  31%|███▏      | 5/16 [05:37<12:21, 67.45s/it]
+target_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_only blocks:  11%|█         | 1/9 [00:01<00:15,  1.96s/it][A
+target_only blocks:  22%|██▏       | 2/9 [00:04<00:14,  2.14s/it][A
+target_only blocks:  33%|███▎      | 3/9 [00:06<00:13,  2.33s/it][A
+target_only blocks:  44%|████▍     | 4/9 [00:09<00:12,  2.54s/it][A
+target_only blocks:  56%|█████▌    | 5/9 [00:12<00:11,  2.76s/it][A
+target_only blocks:  67%|██████▋   | 6/9 [00:16<00:08,  3.00s/it][A
+target_only blocks:  78%|███████▊  | 7/9 [00:19<00:06,  3.24s/it][A
+target_only blocks:  89%|████████▉ | 8/9 [00:23<00:03,  3.40s/it][A
+target_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.50s/it][Atarget_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.05s/it]
+
+target_regen blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_regen blocks:  11%|█         | 1/9 [00:02<00:20,  2.60s/it][A
+target_regen blocks:  22%|██▏       | 2/9 [00:05<00:19,  2.84s/it][A
+target_regen blocks:  33%|███▎      | 3/9 [00:08<00:18,  3.09s/it][A
+target_regen blocks:  44%|████▍     | 4/9 [00:12<00:16,  3.35s/it][A
+target_regen blocks:  56%|█████▌    | 5/9 [00:16<00:14,  3.63s/it][A
+target_regen blocks:  67%|██████▋   | 6/9 [00:21<00:11,  3.92s/it][A
+target_regen blocks:  78%|███████▊  | 7/9 [00:26<00:08,  4.23s/it][A
+target_regen blocks:  89%|████████▉ | 8/9 [00:31<00:04,  4.43s/it][A
+target_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.57s/it][Atarget_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.00s/it]
+prompts:  38%|███▊      | 6/16 [06:45<11:14, 67.47s/it]
+target_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_only blocks:  11%|█         | 1/9 [00:01<00:15,  1.96s/it][A
+target_only blocks:  22%|██▏       | 2/9 [00:04<00:14,  2.13s/it][A
+target_only blocks:  33%|███▎      | 3/9 [00:06<00:13,  2.33s/it][A
+target_only blocks:  44%|████▍     | 4/9 [00:09<00:12,  2.53s/it][A
+target_only blocks:  56%|█████▌    | 5/9 [00:12<00:11,  2.75s/it][A
+target_only blocks:  67%|██████▋   | 6/9 [00:16<00:08,  2.99s/it][A
+target_only blocks:  78%|███████▊  | 7/9 [00:19<00:06,  3.23s/it][A
+target_only blocks:  89%|████████▉ | 8/9 [00:23<00:03,  3.39s/it][A
+target_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.50s/it][Atarget_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.04s/it]
+
+target_regen blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_regen blocks:  11%|█         | 1/9 [00:02<00:20,  2.60s/it][A
+target_regen blocks:  22%|██▏       | 2/9 [00:05<00:19,  2.85s/it][A
+target_regen blocks:  33%|███▎      | 3/9 [00:09<00:18,  3.09s/it][A
+target_regen blocks:  44%|████▍     | 4/9 [00:12<00:16,  3.35s/it][A
+target_regen blocks:  56%|█████▌    | 5/9 [00:16<00:14,  3.63s/it][A
+target_regen blocks:  67%|██████▋   | 6/9 [00:21<00:11,  3.93s/it][A
+target_regen blocks:  78%|███████▊  | 7/9 [00:26<00:08,  4.23s/it][A
+target_regen blocks:  89%|████████▉ | 8/9 [00:31<00:04,  4.43s/it][A
+target_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.57s/it][Atarget_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.00s/it]
+prompts:  44%|████▍     | 7/16 [07:52<10:07, 67.48s/it]
+target_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_only blocks:  11%|█         | 1/9 [00:01<00:15,  1.96s/it][A
+target_only blocks:  22%|██▏       | 2/9 [00:04<00:14,  2.14s/it][A
+target_only blocks:  33%|███▎      | 3/9 [00:06<00:13,  2.33s/it][A
+target_only blocks:  44%|████▍     | 4/9 [00:09<00:12,  2.54s/it][A
+target_only blocks:  56%|█████▌    | 5/9 [00:12<00:11,  2.76s/it][A
+target_only blocks:  67%|██████▋   | 6/9 [00:16<00:08,  3.00s/it][A
+target_only blocks:  78%|███████▊  | 7/9 [00:19<00:06,  3.24s/it][A
+target_only blocks:  89%|████████▉ | 8/9 [00:23<00:03,  3.40s/it][A
+target_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.50s/it][Atarget_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.05s/it]
+
+target_regen blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_regen blocks:  11%|█         | 1/9 [00:02<00:20,  2.59s/it][A
+target_regen blocks:  22%|██▏       | 2/9 [00:05<00:19,  2.84s/it][A
+target_regen blocks:  33%|███▎      | 3/9 [00:08<00:18,  3.09s/it][A
+target_regen blocks:  44%|████▍     | 4/9 [00:12<00:16,  3.35s/it][A
+target_regen blocks:  56%|█████▌    | 5/9 [00:16<00:14,  3.63s/it][A
+target_regen blocks:  67%|██████▋   | 6/9 [00:21<00:11,  3.92s/it][A
+target_regen blocks:  78%|███████▊  | 7/9 [00:26<00:08,  4.23s/it][A
+target_regen blocks:  89%|████████▉ | 8/9 [00:31<00:04,  4.43s/it][A
+target_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.56s/it][Atarget_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  3.99s/it]
+prompts:  50%|█████     | 8/16 [09:00<08:59, 67.44s/it]
+target_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_only blocks:  11%|█         | 1/9 [00:01<00:15,  1.97s/it][A
+target_only blocks:  22%|██▏       | 2/9 [00:04<00:14,  2.13s/it][A
+target_only blocks:  33%|███▎      | 3/9 [00:06<00:13,  2.32s/it][A
+target_only blocks:  44%|████▍     | 4/9 [00:09<00:12,  2.53s/it][A
+target_only blocks:  56%|█████▌    | 5/9 [00:12<00:10,  2.75s/it][A
+target_only blocks:  67%|██████▋   | 6/9 [00:16<00:08,  2.98s/it][A
+target_only blocks:  78%|███████▊  | 7/9 [00:19<00:06,  3.23s/it][A
+target_only blocks:  89%|████████▉ | 8/9 [00:23<00:03,  3.39s/it][A
+target_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.50s/it][Atarget_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.04s/it]
+
+target_regen blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_regen blocks:  11%|█         | 1/9 [00:02<00:20,  2.61s/it][A
+target_regen blocks:  22%|██▏       | 2/9 [00:05<00:19,  2.85s/it][A
+target_regen blocks:  33%|███▎      | 3/9 [00:09<00:18,  3.09s/it][A
+target_regen blocks:  44%|████▍     | 4/9 [00:12<00:16,  3.35s/it][A
+target_regen blocks:  56%|█████▌    | 5/9 [00:16<00:14,  3.63s/it][A
+target_regen blocks:  67%|██████▋   | 6/9 [00:21<00:11,  3.92s/it][A
+target_regen blocks:  78%|███████▊  | 7/9 [00:26<00:08,  4.23s/it][A
+target_regen blocks:  89%|████████▉ | 8/9 [00:31<00:04,  4.43s/it][A
+target_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.56s/it][Atarget_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  3.99s/it]
+prompts:  56%|█████▋    | 9/16 [10:07<07:51, 67.38s/it]
+target_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_only blocks:  11%|█         | 1/9 [00:01<00:15,  1.96s/it][A
+target_only blocks:  22%|██▏       | 2/9 [00:04<00:14,  2.13s/it][A
+target_only blocks:  33%|███▎      | 3/9 [00:06<00:13,  2.32s/it][A
+target_only blocks:  44%|████▍     | 4/9 [00:09<00:12,  2.52s/it][A
+target_only blocks:  56%|█████▌    | 5/9 [00:12<00:10,  2.75s/it][A
+target_only blocks:  67%|██████▋   | 6/9 [00:16<00:08,  2.98s/it][A
+target_only blocks:  78%|███████▊  | 7/9 [00:19<00:06,  3.23s/it][A
+target_only blocks:  89%|████████▉ | 8/9 [00:23<00:03,  3.39s/it][A
+target_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.49s/it][Atarget_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.04s/it]
+
+target_regen blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_regen blocks:  11%|█         | 1/9 [00:02<00:20,  2.60s/it][A
+target_regen blocks:  22%|██▏       | 2/9 [00:05<00:19,  2.84s/it][A
+target_regen blocks:  33%|███▎      | 3/9 [00:08<00:18,  3.09s/it][A
+target_regen blocks:  44%|████▍     | 4/9 [00:12<00:16,  3.35s/it][A
+target_regen blocks:  56%|█████▌    | 5/9 [00:16<00:14,  3.63s/it][A
+target_regen blocks:  67%|██████▋   | 6/9 [00:21<00:11,  3.93s/it][A
+target_regen blocks:  78%|███████▊  | 7/9 [00:26<00:08,  4.24s/it][A
+target_regen blocks:  89%|████████▉ | 8/9 [00:31<00:04,  4.44s/it][A
+target_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.56s/it][Atarget_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.00s/it]
+prompts:  62%|██████▎   | 10/16 [11:15<06:44, 67.47s/it]
+target_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_only blocks:  11%|█         | 1/9 [00:01<00:15,  1.96s/it][A
+target_only blocks:  22%|██▏       | 2/9 [00:04<00:14,  2.13s/it][A
+target_only blocks:  33%|███▎      | 3/9 [00:06<00:13,  2.32s/it][A
+target_only blocks:  44%|████▍     | 4/9 [00:09<00:12,  2.53s/it][A
+target_only blocks:  56%|█████▌    | 5/9 [00:12<00:11,  2.75s/it][A
+target_only blocks:  67%|██████▋   | 6/9 [00:16<00:08,  2.98s/it][A
+target_only blocks:  78%|███████▊  | 7/9 [00:19<00:06,  3.23s/it][A
+target_only blocks:  89%|████████▉ | 8/9 [00:23<00:03,  3.39s/it][A
+target_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.50s/it][Atarget_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.04s/it]
+
+target_regen blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_regen blocks:  11%|█         | 1/9 [00:02<00:20,  2.60s/it][A
+target_regen blocks:  22%|██▏       | 2/9 [00:05<00:19,  2.85s/it][A
+target_regen blocks:  33%|███▎      | 3/9 [00:09<00:18,  3.09s/it][A
+target_regen blocks:  44%|████▍     | 4/9 [00:12<00:16,  3.35s/it][A
+target_regen blocks:  56%|█████▌    | 5/9 [00:16<00:14,  3.63s/it][A
+target_regen blocks:  67%|██████▋   | 6/9 [00:21<00:11,  3.92s/it][A
+target_regen blocks:  78%|███████▊  | 7/9 [00:26<00:08,  4.22s/it][A
+target_regen blocks:  89%|████████▉ | 8/9 [00:31<00:04,  4.43s/it][A
+target_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.56s/it][Atarget_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  3.99s/it]
+prompts:  69%|██████▉   | 11/16 [12:22<05:37, 67.42s/it]
+target_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_only blocks:  11%|█         | 1/9 [00:01<00:15,  1.96s/it][A
+target_only blocks:  22%|██▏       | 2/9 [00:04<00:14,  2.14s/it][A
+target_only blocks:  33%|███▎      | 3/9 [00:06<00:13,  2.33s/it][A
+target_only blocks:  44%|████▍     | 4/9 [00:09<00:12,  2.53s/it][A
+target_only blocks:  56%|█████▌    | 5/9 [00:12<00:11,  2.75s/it][A
+target_only blocks:  67%|██████▋   | 6/9 [00:16<00:08,  2.99s/it][A
+target_only blocks:  78%|███████▊  | 7/9 [00:19<00:06,  3.23s/it][A
+target_only blocks:  89%|████████▉ | 8/9 [00:23<00:03,  3.39s/it][A
+target_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.50s/it][Atarget_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.05s/it]
+
+target_regen blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_regen blocks:  11%|█         | 1/9 [00:02<00:20,  2.60s/it][A
+target_regen blocks:  22%|██▏       | 2/9 [00:05<00:19,  2.85s/it][A
+target_regen blocks:  33%|███▎      | 3/9 [00:09<00:18,  3.10s/it][A
+target_regen blocks:  44%|████▍     | 4/9 [00:12<00:16,  3.36s/it][A
+target_regen blocks:  56%|█████▌    | 5/9 [00:16<00:14,  3.63s/it][A
+target_regen blocks:  67%|██████▋   | 6/9 [00:21<00:11,  3.92s/it][A
+target_regen blocks:  78%|███████▊  | 7/9 [00:26<00:08,  4.23s/it][A
+target_regen blocks:  89%|████████▉ | 8/9 [00:31<00:04,  4.43s/it][A
+target_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.56s/it][Atarget_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  3.99s/it]
+prompts:  75%|███████▌  | 12/16 [13:29<04:29, 67.38s/it]
+target_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_only blocks:  11%|█         | 1/9 [00:01<00:15,  1.96s/it][A
+target_only blocks:  22%|██▏       | 2/9 [00:04<00:14,  2.13s/it][A
+target_only blocks:  33%|███▎      | 3/9 [00:06<00:13,  2.32s/it][A
+target_only blocks:  44%|████▍     | 4/9 [00:09<00:12,  2.53s/it][A
+target_only blocks:  56%|█████▌    | 5/9 [00:12<00:11,  2.75s/it][A
+target_only blocks:  67%|██████▋   | 6/9 [00:16<00:08,  2.99s/it][A
+target_only blocks:  78%|███████▊  | 7/9 [00:19<00:06,  3.24s/it][A
+target_only blocks:  89%|████████▉ | 8/9 [00:23<00:03,  3.40s/it][A
+target_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.51s/it][Atarget_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.05s/it]
+
+target_regen blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_regen blocks:  11%|█         | 1/9 [00:02<00:20,  2.61s/it][A
+target_regen blocks:  22%|██▏       | 2/9 [00:05<00:19,  2.86s/it][A
+target_regen blocks:  33%|███▎      | 3/9 [00:09<00:18,  3.10s/it][A
+target_regen blocks:  44%|████▍     | 4/9 [00:12<00:16,  3.36s/it][A
+target_regen blocks:  56%|█████▌    | 5/9 [00:16<00:14,  3.64s/it][A
+target_regen blocks:  67%|██████▋   | 6/9 [00:21<00:11,  3.93s/it][A
+target_regen blocks:  78%|███████▊  | 7/9 [00:26<00:08,  4.24s/it][A
+target_regen blocks:  89%|████████▉ | 8/9 [00:31<00:04,  4.45s/it][A
+target_regen blocks: 100%|██████████| 9/9 [00:36<00:00,  4.58s/it][Atarget_regen blocks: 100%|██████████| 9/9 [00:36<00:00,  4.01s/it]
+prompts:  81%|████████▏ | 13/16 [14:37<03:22, 67.43s/it]
+target_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_only blocks:  11%|█         | 1/9 [00:01<00:15,  1.96s/it][A
+target_only blocks:  22%|██▏       | 2/9 [00:04<00:14,  2.13s/it][A
+target_only blocks:  33%|███▎      | 3/9 [00:06<00:13,  2.32s/it][A
+target_only blocks:  44%|████▍     | 4/9 [00:09<00:12,  2.53s/it][A
+target_only blocks:  56%|█████▌    | 5/9 [00:12<00:11,  2.75s/it][A
+target_only blocks:  67%|██████▋   | 6/9 [00:16<00:08,  2.98s/it][A
+target_only blocks:  78%|███████▊  | 7/9 [00:19<00:06,  3.23s/it][A
+target_only blocks:  89%|████████▉ | 8/9 [00:23<00:03,  3.39s/it][A
+target_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.50s/it][Atarget_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.04s/it]
+
+target_regen blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_regen blocks:  11%|█         | 1/9 [00:02<00:20,  2.61s/it][A
+target_regen blocks:  22%|██▏       | 2/9 [00:05<00:19,  2.85s/it][A
+target_regen blocks:  33%|███▎      | 3/9 [00:09<00:18,  3.10s/it][A
+target_regen blocks:  44%|████▍     | 4/9 [00:12<00:16,  3.35s/it][A
+target_regen blocks:  56%|█████▌    | 5/9 [00:16<00:14,  3.63s/it][A
+target_regen blocks:  67%|██████▋   | 6/9 [00:21<00:11,  3.92s/it][A
+target_regen blocks:  78%|███████▊  | 7/9 [00:26<00:08,  4.23s/it][A
+target_regen blocks:  89%|████████▉ | 8/9 [00:31<00:04,  4.43s/it][A
+target_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.57s/it][Atarget_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.00s/it]
+prompts:  88%|████████▊ | 14/16 [15:44<02:14, 67.47s/it]
+target_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_only blocks:  11%|█         | 1/9 [00:01<00:15,  1.96s/it][A
+target_only blocks:  22%|██▏       | 2/9 [00:04<00:14,  2.13s/it][A
+target_only blocks:  33%|███▎      | 3/9 [00:06<00:13,  2.32s/it][A
+target_only blocks:  44%|████▍     | 4/9 [00:09<00:12,  2.53s/it][A
+target_only blocks:  56%|█████▌    | 5/9 [00:12<00:11,  2.76s/it][A
+target_only blocks:  67%|██████▋   | 6/9 [00:16<00:08,  2.99s/it][A
+target_only blocks:  78%|███████▊  | 7/9 [00:19<00:06,  3.23s/it][A
+target_only blocks:  89%|████████▉ | 8/9 [00:23<00:03,  3.40s/it][A
+target_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.50s/it][Atarget_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.05s/it]
+
+target_regen blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_regen blocks:  11%|█         | 1/9 [00:02<00:20,  2.60s/it][A
+target_regen blocks:  22%|██▏       | 2/9 [00:05<00:19,  2.85s/it][A
+target_regen blocks:  33%|███▎      | 3/9 [00:09<00:18,  3.09s/it][A
+target_regen blocks:  44%|████▍     | 4/9 [00:12<00:16,  3.35s/it][A
+target_regen blocks:  56%|█████▌    | 5/9 [00:16<00:14,  3.63s/it][A
+target_regen blocks:  67%|██████▋   | 6/9 [00:21<00:11,  3.93s/it][A
+target_regen blocks:  78%|███████▊  | 7/9 [00:26<00:08,  4.23s/it][A
+target_regen blocks:  89%|████████▉ | 8/9 [00:31<00:04,  4.43s/it][A
+target_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.57s/it][Atarget_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.00s/it]
+prompts:  94%|█████████▍| 15/16 [16:52<01:07, 67.46s/it]
+target_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_only blocks:  11%|█         | 1/9 [00:01<00:15,  1.95s/it][A
+target_only blocks:  22%|██▏       | 2/9 [00:04<00:14,  2.13s/it][A
+target_only blocks:  33%|███▎      | 3/9 [00:06<00:13,  2.32s/it][A
+target_only blocks:  44%|████▍     | 4/9 [00:09<00:12,  2.53s/it][A
+target_only blocks:  56%|█████▌    | 5/9 [00:12<00:11,  2.75s/it][A
+target_only blocks:  67%|██████▋   | 6/9 [00:16<00:08,  2.99s/it][A
+target_only blocks:  78%|███████▊  | 7/9 [00:19<00:06,  3.23s/it][A
+target_only blocks:  89%|████████▉ | 8/9 [00:23<00:03,  3.40s/it][A
+target_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.50s/it][Atarget_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.05s/it]
+
+target_regen blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_regen blocks:  11%|█         | 1/9 [00:02<00:20,  2.59s/it][A
+target_regen blocks:  22%|██▏       | 2/9 [00:05<00:19,  2.84s/it][A
+target_regen blocks:  33%|███▎      | 3/9 [00:09<00:18,  3.09s/it][A
+target_regen blocks:  44%|████▍     | 4/9 [00:12<00:16,  3.36s/it][A
+target_regen blocks:  56%|█████▌    | 5/9 [00:16<00:14,  3.63s/it][A
+target_regen blocks:  67%|██████▋   | 6/9 [00:21<00:11,  3.92s/it][A
+target_regen blocks:  78%|███████▊  | 7/9 [00:26<00:08,  4.23s/it][A
+target_regen blocks:  89%|████████▉ | 8/9 [00:31<00:04,  4.43s/it][A
+target_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.56s/it][Atarget_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  3.99s/it]
+prompts: 100%|██████████| 16/16 [17:59<00:00, 67.46s/it]prompts: 100%|██████████| 16/16 [17:59<00:00, 67.48s/it]
+Wrote profile: /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p3/profile.json
+target_only: 29.83s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p3/prompt_0000_target_only.mp4
+target_regen: 36.04s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p3/prompt_0000_target_regen.mp4
+target_only: 29.55s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p3/prompt_0001_target_only.mp4
+target_regen: 36.00s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p3/prompt_0001_target_regen.mp4
+target_only: 29.52s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p3/prompt_0002_target_only.mp4
+target_regen: 35.93s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p3/prompt_0002_target_regen.mp4
+target_only: 29.52s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p3/prompt_0003_target_only.mp4
+target_regen: 35.87s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p3/prompt_0003_target_regen.mp4
+target_only: 29.57s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p3/prompt_0004_target_only.mp4
+target_regen: 35.89s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p3/prompt_0004_target_regen.mp4
+target_only: 29.61s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p3/prompt_0005_target_only.mp4
+target_regen: 35.96s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p3/prompt_0005_target_regen.mp4
+target_only: 29.55s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p3/prompt_0006_target_only.mp4
+target_regen: 35.98s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p3/prompt_0006_target_regen.mp4
+target_only: 29.61s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p3/prompt_0007_target_only.mp4
+target_regen: 35.92s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p3/prompt_0007_target_regen.mp4
+target_only: 29.52s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p3/prompt_0008_target_only.mp4
+target_regen: 35.93s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p3/prompt_0008_target_regen.mp4
+target_only: 29.50s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p3/prompt_0009_target_only.mp4
+target_regen: 35.97s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p3/prompt_0009_target_regen.mp4
+target_only: 29.54s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p3/prompt_0010_target_only.mp4
+target_regen: 35.93s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p3/prompt_0010_target_regen.mp4
+target_only: 29.57s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p3/prompt_0011_target_only.mp4
+target_regen: 35.95s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p3/prompt_0011_target_regen.mp4
+target_only: 29.59s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p3/prompt_0012_target_only.mp4
+target_regen: 36.08s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p3/prompt_0012_target_regen.mp4
+target_only: 29.54s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p3/prompt_0013_target_only.mp4
+target_regen: 35.98s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p3/prompt_0013_target_regen.mp4
+target_only: 29.57s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p3/prompt_0014_target_only.mp4
+target_regen: 35.97s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p3/prompt_0014_target_regen.mp4
+target_only: 29.57s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p3/prompt_0015_target_only.mp4
+target_regen: 35.94s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p3/prompt_0015_target_regen.mp4
+[2026-05-28 02:18:43] Profile JSON: /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p3/profile.json
+[2026-05-28 02:18:43] === Running tau_delta=0.4 -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p4 ===
+Loading target: Wan2.1-T2V-14B /mnt/lanxiangh/models/realtime-video/checkpoints/krea-realtime-video-14b.safetensors
+KV inference with 3 frames per block
+Loading drafter: Wan2.1-T2V-1.3B /mnt/lanxiangh/models/Self-Forcing/checkpoints/self_forcing_dmd.pt
+KV inference with 3 frames per block
+prompts:   0%|          | 0/16 [00:00<?, ?it/s]
+target_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_only blocks:  11%|█         | 1/9 [00:02<00:16,  2.10s/it][A
+target_only blocks:  22%|██▏       | 2/9 [00:04<00:15,  2.18s/it][A
+target_only blocks:  33%|███▎      | 3/9 [00:06<00:14,  2.34s/it][A
+target_only blocks:  44%|████▍     | 4/9 [00:09<00:12,  2.54s/it][A
+target_only blocks:  56%|█████▌    | 5/9 [00:12<00:11,  2.75s/it][A
+target_only blocks:  67%|██████▋   | 6/9 [00:16<00:08,  2.99s/it][A
+target_only blocks:  78%|███████▊  | 7/9 [00:20<00:06,  3.23s/it][A
+target_only blocks:  89%|████████▉ | 8/9 [00:23<00:03,  3.39s/it][A
+target_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.49s/it][Atarget_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.05s/it]
+
+target_regen blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_regen blocks:  11%|█         | 1/9 [00:02<00:20,  2.61s/it][A
+target_regen blocks:  22%|██▏       | 2/9 [00:05<00:19,  2.85s/it][A
+target_regen blocks:  33%|███▎      | 3/9 [00:09<00:18,  3.09s/it][A
+target_regen blocks:  44%|████▍     | 4/9 [00:12<00:16,  3.35s/it][A
+target_regen blocks:  56%|█████▌    | 5/9 [00:16<00:14,  3.62s/it][A
+target_regen blocks:  67%|██████▋   | 6/9 [00:21<00:11,  3.91s/it][A
+target_regen blocks:  78%|███████▊  | 7/9 [00:26<00:08,  4.22s/it][A
+target_regen blocks:  89%|████████▉ | 8/9 [00:31<00:04,  4.42s/it][A
+target_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.55s/it][Atarget_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  3.99s/it]
+prompts:   6%|▋         | 1/16 [01:07<16:58, 67.92s/it]
+target_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_only blocks:  11%|█         | 1/9 [00:01<00:15,  1.95s/it][A
+target_only blocks:  22%|██▏       | 2/9 [00:04<00:14,  2.12s/it][A
+target_only blocks:  33%|███▎      | 3/9 [00:06<00:13,  2.32s/it][A
+target_only blocks:  44%|████▍     | 4/9 [00:09<00:12,  2.52s/it][A
+target_only blocks:  56%|█████▌    | 5/9 [00:12<00:10,  2.74s/it][A
+target_only blocks:  67%|██████▋   | 6/9 [00:16<00:08,  2.98s/it][A
+target_only blocks:  78%|███████▊  | 7/9 [00:19<00:06,  3.22s/it][A
+target_only blocks:  89%|████████▉ | 8/9 [00:23<00:03,  3.39s/it][A
+target_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.49s/it][Atarget_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.04s/it]
+
+target_regen blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_regen blocks:  11%|█         | 1/9 [00:02<00:20,  2.59s/it][A
+target_regen blocks:  22%|██▏       | 2/9 [00:05<00:19,  2.84s/it][A
+target_regen blocks:  33%|███▎      | 3/9 [00:08<00:18,  3.09s/it][A
+target_regen blocks:  44%|████▍     | 4/9 [00:12<00:16,  3.35s/it][A
+target_regen blocks:  56%|█████▌    | 5/9 [00:16<00:14,  3.63s/it][A
+target_regen blocks:  67%|██████▋   | 6/9 [00:21<00:11,  3.93s/it][A
+target_regen blocks:  78%|███████▊  | 7/9 [00:26<00:08,  4.23s/it][A
+target_regen blocks:  89%|████████▉ | 8/9 [00:31<00:04,  4.43s/it][A
+target_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.57s/it][Atarget_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.00s/it]
+prompts:  12%|█▎        | 2/16 [02:15<15:46, 67.64s/it]
+target_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_only blocks:  11%|█         | 1/9 [00:01<00:15,  1.95s/it][A
+target_only blocks:  22%|██▏       | 2/9 [00:04<00:14,  2.13s/it][A
+target_only blocks:  33%|███▎      | 3/9 [00:06<00:13,  2.32s/it][A
+target_only blocks:  44%|████▍     | 4/9 [00:09<00:12,  2.53s/it][A
+target_only blocks:  56%|█████▌    | 5/9 [00:12<00:10,  2.75s/it][A
+target_only blocks:  67%|██████▋   | 6/9 [00:16<00:08,  2.98s/it][A
+target_only blocks:  78%|███████▊  | 7/9 [00:19<00:06,  3.23s/it][A
+target_only blocks:  89%|████████▉ | 8/9 [00:23<00:03,  3.39s/it][A
+target_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.50s/it][Atarget_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.04s/it]
+
+target_regen blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_regen blocks:  11%|█         | 1/9 [00:02<00:20,  2.60s/it][A
+target_regen blocks:  22%|██▏       | 2/9 [00:05<00:19,  2.85s/it][A
+target_regen blocks:  33%|███▎      | 3/9 [00:09<00:18,  3.09s/it][A
+target_regen blocks:  44%|████▍     | 4/9 [00:12<00:16,  3.35s/it][A
+target_regen blocks:  56%|█████▌    | 5/9 [00:16<00:14,  3.64s/it][A
+target_regen blocks:  67%|██████▋   | 6/9 [00:21<00:11,  3.93s/it][A
+target_regen blocks:  78%|███████▊  | 7/9 [00:26<00:08,  4.23s/it][A
+target_regen blocks:  89%|████████▉ | 8/9 [00:31<00:04,  4.43s/it][A
+target_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.56s/it][Atarget_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  3.99s/it]
+prompts:  19%|█▉        | 3/16 [03:22<14:37, 67.47s/it]
+target_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_only blocks:  11%|█         | 1/9 [00:01<00:15,  1.95s/it][A
+target_only blocks:  22%|██▏       | 2/9 [00:04<00:14,  2.12s/it][A
+target_only blocks:  33%|███▎      | 3/9 [00:06<00:13,  2.32s/it][A
+target_only blocks:  44%|████▍     | 4/9 [00:09<00:12,  2.52s/it][A
+target_only blocks:  56%|█████▌    | 5/9 [00:12<00:10,  2.74s/it][A
+target_only blocks:  67%|██████▋   | 6/9 [00:16<00:08,  2.97s/it][A
+target_only blocks:  78%|███████▊  | 7/9 [00:19<00:06,  3.22s/it][A
+target_only blocks:  89%|████████▉ | 8/9 [00:23<00:03,  3.38s/it][A
+target_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.49s/it][Atarget_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.04s/it]
+
+target_regen blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_regen blocks:  11%|█         | 1/9 [00:02<00:20,  2.59s/it][A
+target_regen blocks:  22%|██▏       | 2/9 [00:05<00:19,  2.83s/it][A
+target_regen blocks:  33%|███▎      | 3/9 [00:08<00:18,  3.08s/it][A
+target_regen blocks:  44%|████▍     | 4/9 [00:12<00:16,  3.34s/it][A
+target_regen blocks:  56%|█████▌    | 5/9 [00:16<00:14,  3.62s/it][A
+target_regen blocks:  67%|██████▋   | 6/9 [00:21<00:11,  3.91s/it][A
+target_regen blocks:  78%|███████▊  | 7/9 [00:26<00:08,  4.22s/it][A
+target_regen blocks:  89%|████████▉ | 8/9 [00:30<00:04,  4.42s/it][A
+target_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.55s/it][Atarget_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  3.98s/it]
+prompts:  25%|██▌       | 4/16 [04:30<13:29, 67.45s/it]
+target_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_only blocks:  11%|█         | 1/9 [00:01<00:15,  1.96s/it][A
+target_only blocks:  22%|██▏       | 2/9 [00:04<00:14,  2.13s/it][A
+target_only blocks:  33%|███▎      | 3/9 [00:06<00:13,  2.32s/it][A
+target_only blocks:  44%|████▍     | 4/9 [00:09<00:12,  2.53s/it][A
+target_only blocks:  56%|█████▌    | 5/9 [00:12<00:11,  2.76s/it][A
+target_only blocks:  67%|██████▋   | 6/9 [00:16<00:08,  2.99s/it][A
+target_only blocks:  78%|███████▊  | 7/9 [00:19<00:06,  3.24s/it][A
+target_only blocks:  89%|████████▉ | 8/9 [00:23<00:03,  3.40s/it][A
+target_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.51s/it][Atarget_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.05s/it]
+
+target_regen blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_regen blocks:  11%|█         | 1/9 [00:02<00:20,  2.61s/it][A
+target_regen blocks:  22%|██▏       | 2/9 [00:05<00:20,  2.86s/it][A
+target_regen blocks:  33%|███▎      | 3/9 [00:09<00:18,  3.10s/it][A
+target_regen blocks:  44%|████▍     | 4/9 [00:12<00:16,  3.36s/it][A
+target_regen blocks:  56%|█████▌    | 5/9 [00:16<00:14,  3.64s/it][A
+target_regen blocks:  67%|██████▋   | 6/9 [00:21<00:11,  3.93s/it][A
+target_regen blocks:  78%|███████▊  | 7/9 [00:26<00:08,  4.23s/it][A
+target_regen blocks:  89%|████████▉ | 8/9 [00:31<00:04,  4.44s/it][A
+target_regen blocks: 100%|██████████| 9/9 [00:36<00:00,  4.57s/it][Atarget_regen blocks: 100%|██████████| 9/9 [00:36<00:00,  4.00s/it]
+prompts:  31%|███▏      | 5/16 [05:37<12:21, 67.42s/it]
+target_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_only blocks:  11%|█         | 1/9 [00:01<00:15,  1.97s/it][A
+target_only blocks:  22%|██▏       | 2/9 [00:04<00:14,  2.14s/it][A
+target_only blocks:  33%|███▎      | 3/9 [00:06<00:13,  2.33s/it][A
+target_only blocks:  44%|████▍     | 4/9 [00:09<00:12,  2.54s/it][A
+target_only blocks:  56%|█████▌    | 5/9 [00:12<00:11,  2.76s/it][A
+target_only blocks:  67%|██████▋   | 6/9 [00:16<00:08,  3.00s/it][A
+target_only blocks:  78%|███████▊  | 7/9 [00:19<00:06,  3.24s/it][A
+target_only blocks:  89%|████████▉ | 8/9 [00:23<00:03,  3.40s/it][A
+target_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.50s/it][Atarget_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.05s/it]
+
+target_regen blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_regen blocks:  11%|█         | 1/9 [00:02<00:20,  2.60s/it][A
+target_regen blocks:  22%|██▏       | 2/9 [00:05<00:19,  2.85s/it][A
+target_regen blocks:  33%|███▎      | 3/9 [00:08<00:18,  3.09s/it][A
+target_regen blocks:  44%|████▍     | 4/9 [00:12<00:16,  3.35s/it][A
+target_regen blocks:  56%|█████▌    | 5/9 [00:16<00:14,  3.62s/it][A
+target_regen blocks:  67%|██████▋   | 6/9 [00:21<00:11,  3.91s/it][A
+target_regen blocks:  78%|███████▊  | 7/9 [00:26<00:08,  4.22s/it][A
+target_regen blocks:  89%|████████▉ | 8/9 [00:31<00:04,  4.42s/it][A
+target_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.55s/it][Atarget_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  3.99s/it]
+prompts:  38%|███▊      | 6/16 [06:44<11:14, 67.40s/it]
+target_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_only blocks:  11%|█         | 1/9 [00:01<00:15,  1.96s/it][A
+target_only blocks:  22%|██▏       | 2/9 [00:04<00:14,  2.14s/it][A
+target_only blocks:  33%|███▎      | 3/9 [00:06<00:13,  2.33s/it][A
+target_only blocks:  44%|████▍     | 4/9 [00:09<00:12,  2.54s/it][A
+target_only blocks:  56%|█████▌    | 5/9 [00:12<00:11,  2.76s/it][A
+target_only blocks:  67%|██████▋   | 6/9 [00:16<00:09,  3.00s/it][A
+target_only blocks:  78%|███████▊  | 7/9 [00:20<00:06,  3.25s/it][A
+target_only blocks:  89%|████████▉ | 8/9 [00:23<00:03,  3.41s/it][A
+target_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.51s/it][Atarget_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.06s/it]
+
+target_regen blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_regen blocks:  11%|█         | 1/9 [00:02<00:20,  2.59s/it][A
+target_regen blocks:  22%|██▏       | 2/9 [00:05<00:19,  2.84s/it][A
+target_regen blocks:  33%|███▎      | 3/9 [00:08<00:18,  3.08s/it][A
+target_regen blocks:  44%|████▍     | 4/9 [00:12<00:16,  3.34s/it][A
+target_regen blocks:  56%|█████▌    | 5/9 [00:16<00:14,  3.62s/it][A
+target_regen blocks:  67%|██████▋   | 6/9 [00:21<00:11,  3.91s/it][A
+target_regen blocks:  78%|███████▊  | 7/9 [00:26<00:08,  4.22s/it][A
+target_regen blocks:  89%|████████▉ | 8/9 [00:31<00:04,  4.42s/it][A
+target_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.56s/it][Atarget_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  3.99s/it]
+prompts:  44%|████▍     | 7/16 [07:52<10:06, 67.42s/it]
+target_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_only blocks:  11%|█         | 1/9 [00:01<00:15,  1.96s/it][A
+target_only blocks:  22%|██▏       | 2/9 [00:04<00:14,  2.13s/it][A
+target_only blocks:  33%|███▎      | 3/9 [00:06<00:13,  2.32s/it][A
+target_only blocks:  44%|████▍     | 4/9 [00:09<00:12,  2.53s/it][A
+target_only blocks:  56%|█████▌    | 5/9 [00:12<00:11,  2.75s/it][A
+target_only blocks:  67%|██████▋   | 6/9 [00:16<00:08,  2.98s/it][A
+target_only blocks:  78%|███████▊  | 7/9 [00:19<00:06,  3.23s/it][A
+target_only blocks:  89%|████████▉ | 8/9 [00:23<00:03,  3.39s/it][A
+target_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.50s/it][Atarget_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.04s/it]
+
+target_regen blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_regen blocks:  11%|█         | 1/9 [00:02<00:20,  2.61s/it][A
+target_regen blocks:  22%|██▏       | 2/9 [00:05<00:19,  2.85s/it][A
+target_regen blocks:  33%|███▎      | 3/9 [00:09<00:18,  3.10s/it][A
+target_regen blocks:  44%|████▍     | 4/9 [00:12<00:16,  3.36s/it][A
+target_regen blocks:  56%|█████▌    | 5/9 [00:16<00:14,  3.63s/it][A
+target_regen blocks:  67%|██████▋   | 6/9 [00:21<00:11,  3.92s/it][A
+target_regen blocks:  78%|███████▊  | 7/9 [00:26<00:08,  4.22s/it][A
+target_regen blocks:  89%|████████▉ | 8/9 [00:31<00:04,  4.42s/it][A
+target_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.56s/it][Atarget_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  3.99s/it]
+prompts:  50%|█████     | 8/16 [08:59<08:58, 67.37s/it]
+target_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_only blocks:  11%|█         | 1/9 [00:01<00:15,  1.96s/it][A
+target_only blocks:  22%|██▏       | 2/9 [00:04<00:14,  2.13s/it][A
+target_only blocks:  33%|███▎      | 3/9 [00:06<00:13,  2.32s/it][A
+target_only blocks:  44%|████▍     | 4/9 [00:09<00:12,  2.52s/it][A
+target_only blocks:  56%|█████▌    | 5/9 [00:12<00:10,  2.75s/it][A
+target_only blocks:  67%|██████▋   | 6/9 [00:16<00:08,  2.98s/it][A
+target_only blocks:  78%|███████▊  | 7/9 [00:19<00:06,  3.23s/it][A
+target_only blocks:  89%|████████▉ | 8/9 [00:23<00:03,  3.39s/it][A
+target_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.50s/it][Atarget_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.04s/it]
+
+target_regen blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_regen blocks:  11%|█         | 1/9 [00:02<00:21,  2.63s/it][A
+target_regen blocks:  22%|██▏       | 2/9 [00:05<00:19,  2.86s/it][A
+target_regen blocks:  33%|███▎      | 3/9 [00:09<00:18,  3.10s/it][A
+target_regen blocks:  44%|████▍     | 4/9 [00:12<00:16,  3.35s/it][A
+target_regen blocks:  56%|█████▌    | 5/9 [00:16<00:14,  3.63s/it][A
+target_regen blocks:  67%|██████▋   | 6/9 [00:21<00:11,  3.92s/it][A
+target_regen blocks:  78%|███████▊  | 7/9 [00:26<00:08,  4.22s/it][A
+target_regen blocks:  89%|████████▉ | 8/9 [00:31<00:04,  4.42s/it][A
+target_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.55s/it][Atarget_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  3.99s/it]
+prompts:  56%|█████▋    | 9/16 [10:06<07:51, 67.32s/it]
+target_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_only blocks:  11%|█         | 1/9 [00:01<00:15,  1.96s/it][A
+target_only blocks:  22%|██▏       | 2/9 [00:04<00:14,  2.13s/it][A
+target_only blocks:  33%|███▎      | 3/9 [00:06<00:13,  2.33s/it][A
+target_only blocks:  44%|████▍     | 4/9 [00:09<00:12,  2.53s/it][A
+target_only blocks:  56%|█████▌    | 5/9 [00:12<00:11,  2.75s/it][A
+target_only blocks:  67%|██████▋   | 6/9 [00:16<00:08,  2.99s/it][A
+target_only blocks:  78%|███████▊  | 7/9 [00:19<00:06,  3.24s/it][A
+target_only blocks:  89%|████████▉ | 8/9 [00:23<00:03,  3.40s/it][A
+target_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.51s/it][Atarget_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.05s/it]
+
+target_regen blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_regen blocks:  11%|█         | 1/9 [00:02<00:20,  2.57s/it][A
+target_regen blocks:  22%|██▏       | 2/9 [00:05<00:19,  2.83s/it][A
+target_regen blocks:  33%|███▎      | 3/9 [00:08<00:18,  3.07s/it][A
+target_regen blocks:  44%|████▍     | 4/9 [00:12<00:16,  3.33s/it][A
+target_regen blocks:  56%|█████▌    | 5/9 [00:16<00:14,  3.61s/it][A
+target_regen blocks:  67%|██████▋   | 6/9 [00:21<00:11,  3.91s/it][A
+target_regen blocks:  78%|███████▊  | 7/9 [00:26<00:08,  4.21s/it][A
+target_regen blocks:  89%|████████▉ | 8/9 [00:30<00:04,  4.42s/it][A
+target_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.55s/it][Atarget_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  3.98s/it]
+prompts:  62%|██████▎   | 10/16 [11:14<06:44, 67.40s/it]
+target_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_only blocks:  11%|█         | 1/9 [00:01<00:15,  1.95s/it][A
+target_only blocks:  22%|██▏       | 2/9 [00:04<00:14,  2.13s/it][A
+target_only blocks:  33%|███▎      | 3/9 [00:06<00:13,  2.32s/it][A
+target_only blocks:  44%|████▍     | 4/9 [00:09<00:12,  2.52s/it][A
+target_only blocks:  56%|█████▌    | 5/9 [00:12<00:10,  2.74s/it][A
+target_only blocks:  67%|██████▋   | 6/9 [00:16<00:08,  2.98s/it][A
+target_only blocks:  78%|███████▊  | 7/9 [00:19<00:06,  3.23s/it][A
+target_only blocks:  89%|████████▉ | 8/9 [00:23<00:03,  3.39s/it][A
+target_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.49s/it][Atarget_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.04s/it]
+
+target_regen blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_regen blocks:  11%|█         | 1/9 [00:02<00:20,  2.60s/it][A
+target_regen blocks:  22%|██▏       | 2/9 [00:05<00:19,  2.85s/it][A
+target_regen blocks:  33%|███▎      | 3/9 [00:09<00:18,  3.10s/it][A
+target_regen blocks:  44%|████▍     | 4/9 [00:12<00:16,  3.36s/it][A
+target_regen blocks:  56%|█████▌    | 5/9 [00:16<00:14,  3.64s/it][A
+target_regen blocks:  67%|██████▋   | 6/9 [00:21<00:11,  3.93s/it][A
+target_regen blocks:  78%|███████▊  | 7/9 [00:26<00:08,  4.23s/it][A
+target_regen blocks:  89%|████████▉ | 8/9 [00:31<00:04,  4.43s/it][A
+target_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.57s/it][Atarget_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.00s/it]
+prompts:  69%|██████▉   | 11/16 [12:21<05:36, 67.35s/it]
+target_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_only blocks:  11%|█         | 1/9 [00:01<00:15,  1.98s/it][A
+target_only blocks:  22%|██▏       | 2/9 [00:04<00:14,  2.14s/it][A
+target_only blocks:  33%|███▎      | 3/9 [00:06<00:13,  2.33s/it][A
+target_only blocks:  44%|████▍     | 4/9 [00:09<00:12,  2.53s/it][A
+target_only blocks:  56%|█████▌    | 5/9 [00:12<00:11,  2.75s/it][A
+target_only blocks:  67%|██████▋   | 6/9 [00:16<00:08,  2.99s/it][A
+target_only blocks:  78%|███████▊  | 7/9 [00:19<00:06,  3.23s/it][A
+target_only blocks:  89%|████████▉ | 8/9 [00:23<00:03,  3.39s/it][A
+target_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.50s/it][Atarget_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.05s/it]
+
+target_regen blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_regen blocks:  11%|█         | 1/9 [00:02<00:20,  2.60s/it][A
+target_regen blocks:  22%|██▏       | 2/9 [00:05<00:19,  2.84s/it][A
+target_regen blocks:  33%|███▎      | 3/9 [00:08<00:18,  3.09s/it][A
+target_regen blocks:  44%|████▍     | 4/9 [00:12<00:16,  3.35s/it][A
+target_regen blocks:  56%|█████▌    | 5/9 [00:16<00:14,  3.63s/it][A
+target_regen blocks:  67%|██████▋   | 6/9 [00:21<00:11,  3.92s/it][A
+target_regen blocks:  78%|███████▊  | 7/9 [00:26<00:08,  4.22s/it][A
+target_regen blocks:  89%|████████▉ | 8/9 [00:31<00:04,  4.42s/it][A
+target_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.56s/it][Atarget_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  3.99s/it]
+prompts:  75%|███████▌  | 12/16 [13:28<04:29, 67.32s/it]
+target_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_only blocks:  11%|█         | 1/9 [00:01<00:15,  1.95s/it][A
+target_only blocks:  22%|██▏       | 2/9 [00:04<00:14,  2.13s/it][A
+target_only blocks:  33%|███▎      | 3/9 [00:06<00:13,  2.32s/it][A
+target_only blocks:  44%|████▍     | 4/9 [00:09<00:12,  2.53s/it][A
+target_only blocks:  56%|█████▌    | 5/9 [00:12<00:10,  2.75s/it][A
+target_only blocks:  67%|██████▋   | 6/9 [00:16<00:08,  2.98s/it][A
+target_only blocks:  78%|███████▊  | 7/9 [00:19<00:06,  3.23s/it][A
+target_only blocks:  89%|████████▉ | 8/9 [00:23<00:03,  3.39s/it][A
+target_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.50s/it][Atarget_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.04s/it]
+
+target_regen blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_regen blocks:  11%|█         | 1/9 [00:02<00:20,  2.59s/it][A
+target_regen blocks:  22%|██▏       | 2/9 [00:05<00:19,  2.84s/it][A
+target_regen blocks:  33%|███▎      | 3/9 [00:08<00:18,  3.09s/it][A
+target_regen blocks:  44%|████▍     | 4/9 [00:12<00:16,  3.34s/it][A
+target_regen blocks:  56%|█████▌    | 5/9 [00:16<00:14,  3.62s/it][A
+target_regen blocks:  67%|██████▋   | 6/9 [00:21<00:11,  3.92s/it][A
+target_regen blocks:  78%|███████▊  | 7/9 [00:26<00:08,  4.22s/it][A
+target_regen blocks:  89%|████████▉ | 8/9 [00:31<00:04,  4.42s/it][A
+target_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.56s/it][Atarget_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  3.99s/it]
+prompts:  81%|████████▏ | 13/16 [14:36<03:22, 67.34s/it]
+target_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_only blocks:  11%|█         | 1/9 [00:01<00:15,  1.96s/it][A
+target_only blocks:  22%|██▏       | 2/9 [00:04<00:14,  2.13s/it][A
+target_only blocks:  33%|███▎      | 3/9 [00:06<00:13,  2.32s/it][A
+target_only blocks:  44%|████▍     | 4/9 [00:09<00:12,  2.53s/it][A
+target_only blocks:  56%|█████▌    | 5/9 [00:12<00:10,  2.75s/it][A
+target_only blocks:  67%|██████▋   | 6/9 [00:16<00:08,  2.98s/it][A
+target_only blocks:  78%|███████▊  | 7/9 [00:19<00:06,  3.23s/it][A
+target_only blocks:  89%|████████▉ | 8/9 [00:23<00:03,  3.39s/it][A
+target_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.50s/it][Atarget_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.04s/it]
+
+target_regen blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_regen blocks:  11%|█         | 1/9 [00:02<00:20,  2.61s/it][A
+target_regen blocks:  22%|██▏       | 2/9 [00:05<00:19,  2.85s/it][A
+target_regen blocks:  33%|███▎      | 3/9 [00:09<00:18,  3.09s/it][A
+target_regen blocks:  44%|████▍     | 4/9 [00:12<00:16,  3.36s/it][A
+target_regen blocks:  56%|█████▌    | 5/9 [00:16<00:14,  3.63s/it][A
+target_regen blocks:  67%|██████▋   | 6/9 [00:21<00:11,  3.92s/it][A
+target_regen blocks:  78%|███████▊  | 7/9 [00:26<00:08,  4.23s/it][A
+target_regen blocks:  89%|████████▉ | 8/9 [00:31<00:04,  4.43s/it][A
+target_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.56s/it][Atarget_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  3.99s/it]
+prompts:  88%|████████▊ | 14/16 [15:43<02:14, 67.38s/it]
+target_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_only blocks:  11%|█         | 1/9 [00:01<00:15,  1.96s/it][A
+target_only blocks:  22%|██▏       | 2/9 [00:04<00:14,  2.13s/it][A
+target_only blocks:  33%|███▎      | 3/9 [00:06<00:13,  2.32s/it][A
+target_only blocks:  44%|████▍     | 4/9 [00:09<00:12,  2.53s/it][A
+target_only blocks:  56%|█████▌    | 5/9 [00:12<00:10,  2.75s/it][A
+target_only blocks:  67%|██████▋   | 6/9 [00:16<00:08,  2.98s/it][A
+target_only blocks:  78%|███████▊  | 7/9 [00:19<00:06,  3.23s/it][A
+target_only blocks:  89%|████████▉ | 8/9 [00:23<00:03,  3.39s/it][A
+target_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.49s/it][Atarget_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.04s/it]
+
+target_regen blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_regen blocks:  11%|█         | 1/9 [00:02<00:20,  2.59s/it][A
+target_regen blocks:  22%|██▏       | 2/9 [00:05<00:19,  2.84s/it][A
+target_regen blocks:  33%|███▎      | 3/9 [00:08<00:18,  3.08s/it][A
+target_regen blocks:  44%|████▍     | 4/9 [00:12<00:16,  3.34s/it][A
+target_regen blocks:  56%|█████▌    | 5/9 [00:16<00:14,  3.62s/it][A
+target_regen blocks:  67%|██████▋   | 6/9 [00:21<00:11,  3.91s/it][A
+target_regen blocks:  78%|███████▊  | 7/9 [00:26<00:08,  4.22s/it][A
+target_regen blocks:  89%|████████▉ | 8/9 [00:31<00:04,  4.42s/it][A
+target_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.56s/it][Atarget_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  3.99s/it]
+prompts:  94%|█████████▍| 15/16 [16:50<01:07, 67.36s/it]
+target_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_only blocks:  11%|█         | 1/9 [00:01<00:15,  1.96s/it][A
+target_only blocks:  22%|██▏       | 2/9 [00:04<00:14,  2.13s/it][A
+target_only blocks:  33%|███▎      | 3/9 [00:06<00:13,  2.32s/it][A
+target_only blocks:  44%|████▍     | 4/9 [00:09<00:12,  2.53s/it][A
+target_only blocks:  56%|█████▌    | 5/9 [00:12<00:11,  2.75s/it][A
+target_only blocks:  67%|██████▋   | 6/9 [00:16<00:08,  2.99s/it][A
+target_only blocks:  78%|███████▊  | 7/9 [00:19<00:06,  3.23s/it][A
+target_only blocks:  89%|████████▉ | 8/9 [00:23<00:03,  3.39s/it][A
+target_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.50s/it][Atarget_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.05s/it]
+
+target_regen blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_regen blocks:  11%|█         | 1/9 [00:02<00:20,  2.59s/it][A
+target_regen blocks:  22%|██▏       | 2/9 [00:05<00:19,  2.85s/it][A
+target_regen blocks:  33%|███▎      | 3/9 [00:08<00:18,  3.09s/it][A
+target_regen blocks:  44%|████▍     | 4/9 [00:12<00:16,  3.35s/it][A
+target_regen blocks:  56%|█████▌    | 5/9 [00:16<00:14,  3.63s/it][A
+target_regen blocks:  67%|██████▋   | 6/9 [00:21<00:11,  3.92s/it][A
+target_regen blocks:  78%|███████▊  | 7/9 [00:26<00:08,  4.22s/it][A
+target_regen blocks:  89%|████████▉ | 8/9 [00:31<00:04,  4.42s/it][A
+target_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.56s/it][Atarget_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  3.99s/it]
+prompts: 100%|██████████| 16/16 [17:58<00:00, 67.36s/it]prompts: 100%|██████████| 16/16 [17:58<00:00, 67.39s/it]
+Wrote profile: /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p4/profile.json
+target_only: 29.74s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p4/prompt_0000_target_only.mp4
+target_regen: 35.88s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p4/prompt_0000_target_regen.mp4
+target_only: 29.48s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p4/prompt_0001_target_only.mp4
+target_regen: 35.96s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p4/prompt_0001_target_regen.mp4
+target_only: 29.51s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p4/prompt_0002_target_only.mp4
+target_regen: 35.95s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p4/prompt_0002_target_regen.mp4
+target_only: 29.47s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p4/prompt_0003_target_only.mp4
+target_regen: 35.84s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p4/prompt_0003_target_regen.mp4
+target_only: 29.60s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p4/prompt_0004_target_only.mp4
+target_regen: 36.02s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p4/prompt_0004_target_regen.mp4
+target_only: 29.60s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p4/prompt_0005_target_only.mp4
+target_regen: 35.88s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p4/prompt_0005_target_regen.mp4
+target_only: 29.67s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p4/prompt_0006_target_only.mp4
+target_regen: 35.88s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p4/prompt_0006_target_regen.mp4
+target_only: 29.54s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p4/prompt_0007_target_only.mp4
+target_regen: 35.92s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p4/prompt_0007_target_regen.mp4
+target_only: 29.52s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p4/prompt_0008_target_only.mp4
+target_regen: 35.91s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p4/prompt_0008_target_regen.mp4
+target_only: 29.59s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p4/prompt_0009_target_only.mp4
+target_regen: 35.80s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p4/prompt_0009_target_regen.mp4
+target_only: 29.49s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p4/prompt_0010_target_only.mp4
+target_regen: 35.98s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p4/prompt_0010_target_regen.mp4
+target_only: 29.56s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p4/prompt_0011_target_only.mp4
+target_regen: 35.89s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p4/prompt_0011_target_regen.mp4
+target_only: 29.54s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p4/prompt_0012_target_only.mp4
+target_regen: 35.91s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p4/prompt_0012_target_regen.mp4
+target_only: 29.53s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p4/prompt_0013_target_only.mp4
+target_regen: 35.95s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p4/prompt_0013_target_regen.mp4
+target_only: 29.51s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p4/prompt_0014_target_only.mp4
+target_regen: 35.87s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p4/prompt_0014_target_regen.mp4
+target_only: 29.56s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p4/prompt_0015_target_only.mp4
+target_regen: 35.90s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p4/prompt_0015_target_regen.mp4
+[2026-05-28 02:37:59] Profile JSON: /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p4/profile.json
+[2026-05-28 02:38:00] === Running tau_delta=0.5 -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p5 ===
+Loading target: Wan2.1-T2V-14B /mnt/lanxiangh/models/realtime-video/checkpoints/krea-realtime-video-14b.safetensors
+KV inference with 3 frames per block
+Loading drafter: Wan2.1-T2V-1.3B /mnt/lanxiangh/models/Self-Forcing/checkpoints/self_forcing_dmd.pt
+KV inference with 3 frames per block
+prompts:   0%|          | 0/16 [00:00<?, ?it/s]
+target_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_only blocks:  11%|█         | 1/9 [00:02<00:16,  2.08s/it][A
+target_only blocks:  22%|██▏       | 2/9 [00:04<00:15,  2.17s/it][A
+target_only blocks:  33%|███▎      | 3/9 [00:06<00:14,  2.34s/it][A
+target_only blocks:  44%|████▍     | 4/9 [00:09<00:12,  2.54s/it][A
+target_only blocks:  56%|█████▌    | 5/9 [00:12<00:11,  2.76s/it][A
+target_only blocks:  67%|██████▋   | 6/9 [00:16<00:08,  2.99s/it][A
+target_only blocks:  78%|███████▊  | 7/9 [00:20<00:06,  3.23s/it][A
+target_only blocks:  89%|████████▉ | 8/9 [00:23<00:03,  3.40s/it][A
+target_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.50s/it][Atarget_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.06s/it]
+
+target_regen blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_regen blocks:  11%|█         | 1/9 [00:02<00:20,  2.62s/it][A
+target_regen blocks:  22%|██▏       | 2/9 [00:05<00:20,  2.86s/it][A
+target_regen blocks:  33%|███▎      | 3/9 [00:09<00:18,  3.10s/it][A
+target_regen blocks:  44%|████▍     | 4/9 [00:12<00:16,  3.35s/it][A
+target_regen blocks:  56%|█████▌    | 5/9 [00:16<00:14,  3.63s/it][A
+target_regen blocks:  67%|██████▋   | 6/9 [00:21<00:11,  3.92s/it][A
+target_regen blocks:  78%|███████▊  | 7/9 [00:26<00:08,  4.23s/it][A
+target_regen blocks:  89%|████████▉ | 8/9 [00:31<00:04,  4.43s/it][A
+target_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.57s/it][Atarget_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.00s/it]
+prompts:   6%|▋         | 1/16 [01:08<17:00, 68.04s/it]
+target_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_only blocks:  11%|█         | 1/9 [00:01<00:15,  1.96s/it][A
+target_only blocks:  22%|██▏       | 2/9 [00:04<00:14,  2.13s/it][A
+target_only blocks:  33%|███▎      | 3/9 [00:06<00:13,  2.31s/it][A
+target_only blocks:  44%|████▍     | 4/9 [00:09<00:12,  2.52s/it][A
+target_only blocks:  56%|█████▌    | 5/9 [00:12<00:10,  2.74s/it][A
+target_only blocks:  67%|██████▋   | 6/9 [00:16<00:08,  2.98s/it][A
+target_only blocks:  78%|███████▊  | 7/9 [00:19<00:06,  3.22s/it][A
+target_only blocks:  89%|████████▉ | 8/9 [00:23<00:03,  3.38s/it][A
+target_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.49s/it][Atarget_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.04s/it]
+
+target_regen blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_regen blocks:  11%|█         | 1/9 [00:02<00:20,  2.60s/it][A
+target_regen blocks:  22%|██▏       | 2/9 [00:05<00:19,  2.85s/it][A
+target_regen blocks:  33%|███▎      | 3/9 [00:09<00:18,  3.09s/it][A
+target_regen blocks:  44%|████▍     | 4/9 [00:12<00:16,  3.36s/it][A
+target_regen blocks:  56%|█████▌    | 5/9 [00:16<00:14,  3.64s/it][A
+target_regen blocks:  67%|██████▋   | 6/9 [00:21<00:11,  3.92s/it][A
+target_regen blocks:  78%|███████▊  | 7/9 [00:26<00:08,  4.23s/it][A
+target_regen blocks:  89%|████████▉ | 8/9 [00:31<00:04,  4.43s/it][A
+target_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.56s/it][Atarget_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.00s/it]
+prompts:  12%|█▎        | 2/16 [02:15<15:47, 67.66s/it]
+target_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_only blocks:  11%|█         | 1/9 [00:01<00:15,  1.97s/it][A
+target_only blocks:  22%|██▏       | 2/9 [00:04<00:14,  2.14s/it][A
+target_only blocks:  33%|███▎      | 3/9 [00:06<00:13,  2.33s/it][A
+target_only blocks:  44%|████▍     | 4/9 [00:09<00:12,  2.54s/it][A
+target_only blocks:  56%|█████▌    | 5/9 [00:12<00:11,  2.76s/it][A
+target_only blocks:  67%|██████▋   | 6/9 [00:16<00:08,  2.99s/it][A
+target_only blocks:  78%|███████▊  | 7/9 [00:19<00:06,  3.24s/it][A
+target_only blocks:  89%|████████▉ | 8/9 [00:23<00:03,  3.40s/it][A
+target_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.50s/it][Atarget_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.05s/it]
+
+target_regen blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_regen blocks:  11%|█         | 1/9 [00:02<00:20,  2.59s/it][A
+target_regen blocks:  22%|██▏       | 2/9 [00:05<00:19,  2.84s/it][A
+target_regen blocks:  33%|███▎      | 3/9 [00:08<00:18,  3.09s/it][A
+target_regen blocks:  44%|████▍     | 4/9 [00:12<00:16,  3.35s/it][A
+target_regen blocks:  56%|█████▌    | 5/9 [00:16<00:14,  3.62s/it][A
+target_regen blocks:  67%|██████▋   | 6/9 [00:21<00:11,  3.91s/it][A
+target_regen blocks:  78%|███████▊  | 7/9 [00:26<00:08,  4.22s/it][A
+target_regen blocks:  89%|████████▉ | 8/9 [00:31<00:04,  4.42s/it][A
+target_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.55s/it][Atarget_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  3.99s/it]
+prompts:  19%|█▉        | 3/16 [03:22<14:37, 67.49s/it]
+target_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_only blocks:  11%|█         | 1/9 [00:01<00:15,  1.96s/it][A
+target_only blocks:  22%|██▏       | 2/9 [00:04<00:14,  2.14s/it][A
+target_only blocks:  33%|███▎      | 3/9 [00:06<00:13,  2.33s/it][A
+target_only blocks:  44%|████▍     | 4/9 [00:09<00:12,  2.54s/it][A
+target_only blocks:  56%|█████▌    | 5/9 [00:12<00:11,  2.76s/it][A
+target_only blocks:  67%|██████▋   | 6/9 [00:16<00:08,  2.99s/it][A
+target_only blocks:  78%|███████▊  | 7/9 [00:19<00:06,  3.23s/it][A
+target_only blocks:  89%|████████▉ | 8/9 [00:23<00:03,  3.39s/it][A
+target_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.50s/it][Atarget_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.05s/it]
+
+target_regen blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_regen blocks:  11%|█         | 1/9 [00:02<00:20,  2.61s/it][A
+target_regen blocks:  22%|██▏       | 2/9 [00:05<00:19,  2.85s/it][A
+target_regen blocks:  33%|███▎      | 3/9 [00:09<00:18,  3.09s/it][A
+target_regen blocks:  44%|████▍     | 4/9 [00:12<00:16,  3.36s/it][A
+target_regen blocks:  56%|█████▌    | 5/9 [00:16<00:14,  3.63s/it][A
+target_regen blocks:  67%|██████▋   | 6/9 [00:21<00:11,  3.93s/it][A
+target_regen blocks:  78%|███████▊  | 7/9 [00:26<00:08,  4.24s/it][A
+target_regen blocks:  89%|████████▉ | 8/9 [00:31<00:04,  4.43s/it][A
+target_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.56s/it][Atarget_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.00s/it]
+prompts:  25%|██▌       | 4/16 [04:30<13:30, 67.55s/it]
+target_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_only blocks:  11%|█         | 1/9 [00:01<00:15,  1.96s/it][A
+target_only blocks:  22%|██▏       | 2/9 [00:04<00:14,  2.14s/it][A
+target_only blocks:  33%|███▎      | 3/9 [00:06<00:13,  2.32s/it][A
+target_only blocks:  44%|████▍     | 4/9 [00:09<00:12,  2.53s/it][A
+target_only blocks:  56%|█████▌    | 5/9 [00:12<00:10,  2.75s/it][A
+target_only blocks:  67%|██████▋   | 6/9 [00:16<00:08,  2.98s/it][A
+target_only blocks:  78%|███████▊  | 7/9 [00:19<00:06,  3.23s/it][A
+target_only blocks:  89%|████████▉ | 8/9 [00:23<00:03,  3.39s/it][A
+target_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.50s/it][Atarget_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.04s/it]
+
+target_regen blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_regen blocks:  11%|█         | 1/9 [00:02<00:20,  2.61s/it][A
+target_regen blocks:  22%|██▏       | 2/9 [00:05<00:19,  2.86s/it][A
+target_regen blocks:  33%|███▎      | 3/9 [00:09<00:18,  3.10s/it][A
+target_regen blocks:  44%|████▍     | 4/9 [00:12<00:16,  3.36s/it][A
+target_regen blocks:  56%|█████▌    | 5/9 [00:16<00:14,  3.64s/it][A
+target_regen blocks:  67%|██████▋   | 6/9 [00:21<00:11,  3.93s/it][A
+target_regen blocks:  78%|███████▊  | 7/9 [00:26<00:08,  4.23s/it][A
+target_regen blocks:  89%|████████▉ | 8/9 [00:31<00:04,  4.43s/it][A
+target_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.56s/it][Atarget_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.00s/it]
+prompts:  31%|███▏      | 5/16 [05:37<12:22, 67.47s/it]
+target_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_only blocks:  11%|█         | 1/9 [00:01<00:15,  1.97s/it][A
+target_only blocks:  22%|██▏       | 2/9 [00:04<00:14,  2.13s/it][A
+target_only blocks:  33%|███▎      | 3/9 [00:06<00:13,  2.32s/it][A
+target_only blocks:  44%|████▍     | 4/9 [00:09<00:12,  2.53s/it][A
+target_only blocks:  56%|█████▌    | 5/9 [00:12<00:11,  2.75s/it][A
+target_only blocks:  67%|██████▋   | 6/9 [00:16<00:08,  2.99s/it][A
+target_only blocks:  78%|███████▊  | 7/9 [00:19<00:06,  3.23s/it][A
+target_only blocks:  89%|████████▉ | 8/9 [00:23<00:03,  3.39s/it][A
+target_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.50s/it][Atarget_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.05s/it]
+
+target_regen blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_regen blocks:  11%|█         | 1/9 [00:02<00:20,  2.59s/it][A
+target_regen blocks:  22%|██▏       | 2/9 [00:05<00:19,  2.84s/it][A
+target_regen blocks:  33%|███▎      | 3/9 [00:08<00:18,  3.09s/it][A
+target_regen blocks:  44%|████▍     | 4/9 [00:12<00:16,  3.35s/it][A
+target_regen blocks:  56%|█████▌    | 5/9 [00:16<00:14,  3.63s/it][A
+target_regen blocks:  67%|██████▋   | 6/9 [00:21<00:11,  3.92s/it][A
+target_regen blocks:  78%|███████▊  | 7/9 [00:26<00:08,  4.23s/it][A
+target_regen blocks:  89%|████████▉ | 8/9 [00:31<00:04,  4.43s/it][A
+target_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.56s/it][Atarget_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  3.99s/it]
+prompts:  38%|███▊      | 6/16 [06:45<11:14, 67.43s/it]
+target_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_only blocks:  11%|█         | 1/9 [00:01<00:15,  1.96s/it][A
+target_only blocks:  22%|██▏       | 2/9 [00:04<00:14,  2.13s/it][A
+target_only blocks:  33%|███▎      | 3/9 [00:06<00:13,  2.32s/it][A
+target_only blocks:  44%|████▍     | 4/9 [00:09<00:12,  2.52s/it][A
+target_only blocks:  56%|█████▌    | 5/9 [00:12<00:10,  2.75s/it][A
+target_only blocks:  67%|██████▋   | 6/9 [00:16<00:08,  2.98s/it][A
+target_only blocks:  78%|███████▊  | 7/9 [00:19<00:06,  3.23s/it][A
+target_only blocks:  89%|████████▉ | 8/9 [00:23<00:03,  3.39s/it][A
+target_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.50s/it][Atarget_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.04s/it]
+
+target_regen blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_regen blocks:  11%|█         | 1/9 [00:02<00:20,  2.61s/it][A
+target_regen blocks:  22%|██▏       | 2/9 [00:05<00:19,  2.84s/it][A
+target_regen blocks:  33%|███▎      | 3/9 [00:08<00:18,  3.09s/it][A
+target_regen blocks:  44%|████▍     | 4/9 [00:12<00:16,  3.35s/it][A
+target_regen blocks:  56%|█████▌    | 5/9 [00:16<00:14,  3.63s/it][A
+target_regen blocks:  67%|██████▋   | 6/9 [00:21<00:11,  3.92s/it][A
+target_regen blocks:  78%|███████▊  | 7/9 [00:26<00:08,  4.23s/it][A
+target_regen blocks:  89%|████████▉ | 8/9 [00:31<00:04,  4.43s/it][A
+target_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.56s/it][Atarget_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  3.99s/it]
+prompts:  44%|████▍     | 7/16 [07:52<10:06, 67.40s/it]
+target_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_only blocks:  11%|█         | 1/9 [00:01<00:15,  1.96s/it][A
+target_only blocks:  22%|██▏       | 2/9 [00:04<00:14,  2.13s/it][A
+target_only blocks:  33%|███▎      | 3/9 [00:06<00:13,  2.32s/it][A
+target_only blocks:  44%|████▍     | 4/9 [00:09<00:12,  2.53s/it][A
+target_only blocks:  56%|█████▌    | 5/9 [00:12<00:11,  2.75s/it][A
+target_only blocks:  67%|██████▋   | 6/9 [00:16<00:08,  2.98s/it][A
+target_only blocks:  78%|███████▊  | 7/9 [00:19<00:06,  3.23s/it][A
+target_only blocks:  89%|████████▉ | 8/9 [00:23<00:03,  3.39s/it][A
+target_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.50s/it][Atarget_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.04s/it]
+
+target_regen blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_regen blocks:  11%|█         | 1/9 [00:02<00:20,  2.60s/it][A
+target_regen blocks:  22%|██▏       | 2/9 [00:05<00:19,  2.84s/it][A
+target_regen blocks:  33%|███▎      | 3/9 [00:08<00:18,  3.09s/it][A
+target_regen blocks:  44%|████▍     | 4/9 [00:12<00:16,  3.35s/it][A
+target_regen blocks:  56%|█████▌    | 5/9 [00:16<00:14,  3.63s/it][A
+target_regen blocks:  67%|██████▋   | 6/9 [00:21<00:11,  3.92s/it][A
+target_regen blocks:  78%|███████▊  | 7/9 [00:26<00:08,  4.23s/it][A
+target_regen blocks:  89%|████████▉ | 8/9 [00:31<00:04,  4.43s/it][A
+target_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.56s/it][Atarget_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  3.99s/it]
+prompts:  50%|█████     | 8/16 [08:59<08:58, 67.36s/it]
+target_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_only blocks:  11%|█         | 1/9 [00:01<00:15,  1.98s/it][A
+target_only blocks:  22%|██▏       | 2/9 [00:04<00:15,  2.15s/it][A
+target_only blocks:  33%|███▎      | 3/9 [00:06<00:14,  2.34s/it][A
+target_only blocks:  44%|████▍     | 4/9 [00:09<00:12,  2.54s/it][A
+target_only blocks:  56%|█████▌    | 5/9 [00:12<00:11,  2.76s/it][A
+target_only blocks:  67%|██████▋   | 6/9 [00:16<00:08,  2.99s/it][A
+target_only blocks:  78%|███████▊  | 7/9 [00:19<00:06,  3.23s/it][A
+target_only blocks:  89%|████████▉ | 8/9 [00:23<00:03,  3.39s/it][A
+target_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.50s/it][Atarget_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.05s/it]
+
+target_regen blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_regen blocks:  11%|█         | 1/9 [00:02<00:20,  2.61s/it][A
+target_regen blocks:  22%|██▏       | 2/9 [00:05<00:19,  2.85s/it][A
+target_regen blocks:  33%|███▎      | 3/9 [00:09<00:18,  3.09s/it][A
+target_regen blocks:  44%|████▍     | 4/9 [00:12<00:16,  3.35s/it][A
+target_regen blocks:  56%|█████▌    | 5/9 [00:16<00:14,  3.62s/it][A
+target_regen blocks:  67%|██████▋   | 6/9 [00:21<00:11,  3.92s/it][A
+target_regen blocks:  78%|███████▊  | 7/9 [00:26<00:08,  4.23s/it][A
+target_regen blocks:  89%|████████▉ | 8/9 [00:31<00:04,  4.43s/it][A
+target_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.56s/it][Atarget_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  3.99s/it]
+prompts:  56%|█████▋    | 9/16 [10:06<07:51, 67.34s/it]
+target_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_only blocks:  11%|█         | 1/9 [00:01<00:15,  1.96s/it][A
+target_only blocks:  22%|██▏       | 2/9 [00:04<00:14,  2.13s/it][A
+target_only blocks:  33%|███▎      | 3/9 [00:06<00:13,  2.33s/it][A
+target_only blocks:  44%|████▍     | 4/9 [00:09<00:12,  2.53s/it][A
+target_only blocks:  56%|█████▌    | 5/9 [00:12<00:11,  2.75s/it][A
+target_only blocks:  67%|██████▋   | 6/9 [00:16<00:08,  2.98s/it][A
+target_only blocks:  78%|███████▊  | 7/9 [00:19<00:06,  3.23s/it][A
+target_only blocks:  89%|████████▉ | 8/9 [00:23<00:03,  3.39s/it][A
+target_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.49s/it][Atarget_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.04s/it]
+
+target_regen blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_regen blocks:  11%|█         | 1/9 [00:02<00:20,  2.60s/it][A
+target_regen blocks:  22%|██▏       | 2/9 [00:05<00:19,  2.84s/it][A
+target_regen blocks:  33%|███▎      | 3/9 [00:08<00:18,  3.08s/it][A
+target_regen blocks:  44%|████▍     | 4/9 [00:12<00:16,  3.34s/it][A
+target_regen blocks:  56%|█████▌    | 5/9 [00:16<00:14,  3.62s/it][A
+target_regen blocks:  67%|██████▋   | 6/9 [00:21<00:11,  3.91s/it][A
+target_regen blocks:  78%|███████▊  | 7/9 [00:26<00:08,  4.22s/it][A
+target_regen blocks:  89%|████████▉ | 8/9 [00:31<00:04,  4.42s/it][A
+target_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.56s/it][Atarget_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  3.99s/it]
+prompts:  62%|██████▎   | 10/16 [11:14<06:44, 67.41s/it]
+target_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_only blocks:  11%|█         | 1/9 [00:01<00:15,  1.98s/it][A
+target_only blocks:  22%|██▏       | 2/9 [00:04<00:15,  2.15s/it][A
+target_only blocks:  33%|███▎      | 3/9 [00:06<00:13,  2.33s/it][A
+target_only blocks:  44%|████▍     | 4/9 [00:09<00:12,  2.54s/it][A
+target_only blocks:  56%|█████▌    | 5/9 [00:12<00:11,  2.76s/it][A
+target_only blocks:  67%|██████▋   | 6/9 [00:16<00:08,  2.99s/it][A
+target_only blocks:  78%|███████▊  | 7/9 [00:19<00:06,  3.23s/it][A
+target_only blocks:  89%|████████▉ | 8/9 [00:23<00:03,  3.39s/it][A
+target_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.50s/it][Atarget_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.05s/it]
+
+target_regen blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_regen blocks:  11%|█         | 1/9 [00:02<00:20,  2.60s/it][A
+target_regen blocks:  22%|██▏       | 2/9 [00:05<00:19,  2.85s/it][A
+target_regen blocks:  33%|███▎      | 3/9 [00:09<00:18,  3.09s/it][A
+target_regen blocks:  44%|████▍     | 4/9 [00:12<00:16,  3.35s/it][A
+target_regen blocks:  56%|█████▌    | 5/9 [00:16<00:14,  3.63s/it][A
+target_regen blocks:  67%|██████▋   | 6/9 [00:21<00:11,  3.92s/it][A
+target_regen blocks:  78%|███████▊  | 7/9 [00:26<00:08,  4.23s/it][A
+target_regen blocks:  89%|████████▉ | 8/9 [00:31<00:04,  4.43s/it][A
+target_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.56s/it][Atarget_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  3.99s/it]
+prompts:  69%|██████▉   | 11/16 [12:21<05:36, 67.38s/it]
+target_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_only blocks:  11%|█         | 1/9 [00:01<00:15,  1.96s/it][A
+target_only blocks:  22%|██▏       | 2/9 [00:04<00:14,  2.13s/it][A
+target_only blocks:  33%|███▎      | 3/9 [00:06<00:13,  2.32s/it][A
+target_only blocks:  44%|████▍     | 4/9 [00:09<00:12,  2.53s/it][A
+target_only blocks:  56%|█████▌    | 5/9 [00:12<00:10,  2.75s/it][A
+target_only blocks:  67%|██████▋   | 6/9 [00:16<00:08,  2.98s/it][A
+target_only blocks:  78%|███████▊  | 7/9 [00:19<00:06,  3.22s/it][A
+target_only blocks:  89%|████████▉ | 8/9 [00:23<00:03,  3.38s/it][A
+target_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.49s/it][Atarget_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.04s/it]
+
+target_regen blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_regen blocks:  11%|█         | 1/9 [00:02<00:21,  2.65s/it][A
+target_regen blocks:  22%|██▏       | 2/9 [00:05<00:20,  2.87s/it][A
+target_regen blocks:  33%|███▎      | 3/9 [00:09<00:18,  3.10s/it][A
+target_regen blocks:  44%|████▍     | 4/9 [00:12<00:16,  3.36s/it][A
+target_regen blocks:  56%|█████▌    | 5/9 [00:16<00:14,  3.63s/it][A
+target_regen blocks:  67%|██████▋   | 6/9 [00:21<00:11,  3.92s/it][A
+target_regen blocks:  78%|███████▊  | 7/9 [00:26<00:08,  4.23s/it][A
+target_regen blocks:  89%|████████▉ | 8/9 [00:31<00:04,  4.43s/it][A
+target_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.56s/it][Atarget_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.00s/it]
+prompts:  75%|███████▌  | 12/16 [13:29<04:29, 67.34s/it]
+target_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_only blocks:  11%|█         | 1/9 [00:01<00:15,  1.96s/it][A
+target_only blocks:  22%|██▏       | 2/9 [00:04<00:14,  2.13s/it][A
+target_only blocks:  33%|███▎      | 3/9 [00:06<00:13,  2.32s/it][A
+target_only blocks:  44%|████▍     | 4/9 [00:09<00:12,  2.53s/it][A
+target_only blocks:  56%|█████▌    | 5/9 [00:12<00:11,  2.75s/it][A
+target_only blocks:  67%|██████▋   | 6/9 [00:16<00:08,  2.98s/it][A
+target_only blocks:  78%|███████▊  | 7/9 [00:19<00:06,  3.23s/it][A
+target_only blocks:  89%|████████▉ | 8/9 [00:23<00:03,  3.39s/it][A
+target_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.50s/it][Atarget_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.05s/it]
+
+target_regen blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_regen blocks:  11%|█         | 1/9 [00:02<00:20,  2.62s/it][A
+target_regen blocks:  22%|██▏       | 2/9 [00:05<00:19,  2.86s/it][A
+target_regen blocks:  33%|███▎      | 3/9 [00:09<00:18,  3.10s/it][A
+target_regen blocks:  44%|████▍     | 4/9 [00:12<00:16,  3.36s/it][A
+target_regen blocks:  56%|█████▌    | 5/9 [00:16<00:14,  3.65s/it][A
+target_regen blocks:  67%|██████▋   | 6/9 [00:21<00:11,  3.94s/it][A
+target_regen blocks:  78%|███████▊  | 7/9 [00:26<00:08,  4.24s/it][A
+target_regen blocks:  89%|████████▉ | 8/9 [00:31<00:04,  4.44s/it][A
+target_regen blocks: 100%|██████████| 9/9 [00:36<00:00,  4.57s/it][Atarget_regen blocks: 100%|██████████| 9/9 [00:36<00:00,  4.00s/it]
+prompts:  81%|████████▏ | 13/16 [14:36<03:22, 67.38s/it]
+target_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_only blocks:  11%|█         | 1/9 [00:01<00:15,  1.98s/it][A
+target_only blocks:  22%|██▏       | 2/9 [00:04<00:14,  2.14s/it][A
+target_only blocks:  33%|███▎      | 3/9 [00:06<00:13,  2.33s/it][A
+target_only blocks:  44%|████▍     | 4/9 [00:09<00:12,  2.53s/it][A
+target_only blocks:  56%|█████▌    | 5/9 [00:12<00:11,  2.75s/it][A
+target_only blocks:  67%|██████▋   | 6/9 [00:16<00:08,  2.99s/it][A
+target_only blocks:  78%|███████▊  | 7/9 [00:19<00:06,  3.23s/it][A
+target_only blocks:  89%|████████▉ | 8/9 [00:23<00:03,  3.40s/it][A
+target_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.50s/it][Atarget_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.05s/it]
+
+target_regen blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_regen blocks:  11%|█         | 1/9 [00:02<00:20,  2.59s/it][A
+target_regen blocks:  22%|██▏       | 2/9 [00:05<00:19,  2.84s/it][A
+target_regen blocks:  33%|███▎      | 3/9 [00:08<00:18,  3.09s/it][A
+target_regen blocks:  44%|████▍     | 4/9 [00:12<00:16,  3.35s/it][A
+target_regen blocks:  56%|█████▌    | 5/9 [00:16<00:14,  3.63s/it][A
+target_regen blocks:  67%|██████▋   | 6/9 [00:21<00:11,  3.92s/it][A
+target_regen blocks:  78%|███████▊  | 7/9 [00:26<00:08,  4.22s/it][A
+target_regen blocks:  89%|████████▉ | 8/9 [00:31<00:04,  4.42s/it][A
+target_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.56s/it][Atarget_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  3.99s/it]
+prompts:  88%|████████▊ | 14/16 [15:44<02:14, 67.42s/it]
+target_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_only blocks:  11%|█         | 1/9 [00:01<00:15,  1.96s/it][A
+target_only blocks:  22%|██▏       | 2/9 [00:04<00:14,  2.13s/it][A
+target_only blocks:  33%|███▎      | 3/9 [00:06<00:13,  2.32s/it][A
+target_only blocks:  44%|████▍     | 4/9 [00:09<00:12,  2.53s/it][A
+target_only blocks:  56%|█████▌    | 5/9 [00:12<00:10,  2.75s/it][A
+target_only blocks:  67%|██████▋   | 6/9 [00:16<00:08,  2.98s/it][A
+target_only blocks:  78%|███████▊  | 7/9 [00:19<00:06,  3.23s/it][A
+target_only blocks:  89%|████████▉ | 8/9 [00:23<00:03,  3.39s/it][A
+target_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.50s/it][Atarget_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.04s/it]
+
+target_regen blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_regen blocks:  11%|█         | 1/9 [00:02<00:20,  2.62s/it][A
+target_regen blocks:  22%|██▏       | 2/9 [00:05<00:20,  2.86s/it][A
+target_regen blocks:  33%|███▎      | 3/9 [00:09<00:18,  3.10s/it][A
+target_regen blocks:  44%|████▍     | 4/9 [00:12<00:16,  3.36s/it][A
+target_regen blocks:  56%|█████▌    | 5/9 [00:16<00:14,  3.64s/it][A
+target_regen blocks:  67%|██████▋   | 6/9 [00:21<00:11,  3.93s/it][A
+target_regen blocks:  78%|███████▊  | 7/9 [00:26<00:08,  4.24s/it][A
+target_regen blocks:  89%|████████▉ | 8/9 [00:31<00:04,  4.44s/it][A
+target_regen blocks: 100%|██████████| 9/9 [00:36<00:00,  4.58s/it][Atarget_regen blocks: 100%|██████████| 9/9 [00:36<00:00,  4.01s/it]
+prompts:  94%|█████████▍| 15/16 [16:51<01:07, 67.44s/it]
+target_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_only blocks:  11%|█         | 1/9 [00:01<00:15,  1.96s/it][A
+target_only blocks:  22%|██▏       | 2/9 [00:04<00:14,  2.13s/it][A
+target_only blocks:  33%|███▎      | 3/9 [00:06<00:13,  2.32s/it][A
+target_only blocks:  44%|████▍     | 4/9 [00:09<00:12,  2.53s/it][A
+target_only blocks:  56%|█████▌    | 5/9 [00:12<00:11,  2.75s/it][A
+target_only blocks:  67%|██████▋   | 6/9 [00:16<00:08,  2.98s/it][A
+target_only blocks:  78%|███████▊  | 7/9 [00:19<00:06,  3.23s/it][A
+target_only blocks:  89%|████████▉ | 8/9 [00:23<00:03,  3.39s/it][A
+target_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.50s/it][Atarget_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.04s/it]
+
+target_regen blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_regen blocks:  11%|█         | 1/9 [00:02<00:20,  2.61s/it][A
+target_regen blocks:  22%|██▏       | 2/9 [00:05<00:19,  2.85s/it][A
+target_regen blocks:  33%|███▎      | 3/9 [00:09<00:18,  3.09s/it][A
+target_regen blocks:  44%|████▍     | 4/9 [00:12<00:16,  3.35s/it][A
+target_regen blocks:  56%|█████▌    | 5/9 [00:16<00:14,  3.63s/it][A
+target_regen blocks:  67%|██████▋   | 6/9 [00:21<00:11,  3.92s/it][A
+target_regen blocks:  78%|███████▊  | 7/9 [00:26<00:08,  4.23s/it][A
+target_regen blocks:  89%|████████▉ | 8/9 [00:31<00:04,  4.43s/it][A
+target_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.56s/it][Atarget_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  3.99s/it]
+prompts: 100%|██████████| 16/16 [17:58<00:00, 67.43s/it]prompts: 100%|██████████| 16/16 [17:58<00:00, 67.44s/it]
+Wrote profile: /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p5/profile.json
+target_only: 29.82s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p5/prompt_0000_target_only.mp4
+target_regen: 35.97s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p5/prompt_0000_target_regen.mp4
+target_only: 29.49s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p5/prompt_0001_target_only.mp4
+target_regen: 35.96s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p5/prompt_0001_target_regen.mp4
+target_only: 29.60s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p5/prompt_0002_target_only.mp4
+target_regen: 35.87s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p5/prompt_0002_target_regen.mp4
+target_only: 29.57s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p5/prompt_0003_target_only.mp4
+target_regen: 35.98s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p5/prompt_0003_target_regen.mp4
+target_only: 29.52s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p5/prompt_0004_target_only.mp4
+target_regen: 35.98s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p5/prompt_0004_target_regen.mp4
+target_only: 29.56s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p5/prompt_0005_target_only.mp4
+target_regen: 35.92s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p5/prompt_0005_target_regen.mp4
+target_only: 29.50s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p5/prompt_0006_target_only.mp4
+target_regen: 35.92s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p5/prompt_0006_target_regen.mp4
+target_only: 29.54s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p5/prompt_0007_target_only.mp4
+target_regen: 35.95s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p5/prompt_0007_target_regen.mp4
+target_only: 29.61s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p5/prompt_0008_target_only.mp4
+target_regen: 35.92s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p5/prompt_0008_target_regen.mp4
+target_only: 29.53s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p5/prompt_0009_target_only.mp4
+target_regen: 35.87s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p5/prompt_0009_target_regen.mp4
+target_only: 29.58s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p5/prompt_0010_target_only.mp4
+target_regen: 35.93s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p5/prompt_0010_target_regen.mp4
+target_only: 29.50s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p5/prompt_0011_target_only.mp4
+target_regen: 35.97s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p5/prompt_0011_target_regen.mp4
+target_only: 29.56s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p5/prompt_0012_target_only.mp4
+target_regen: 36.03s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p5/prompt_0012_target_regen.mp4
+target_only: 29.59s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p5/prompt_0013_target_only.mp4
+target_regen: 35.90s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p5/prompt_0013_target_regen.mp4
+target_only: 29.53s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p5/prompt_0014_target_only.mp4
+target_regen: 36.05s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p5/prompt_0014_target_regen.mp4
+target_only: 29.54s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p5/prompt_0015_target_only.mp4
+target_regen: 35.95s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p5/prompt_0015_target_regen.mp4
+[2026-05-28 02:57:16] Profile JSON: /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p5/profile.json
+[2026-05-28 02:57:16] === Running tau_delta=0.7 -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p7 ===
+Loading target: Wan2.1-T2V-14B /mnt/lanxiangh/models/realtime-video/checkpoints/krea-realtime-video-14b.safetensors
+KV inference with 3 frames per block
+Loading drafter: Wan2.1-T2V-1.3B /mnt/lanxiangh/models/Self-Forcing/checkpoints/self_forcing_dmd.pt
+KV inference with 3 frames per block
+prompts:   0%|          | 0/16 [00:00<?, ?it/s]
+target_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_only blocks:  11%|█         | 1/9 [00:02<00:16,  2.10s/it][A
+target_only blocks:  22%|██▏       | 2/9 [00:04<00:15,  2.18s/it][A
+target_only blocks:  33%|███▎      | 3/9 [00:06<00:14,  2.35s/it][A
+target_only blocks:  44%|████▍     | 4/9 [00:09<00:12,  2.54s/it][A
+target_only blocks:  56%|█████▌    | 5/9 [00:12<00:11,  2.76s/it][A
+target_only blocks:  67%|██████▋   | 6/9 [00:16<00:08,  2.99s/it][A
+target_only blocks:  78%|███████▊  | 7/9 [00:20<00:06,  3.23s/it][A
+target_only blocks:  89%|████████▉ | 8/9 [00:23<00:03,  3.40s/it][A
+target_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.51s/it][Atarget_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.06s/it]
+
+target_regen blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_regen blocks:  11%|█         | 1/9 [00:02<00:20,  2.62s/it][A
+target_regen blocks:  22%|██▏       | 2/9 [00:05<00:19,  2.85s/it][A
+target_regen blocks:  33%|███▎      | 3/9 [00:09<00:18,  3.10s/it][A
+target_regen blocks:  44%|████▍     | 4/9 [00:12<00:16,  3.36s/it][A
+target_regen blocks:  56%|█████▌    | 5/9 [00:16<00:14,  3.63s/it][A
+target_regen blocks:  67%|██████▋   | 6/9 [00:21<00:11,  3.92s/it][A
+target_regen blocks:  78%|███████▊  | 7/9 [00:26<00:08,  4.23s/it][A
+target_regen blocks:  89%|████████▉ | 8/9 [00:31<00:04,  4.43s/it][A
+target_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.57s/it][Atarget_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.00s/it]
+prompts:   6%|▋         | 1/16 [01:08<17:02, 68.17s/it]
+target_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_only blocks:  11%|█         | 1/9 [00:01<00:15,  1.97s/it][A
+target_only blocks:  22%|██▏       | 2/9 [00:04<00:14,  2.14s/it][A
+target_only blocks:  33%|███▎      | 3/9 [00:06<00:13,  2.32s/it][A
+target_only blocks:  44%|████▍     | 4/9 [00:09<00:12,  2.53s/it][A
+target_only blocks:  56%|█████▌    | 5/9 [00:12<00:11,  2.75s/it][A
+target_only blocks:  67%|██████▋   | 6/9 [00:16<00:08,  2.98s/it][A
+target_only blocks:  78%|███████▊  | 7/9 [00:19<00:06,  3.23s/it][A
+target_only blocks:  89%|████████▉ | 8/9 [00:23<00:03,  3.39s/it][A
+target_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.50s/it][Atarget_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.04s/it]
+
+target_regen blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_regen blocks:  11%|█         | 1/9 [00:02<00:20,  2.59s/it][A
+target_regen blocks:  22%|██▏       | 2/9 [00:05<00:19,  2.85s/it][A
+target_regen blocks:  33%|███▎      | 3/9 [00:08<00:18,  3.09s/it][A
+target_regen blocks:  44%|████▍     | 4/9 [00:12<00:16,  3.36s/it][A
+target_regen blocks:  56%|█████▌    | 5/9 [00:16<00:14,  3.64s/it][A
+target_regen blocks:  67%|██████▋   | 6/9 [00:21<00:11,  3.93s/it][A
+target_regen blocks:  78%|███████▊  | 7/9 [00:26<00:08,  4.23s/it][A
+target_regen blocks:  89%|████████▉ | 8/9 [00:31<00:04,  4.43s/it][A
+target_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.56s/it][Atarget_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  3.99s/it]
+prompts:  12%|█▎        | 2/16 [02:15<15:48, 67.79s/it]
+target_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_only blocks:  11%|█         | 1/9 [00:01<00:15,  1.95s/it][A
+target_only blocks:  22%|██▏       | 2/9 [00:04<00:14,  2.13s/it][A
+target_only blocks:  33%|███▎      | 3/9 [00:06<00:13,  2.32s/it][A
+target_only blocks:  44%|████▍     | 4/9 [00:09<00:12,  2.52s/it][A
+target_only blocks:  56%|█████▌    | 5/9 [00:12<00:10,  2.75s/it][A
+target_only blocks:  67%|██████▋   | 6/9 [00:16<00:08,  2.98s/it][A
+target_only blocks:  78%|███████▊  | 7/9 [00:19<00:06,  3.23s/it][A
+target_only blocks:  89%|████████▉ | 8/9 [00:23<00:03,  3.39s/it][A
+target_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.50s/it][Atarget_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.04s/it]
+
+target_regen blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_regen blocks:  11%|█         | 1/9 [00:02<00:20,  2.60s/it][A
+target_regen blocks:  22%|██▏       | 2/9 [00:05<00:19,  2.84s/it][A
+target_regen blocks:  33%|███▎      | 3/9 [00:08<00:18,  3.09s/it][A
+target_regen blocks:  44%|████▍     | 4/9 [00:12<00:16,  3.35s/it][A
+target_regen blocks:  56%|█████▌    | 5/9 [00:16<00:14,  3.63s/it][A
+target_regen blocks:  67%|██████▋   | 6/9 [00:21<00:11,  3.92s/it][A
+target_regen blocks:  78%|███████▊  | 7/9 [00:26<00:08,  4.23s/it][A
+target_regen blocks:  89%|████████▉ | 8/9 [00:31<00:04,  4.43s/it][A
+target_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.56s/it][Atarget_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  3.99s/it]
+prompts:  19%|█▉        | 3/16 [03:22<14:38, 67.55s/it]
+target_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_only blocks:  11%|█         | 1/9 [00:01<00:15,  1.95s/it][A
+target_only blocks:  22%|██▏       | 2/9 [00:04<00:14,  2.13s/it][A
+target_only blocks:  33%|███▎      | 3/9 [00:06<00:13,  2.32s/it][A
+target_only blocks:  44%|████▍     | 4/9 [00:09<00:12,  2.52s/it][A
+target_only blocks:  56%|█████▌    | 5/9 [00:12<00:10,  2.74s/it][A
+target_only blocks:  67%|██████▋   | 6/9 [00:16<00:08,  2.97s/it][A
+target_only blocks:  78%|███████▊  | 7/9 [00:19<00:06,  3.22s/it][A
+target_only blocks:  89%|████████▉ | 8/9 [00:23<00:03,  3.38s/it][A
+target_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.49s/it][Atarget_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.04s/it]
+
+target_regen blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_regen blocks:  11%|█         | 1/9 [00:02<00:20,  2.59s/it][A
+target_regen blocks:  22%|██▏       | 2/9 [00:05<00:19,  2.84s/it][A
+target_regen blocks:  33%|███▎      | 3/9 [00:08<00:18,  3.08s/it][A
+target_regen blocks:  44%|████▍     | 4/9 [00:12<00:16,  3.34s/it][A
+target_regen blocks:  56%|█████▌    | 5/9 [00:16<00:14,  3.62s/it][A
+target_regen blocks:  67%|██████▋   | 6/9 [00:21<00:11,  3.91s/it][A
+target_regen blocks:  78%|███████▊  | 7/9 [00:26<00:08,  4.22s/it][A
+target_regen blocks:  89%|████████▉ | 8/9 [00:31<00:04,  4.42s/it][A
+target_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.56s/it][Atarget_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  3.98s/it]
+prompts:  25%|██▌       | 4/16 [04:30<13:29, 67.49s/it]
+target_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_only blocks:  11%|█         | 1/9 [00:01<00:15,  1.96s/it][A
+target_only blocks:  22%|██▏       | 2/9 [00:04<00:14,  2.13s/it][A
+target_only blocks:  33%|███▎      | 3/9 [00:06<00:13,  2.32s/it][A
+target_only blocks:  44%|████▍     | 4/9 [00:09<00:12,  2.53s/it][A
+target_only blocks:  56%|█████▌    | 5/9 [00:12<00:10,  2.75s/it][A
+target_only blocks:  67%|██████▋   | 6/9 [00:16<00:08,  2.98s/it][A
+target_only blocks:  78%|███████▊  | 7/9 [00:19<00:06,  3.23s/it][A
+target_only blocks:  89%|████████▉ | 8/9 [00:23<00:03,  3.39s/it][A
+target_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.50s/it][Atarget_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.04s/it]
+
+target_regen blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_regen blocks:  11%|█         | 1/9 [00:02<00:20,  2.60s/it][A
+target_regen blocks:  22%|██▏       | 2/9 [00:05<00:19,  2.84s/it][A
+target_regen blocks:  33%|███▎      | 3/9 [00:08<00:18,  3.09s/it][A
+target_regen blocks:  44%|████▍     | 4/9 [00:12<00:16,  3.35s/it][A
+target_regen blocks:  56%|█████▌    | 5/9 [00:16<00:14,  3.63s/it][A
+target_regen blocks:  67%|██████▋   | 6/9 [00:21<00:11,  3.92s/it][A
+target_regen blocks:  78%|███████▊  | 7/9 [00:26<00:08,  4.23s/it][A
+target_regen blocks:  89%|████████▉ | 8/9 [00:31<00:04,  4.43s/it][A
+target_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.57s/it][Atarget_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  3.99s/it]
+prompts:  31%|███▏      | 5/16 [05:37<12:21, 67.42s/it]
+target_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_only blocks:  11%|█         | 1/9 [00:01<00:15,  1.96s/it][A
+target_only blocks:  22%|██▏       | 2/9 [00:04<00:14,  2.13s/it][A
+target_only blocks:  33%|███▎      | 3/9 [00:06<00:13,  2.33s/it][A
+target_only blocks:  44%|████▍     | 4/9 [00:09<00:12,  2.53s/it][A
+target_only blocks:  56%|█████▌    | 5/9 [00:12<00:11,  2.76s/it][A
+target_only blocks:  67%|██████▋   | 6/9 [00:16<00:08,  2.99s/it][A
+target_only blocks:  78%|███████▊  | 7/9 [00:19<00:06,  3.23s/it][A
+target_only blocks:  89%|████████▉ | 8/9 [00:23<00:03,  3.40s/it][A
+target_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.51s/it][Atarget_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.05s/it]
+
+target_regen blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_regen blocks:  11%|█         | 1/9 [00:02<00:20,  2.60s/it][A
+target_regen blocks:  22%|██▏       | 2/9 [00:05<00:19,  2.85s/it][A
+target_regen blocks:  33%|███▎      | 3/9 [00:09<00:18,  3.09s/it][A
+target_regen blocks:  44%|████▍     | 4/9 [00:12<00:16,  3.36s/it][A
+target_regen blocks:  56%|█████▌    | 5/9 [00:16<00:14,  3.64s/it][A
+target_regen blocks:  67%|██████▋   | 6/9 [00:21<00:11,  3.93s/it][A
+target_regen blocks:  78%|███████▊  | 7/9 [00:26<00:08,  4.23s/it][A
+target_regen blocks:  89%|████████▉ | 8/9 [00:31<00:04,  4.43s/it][A
+target_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.56s/it][Atarget_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.00s/it]
+prompts:  38%|███▊      | 6/16 [06:45<11:14, 67.42s/it]
+target_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_only blocks:  11%|█         | 1/9 [00:01<00:15,  1.97s/it][A
+target_only blocks:  22%|██▏       | 2/9 [00:04<00:14,  2.14s/it][A
+target_only blocks:  33%|███▎      | 3/9 [00:06<00:13,  2.33s/it][A
+target_only blocks:  44%|████▍     | 4/9 [00:09<00:12,  2.53s/it][A
+target_only blocks:  56%|█████▌    | 5/9 [00:12<00:11,  2.76s/it][A
+target_only blocks:  67%|██████▋   | 6/9 [00:16<00:08,  2.99s/it][A
+target_only blocks:  78%|███████▊  | 7/9 [00:19<00:06,  3.24s/it][A
+target_only blocks:  89%|████████▉ | 8/9 [00:23<00:03,  3.39s/it][A
+target_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.50s/it][Atarget_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.05s/it]
+
+target_regen blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_regen blocks:  11%|█         | 1/9 [00:02<00:20,  2.61s/it][A
+target_regen blocks:  22%|██▏       | 2/9 [00:05<00:19,  2.85s/it][A
+target_regen blocks:  33%|███▎      | 3/9 [00:09<00:18,  3.10s/it][A
+target_regen blocks:  44%|████▍     | 4/9 [00:12<00:16,  3.36s/it][A
+target_regen blocks:  56%|█████▌    | 5/9 [00:16<00:14,  3.63s/it][A
+target_regen blocks:  67%|██████▋   | 6/9 [00:21<00:11,  3.92s/it][A
+target_regen blocks:  78%|███████▊  | 7/9 [00:26<00:08,  4.23s/it][A
+target_regen blocks:  89%|████████▉ | 8/9 [00:31<00:04,  4.42s/it][A
+target_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.56s/it][Atarget_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  3.99s/it]
+prompts:  44%|████▍     | 7/16 [07:52<10:06, 67.43s/it]
+target_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_only blocks:  11%|█         | 1/9 [00:01<00:15,  1.97s/it][A
+target_only blocks:  22%|██▏       | 2/9 [00:04<00:14,  2.14s/it][A
+target_only blocks:  33%|███▎      | 3/9 [00:06<00:13,  2.33s/it][A
+target_only blocks:  44%|████▍     | 4/9 [00:09<00:12,  2.53s/it][A
+target_only blocks:  56%|█████▌    | 5/9 [00:12<00:11,  2.75s/it][A
+target_only blocks:  67%|██████▋   | 6/9 [00:16<00:08,  2.98s/it][A
+target_only blocks:  78%|███████▊  | 7/9 [00:19<00:06,  3.23s/it][A
+target_only blocks:  89%|████████▉ | 8/9 [00:23<00:03,  3.39s/it][A
+target_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.50s/it][Atarget_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.05s/it]
+
+target_regen blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_regen blocks:  11%|█         | 1/9 [00:02<00:20,  2.60s/it][A
+target_regen blocks:  22%|██▏       | 2/9 [00:05<00:19,  2.85s/it][A
+target_regen blocks:  33%|███▎      | 3/9 [00:09<00:18,  3.10s/it][A
+target_regen blocks:  44%|████▍     | 4/9 [00:12<00:16,  3.36s/it][A
+target_regen blocks:  56%|█████▌    | 5/9 [00:16<00:14,  3.64s/it][A
+target_regen blocks:  67%|██████▋   | 6/9 [00:21<00:11,  3.94s/it][A
+target_regen blocks:  78%|███████▊  | 7/9 [00:26<00:08,  4.24s/it][A
+target_regen blocks:  89%|████████▉ | 8/9 [00:31<00:04,  4.43s/it][A
+target_regen blocks: 100%|██████████| 9/9 [00:36<00:00,  4.57s/it][Atarget_regen blocks: 100%|██████████| 9/9 [00:36<00:00,  4.00s/it]
+prompts:  50%|█████     | 8/16 [08:59<08:59, 67.41s/it]
+target_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_only blocks:  11%|█         | 1/9 [00:01<00:15,  1.97s/it][A
+target_only blocks:  22%|██▏       | 2/9 [00:04<00:14,  2.14s/it][A
+target_only blocks:  33%|███▎      | 3/9 [00:06<00:13,  2.33s/it][A
+target_only blocks:  44%|████▍     | 4/9 [00:09<00:12,  2.53s/it][A
+target_only blocks:  56%|█████▌    | 5/9 [00:12<00:11,  2.76s/it][A
+target_only blocks:  67%|██████▋   | 6/9 [00:16<00:08,  2.99s/it][A
+target_only blocks:  78%|███████▊  | 7/9 [00:19<00:06,  3.24s/it][A
+target_only blocks:  89%|████████▉ | 8/9 [00:23<00:03,  3.40s/it][A
+target_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.51s/it][Atarget_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.05s/it]
+
+target_regen blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_regen blocks:  11%|█         | 1/9 [00:02<00:20,  2.61s/it][A
+target_regen blocks:  22%|██▏       | 2/9 [00:05<00:19,  2.85s/it][A
+target_regen blocks:  33%|███▎      | 3/9 [00:09<00:18,  3.10s/it][A
+target_regen blocks:  44%|████▍     | 4/9 [00:12<00:16,  3.36s/it][A
+target_regen blocks:  56%|█████▌    | 5/9 [00:16<00:14,  3.64s/it][A
+target_regen blocks:  67%|██████▋   | 6/9 [00:21<00:11,  3.93s/it][A
+target_regen blocks:  78%|███████▊  | 7/9 [00:26<00:08,  4.24s/it][A
+target_regen blocks:  89%|████████▉ | 8/9 [00:31<00:04,  4.43s/it][A
+target_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.57s/it][Atarget_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.00s/it]
+prompts:  56%|█████▋    | 9/16 [10:07<07:51, 67.40s/it]
+target_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_only blocks:  11%|█         | 1/9 [00:01<00:15,  1.96s/it][A
+target_only blocks:  22%|██▏       | 2/9 [00:04<00:14,  2.13s/it][A
+target_only blocks:  33%|███▎      | 3/9 [00:06<00:13,  2.32s/it][A
+target_only blocks:  44%|████▍     | 4/9 [00:09<00:12,  2.53s/it][A
+target_only blocks:  56%|█████▌    | 5/9 [00:12<00:10,  2.75s/it][A
+target_only blocks:  67%|██████▋   | 6/9 [00:16<00:08,  2.98s/it][A
+target_only blocks:  78%|███████▊  | 7/9 [00:19<00:06,  3.23s/it][A
+target_only blocks:  89%|████████▉ | 8/9 [00:23<00:03,  3.39s/it][A
+target_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.49s/it][Atarget_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.04s/it]
+
+target_regen blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_regen blocks:  11%|█         | 1/9 [00:02<00:20,  2.60s/it][A
+target_regen blocks:  22%|██▏       | 2/9 [00:05<00:19,  2.85s/it][A
+target_regen blocks:  33%|███▎      | 3/9 [00:09<00:18,  3.09s/it][A
+target_regen blocks:  44%|████▍     | 4/9 [00:12<00:16,  3.36s/it][A
+target_regen blocks:  56%|█████▌    | 5/9 [00:16<00:14,  3.63s/it][A
+target_regen blocks:  67%|██████▋   | 6/9 [00:21<00:11,  3.93s/it][A
+target_regen blocks:  78%|███████▊  | 7/9 [00:26<00:08,  4.23s/it][A
+target_regen blocks:  89%|████████▉ | 8/9 [00:31<00:04,  4.44s/it][A
+target_regen blocks: 100%|██████████| 9/9 [00:36<00:00,  4.57s/it][Atarget_regen blocks: 100%|██████████| 9/9 [00:36<00:00,  4.00s/it]
+prompts:  62%|██████▎   | 10/16 [11:14<06:44, 67.47s/it]
+target_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_only blocks:  11%|█         | 1/9 [00:01<00:15,  1.97s/it][A
+target_only blocks:  22%|██▏       | 2/9 [00:04<00:14,  2.13s/it][A
+target_only blocks:  33%|███▎      | 3/9 [00:06<00:13,  2.32s/it][A
+target_only blocks:  44%|████▍     | 4/9 [00:09<00:12,  2.52s/it][A
+target_only blocks:  56%|█████▌    | 5/9 [00:12<00:10,  2.75s/it][A
+target_only blocks:  67%|██████▋   | 6/9 [00:16<00:08,  2.98s/it][A
+target_only blocks:  78%|███████▊  | 7/9 [00:19<00:06,  3.23s/it][A
+target_only blocks:  89%|████████▉ | 8/9 [00:23<00:03,  3.39s/it][A
+target_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.50s/it][Atarget_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.04s/it]
+
+target_regen blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_regen blocks:  11%|█         | 1/9 [00:02<00:20,  2.61s/it][A
+target_regen blocks:  22%|██▏       | 2/9 [00:05<00:19,  2.85s/it][A
+target_regen blocks:  33%|███▎      | 3/9 [00:09<00:18,  3.10s/it][A
+target_regen blocks:  44%|████▍     | 4/9 [00:12<00:16,  3.36s/it][A
+target_regen blocks:  56%|█████▌    | 5/9 [00:16<00:14,  3.64s/it][A
+target_regen blocks:  67%|██████▋   | 6/9 [00:21<00:11,  3.94s/it][A
+target_regen blocks:  78%|███████▊  | 7/9 [00:26<00:08,  4.24s/it][A
+target_regen blocks:  89%|████████▉ | 8/9 [00:31<00:04,  4.43s/it][A
+target_regen blocks: 100%|██████████| 9/9 [00:36<00:00,  4.57s/it][Atarget_regen blocks: 100%|██████████| 9/9 [00:36<00:00,  4.00s/it]
+prompts:  69%|██████▉   | 11/16 [12:22<05:37, 67.41s/it]
+target_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_only blocks:  11%|█         | 1/9 [00:01<00:15,  1.97s/it][A
+target_only blocks:  22%|██▏       | 2/9 [00:04<00:14,  2.13s/it][A
+target_only blocks:  33%|███▎      | 3/9 [00:06<00:13,  2.32s/it][A
+target_only blocks:  44%|████▍     | 4/9 [00:09<00:12,  2.52s/it][A
+target_only blocks:  56%|█████▌    | 5/9 [00:12<00:10,  2.74s/it][A
+target_only blocks:  67%|██████▋   | 6/9 [00:16<00:08,  2.98s/it][A
+target_only blocks:  78%|███████▊  | 7/9 [00:19<00:06,  3.23s/it][A
+target_only blocks:  89%|████████▉ | 8/9 [00:23<00:03,  3.39s/it][A
+target_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.50s/it][Atarget_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.04s/it]
+
+target_regen blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_regen blocks:  11%|█         | 1/9 [00:02<00:20,  2.61s/it][A
+target_regen blocks:  22%|██▏       | 2/9 [00:05<00:19,  2.85s/it][A
+target_regen blocks:  33%|███▎      | 3/9 [00:09<00:18,  3.10s/it][A
+target_regen blocks:  44%|████▍     | 4/9 [00:12<00:16,  3.36s/it][A
+target_regen blocks:  56%|█████▌    | 5/9 [00:16<00:14,  3.64s/it][A
+target_regen blocks:  67%|██████▋   | 6/9 [00:21<00:11,  3.93s/it][A
+target_regen blocks:  78%|███████▊  | 7/9 [00:26<00:08,  4.23s/it][A
+target_regen blocks:  89%|████████▉ | 8/9 [00:31<00:04,  4.43s/it][A
+target_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.56s/it][Atarget_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  3.99s/it]
+prompts:  75%|███████▌  | 12/16 [13:29<04:29, 67.36s/it]
+target_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_only blocks:  11%|█         | 1/9 [00:01<00:15,  1.96s/it][A
+target_only blocks:  22%|██▏       | 2/9 [00:04<00:14,  2.14s/it][A
+target_only blocks:  33%|███▎      | 3/9 [00:06<00:13,  2.32s/it][A
+target_only blocks:  44%|████▍     | 4/9 [00:09<00:12,  2.53s/it][A
+target_only blocks:  56%|█████▌    | 5/9 [00:12<00:11,  2.75s/it][A
+target_only blocks:  67%|██████▋   | 6/9 [00:16<00:08,  2.99s/it][A
+target_only blocks:  78%|███████▊  | 7/9 [00:19<00:06,  3.23s/it][A
+target_only blocks:  89%|████████▉ | 8/9 [00:23<00:03,  3.39s/it][A
+target_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.50s/it][Atarget_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.05s/it]
+
+target_regen blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_regen blocks:  11%|█         | 1/9 [00:02<00:20,  2.60s/it][A
+target_regen blocks:  22%|██▏       | 2/9 [00:05<00:19,  2.84s/it][A
+target_regen blocks:  33%|███▎      | 3/9 [00:08<00:18,  3.09s/it][A
+target_regen blocks:  44%|████▍     | 4/9 [00:12<00:16,  3.35s/it][A
+target_regen blocks:  56%|█████▌    | 5/9 [00:16<00:14,  3.63s/it][A
+target_regen blocks:  67%|██████▋   | 6/9 [00:21<00:11,  3.92s/it][A
+target_regen blocks:  78%|███████▊  | 7/9 [00:26<00:08,  4.22s/it][A
+target_regen blocks:  89%|████████▉ | 8/9 [00:31<00:04,  4.43s/it][A
+target_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.56s/it][Atarget_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  3.99s/it]
+prompts:  81%|████████▏ | 13/16 [14:36<03:22, 67.35s/it]
+target_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_only blocks:  11%|█         | 1/9 [00:01<00:15,  1.95s/it][A
+target_only blocks:  22%|██▏       | 2/9 [00:04<00:14,  2.13s/it][A
+target_only blocks:  33%|███▎      | 3/9 [00:06<00:13,  2.33s/it][A
+target_only blocks:  44%|████▍     | 4/9 [00:09<00:12,  2.54s/it][A
+target_only blocks:  56%|█████▌    | 5/9 [00:12<00:11,  2.76s/it][A
+target_only blocks:  67%|██████▋   | 6/9 [00:16<00:08,  3.00s/it][A
+target_only blocks:  78%|███████▊  | 7/9 [00:19<00:06,  3.24s/it][A
+target_only blocks:  89%|████████▉ | 8/9 [00:23<00:03,  3.41s/it][A
+target_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.51s/it][Atarget_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.05s/it]
+
+target_regen blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_regen blocks:  11%|█         | 1/9 [00:02<00:20,  2.60s/it][A
+target_regen blocks:  22%|██▏       | 2/9 [00:05<00:19,  2.85s/it][A
+target_regen blocks:  33%|███▎      | 3/9 [00:09<00:18,  3.10s/it][A
+target_regen blocks:  44%|████▍     | 4/9 [00:12<00:16,  3.36s/it][A
+target_regen blocks:  56%|█████▌    | 5/9 [00:16<00:14,  3.64s/it][A
+target_regen blocks:  67%|██████▋   | 6/9 [00:21<00:11,  3.93s/it][A
+target_regen blocks:  78%|███████▊  | 7/9 [00:26<00:08,  4.23s/it][A
+target_regen blocks:  89%|████████▉ | 8/9 [00:31<00:04,  4.43s/it][A
+target_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.56s/it][Atarget_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.00s/it]
+prompts:  88%|████████▊ | 14/16 [15:44<02:14, 67.42s/it]
+target_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_only blocks:  11%|█         | 1/9 [00:01<00:15,  1.96s/it][A
+target_only blocks:  22%|██▏       | 2/9 [00:04<00:14,  2.13s/it][A
+target_only blocks:  33%|███▎      | 3/9 [00:06<00:13,  2.32s/it][A
+target_only blocks:  44%|████▍     | 4/9 [00:09<00:12,  2.53s/it][A
+target_only blocks:  56%|█████▌    | 5/9 [00:12<00:11,  2.75s/it][A
+target_only blocks:  67%|██████▋   | 6/9 [00:16<00:08,  2.98s/it][A
+target_only blocks:  78%|███████▊  | 7/9 [00:19<00:06,  3.23s/it][A
+target_only blocks:  89%|████████▉ | 8/9 [00:23<00:03,  3.39s/it][A
+target_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.50s/it][Atarget_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.04s/it]
+
+target_regen blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_regen blocks:  11%|█         | 1/9 [00:02<00:20,  2.61s/it][A
+target_regen blocks:  22%|██▏       | 2/9 [00:05<00:19,  2.85s/it][A
+target_regen blocks:  33%|███▎      | 3/9 [00:09<00:18,  3.10s/it][A
+target_regen blocks:  44%|████▍     | 4/9 [00:12<00:16,  3.36s/it][A
+target_regen blocks:  56%|█████▌    | 5/9 [00:16<00:14,  3.64s/it][A
+target_regen blocks:  67%|██████▋   | 6/9 [00:21<00:11,  3.93s/it][A
+target_regen blocks:  78%|███████▊  | 7/9 [00:26<00:08,  4.24s/it][A
+target_regen blocks:  89%|████████▉ | 8/9 [00:31<00:04,  4.44s/it][A
+target_regen blocks: 100%|██████████| 9/9 [00:36<00:00,  4.57s/it][Atarget_regen blocks: 100%|██████████| 9/9 [00:36<00:00,  4.00s/it]
+prompts:  94%|█████████▍| 15/16 [16:51<01:07, 67.43s/it]
+target_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_only blocks:  11%|█         | 1/9 [00:01<00:15,  1.96s/it][A
+target_only blocks:  22%|██▏       | 2/9 [00:04<00:14,  2.14s/it][A
+target_only blocks:  33%|███▎      | 3/9 [00:06<00:13,  2.33s/it][A
+target_only blocks:  44%|████▍     | 4/9 [00:09<00:12,  2.54s/it][A
+target_only blocks:  56%|█████▌    | 5/9 [00:12<00:11,  2.76s/it][A
+target_only blocks:  67%|██████▋   | 6/9 [00:16<00:08,  2.99s/it][A
+target_only blocks:  78%|███████▊  | 7/9 [00:19<00:06,  3.24s/it][A
+target_only blocks:  89%|████████▉ | 8/9 [00:23<00:03,  3.40s/it][A
+target_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.50s/it][Atarget_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.05s/it]
+
+target_regen blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_regen blocks:  11%|█         | 1/9 [00:02<00:20,  2.60s/it][A
+target_regen blocks:  22%|██▏       | 2/9 [00:05<00:19,  2.85s/it][A
+target_regen blocks:  33%|███▎      | 3/9 [00:09<00:18,  3.09s/it][A
+target_regen blocks:  44%|████▍     | 4/9 [00:12<00:16,  3.35s/it][A
+target_regen blocks:  56%|█████▌    | 5/9 [00:16<00:14,  3.63s/it][A
+target_regen blocks:  67%|██████▋   | 6/9 [00:21<00:11,  3.92s/it][A
+target_regen blocks:  78%|███████▊  | 7/9 [00:26<00:08,  4.23s/it][A
+target_regen blocks:  89%|████████▉ | 8/9 [00:31<00:04,  4.43s/it][A
+target_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.56s/it][Atarget_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  3.99s/it]
+prompts: 100%|██████████| 16/16 [17:59<00:00, 67.45s/it]prompts: 100%|██████████| 16/16 [17:59<00:00, 67.45s/it]
+Wrote profile: /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p7/profile.json
+target_only: 29.82s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p7/prompt_0000_target_only.mp4
+target_regen: 36.00s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p7/prompt_0000_target_regen.mp4
+target_only: 29.54s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p7/prompt_0001_target_only.mp4
+target_regen: 35.95s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p7/prompt_0001_target_regen.mp4
+target_only: 29.52s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p7/prompt_0002_target_only.mp4
+target_regen: 35.92s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p7/prompt_0002_target_regen.mp4
+target_only: 29.48s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p7/prompt_0003_target_only.mp4
+target_regen: 35.86s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p7/prompt_0003_target_regen.mp4
+target_only: 29.54s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p7/prompt_0004_target_only.mp4
+target_regen: 35.95s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p7/prompt_0004_target_regen.mp4
+target_only: 29.59s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p7/prompt_0005_target_only.mp4
+target_regen: 35.97s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p7/prompt_0005_target_regen.mp4
+target_only: 29.58s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p7/prompt_0006_target_only.mp4
+target_regen: 35.95s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p7/prompt_0006_target_regen.mp4
+target_only: 29.55s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p7/prompt_0007_target_only.mp4
+target_regen: 36.00s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p7/prompt_0007_target_regen.mp4
+target_only: 29.63s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p7/prompt_0008_target_only.mp4
+target_regen: 35.99s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p7/prompt_0008_target_regen.mp4
+target_only: 29.51s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p7/prompt_0009_target_only.mp4
+target_regen: 36.00s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p7/prompt_0009_target_regen.mp4
+target_only: 29.54s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p7/prompt_0010_target_only.mp4
+target_regen: 36.00s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p7/prompt_0010_target_regen.mp4
+target_only: 29.52s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p7/prompt_0011_target_only.mp4
+target_regen: 35.95s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p7/prompt_0011_target_regen.mp4
+target_only: 29.57s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p7/prompt_0012_target_only.mp4
+target_regen: 35.92s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p7/prompt_0012_target_regen.mp4
+target_only: 29.63s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p7/prompt_0013_target_only.mp4
+target_regen: 35.97s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p7/prompt_0013_target_regen.mp4
+target_only: 29.53s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p7/prompt_0014_target_only.mp4
+target_regen: 36.03s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p7/prompt_0014_target_regen.mp4
+target_only: 29.60s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p7/prompt_0015_target_only.mp4
+target_regen: 35.95s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p7/prompt_0015_target_regen.mp4
+[2026-05-28 03:16:34] Profile JSON: /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_0p7/profile.json
+[2026-05-28 03:16:34] === Running tau_delta=1.0 -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_1p0 ===
+Loading target: Wan2.1-T2V-14B /mnt/lanxiangh/models/realtime-video/checkpoints/krea-realtime-video-14b.safetensors
+KV inference with 3 frames per block
+Loading drafter: Wan2.1-T2V-1.3B /mnt/lanxiangh/models/Self-Forcing/checkpoints/self_forcing_dmd.pt
+KV inference with 3 frames per block
+prompts:   0%|          | 0/16 [00:00<?, ?it/s]
+target_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_only blocks:  11%|█         | 1/9 [00:02<00:16,  2.11s/it][A
+target_only blocks:  22%|██▏       | 2/9 [00:04<00:15,  2.19s/it][A
+target_only blocks:  33%|███▎      | 3/9 [00:06<00:14,  2.35s/it][A
+target_only blocks:  44%|████▍     | 4/9 [00:09<00:12,  2.54s/it][A
+target_only blocks:  56%|█████▌    | 5/9 [00:12<00:11,  2.75s/it][A
+target_only blocks:  67%|██████▋   | 6/9 [00:16<00:08,  2.99s/it][A
+target_only blocks:  78%|███████▊  | 7/9 [00:20<00:06,  3.23s/it][A
+target_only blocks:  89%|████████▉ | 8/9 [00:23<00:03,  3.39s/it][A
+target_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.50s/it][Atarget_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.06s/it]
+
+target_regen blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_regen blocks:  11%|█         | 1/9 [00:02<00:20,  2.61s/it][A
+target_regen blocks:  22%|██▏       | 2/9 [00:05<00:19,  2.85s/it][A
+target_regen blocks:  33%|███▎      | 3/9 [00:09<00:18,  3.09s/it][A
+target_regen blocks:  44%|████▍     | 4/9 [00:12<00:16,  3.35s/it][A
+target_regen blocks:  56%|█████▌    | 5/9 [00:16<00:14,  3.63s/it][A
+target_regen blocks:  67%|██████▋   | 6/9 [00:21<00:11,  3.92s/it][A
+target_regen blocks:  78%|███████▊  | 7/9 [00:26<00:08,  4.22s/it][A
+target_regen blocks:  89%|████████▉ | 8/9 [00:31<00:04,  4.42s/it][A
+target_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.56s/it][Atarget_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  3.99s/it]
+prompts:   6%|▋         | 1/16 [01:07<16:59, 67.97s/it]
+target_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_only blocks:  11%|█         | 1/9 [00:01<00:15,  1.96s/it][A
+target_only blocks:  22%|██▏       | 2/9 [00:04<00:14,  2.14s/it][A
+target_only blocks:  33%|███▎      | 3/9 [00:06<00:13,  2.33s/it][A
+target_only blocks:  44%|████▍     | 4/9 [00:09<00:12,  2.53s/it][A
+target_only blocks:  56%|█████▌    | 5/9 [00:12<00:10,  2.75s/it][A
+target_only blocks:  67%|██████▋   | 6/9 [00:16<00:08,  2.98s/it][A
+target_only blocks:  78%|███████▊  | 7/9 [00:19<00:06,  3.22s/it][A
+target_only blocks:  89%|████████▉ | 8/9 [00:23<00:03,  3.38s/it][A
+target_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.49s/it][Atarget_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.04s/it]
+
+target_regen blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_regen blocks:  11%|█         | 1/9 [00:02<00:20,  2.60s/it][A
+target_regen blocks:  22%|██▏       | 2/9 [00:05<00:19,  2.84s/it][A
+target_regen blocks:  33%|███▎      | 3/9 [00:08<00:18,  3.09s/it][A
+target_regen blocks:  44%|████▍     | 4/9 [00:12<00:16,  3.35s/it][A
+target_regen blocks:  56%|█████▌    | 5/9 [00:16<00:14,  3.63s/it][A
+target_regen blocks:  67%|██████▋   | 6/9 [00:21<00:11,  3.92s/it][A
+target_regen blocks:  78%|███████▊  | 7/9 [00:26<00:08,  4.23s/it][A
+target_regen blocks:  89%|████████▉ | 8/9 [00:31<00:04,  4.43s/it][A
+target_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.56s/it][Atarget_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  3.99s/it]
+prompts:  12%|█▎        | 2/16 [02:15<15:46, 67.60s/it]
+target_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_only blocks:  11%|█         | 1/9 [00:01<00:15,  1.96s/it][A
+target_only blocks:  22%|██▏       | 2/9 [00:04<00:14,  2.13s/it][A
+target_only blocks:  33%|███▎      | 3/9 [00:06<00:13,  2.32s/it][A
+target_only blocks:  44%|████▍     | 4/9 [00:09<00:12,  2.53s/it][A
+target_only blocks:  56%|█████▌    | 5/9 [00:12<00:11,  2.75s/it][A
+target_only blocks:  67%|██████▋   | 6/9 [00:16<00:08,  2.98s/it][A
+target_only blocks:  78%|███████▊  | 7/9 [00:19<00:06,  3.23s/it][A
+target_only blocks:  89%|████████▉ | 8/9 [00:23<00:03,  3.39s/it][A
+target_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.50s/it][Atarget_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.04s/it]
+
+target_regen blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_regen blocks:  11%|█         | 1/9 [00:02<00:20,  2.59s/it][A
+target_regen blocks:  22%|██▏       | 2/9 [00:05<00:19,  2.84s/it][A
+target_regen blocks:  33%|███▎      | 3/9 [00:08<00:18,  3.09s/it][A
+target_regen blocks:  44%|████▍     | 4/9 [00:12<00:16,  3.35s/it][A
+target_regen blocks:  56%|█████▌    | 5/9 [00:16<00:14,  3.62s/it][A
+target_regen blocks:  67%|██████▋   | 6/9 [00:21<00:11,  3.92s/it][A
+target_regen blocks:  78%|███████▊  | 7/9 [00:26<00:08,  4.22s/it][A
+target_regen blocks:  89%|████████▉ | 8/9 [00:31<00:04,  4.42s/it][A
+target_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.56s/it][Atarget_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  3.99s/it]
+prompts:  19%|█▉        | 3/16 [03:22<14:36, 67.43s/it]
+target_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_only blocks:  11%|█         | 1/9 [00:01<00:15,  1.97s/it][A
+target_only blocks:  22%|██▏       | 2/9 [00:04<00:14,  2.13s/it][A
+target_only blocks:  33%|███▎      | 3/9 [00:06<00:13,  2.32s/it][A
+target_only blocks:  44%|████▍     | 4/9 [00:09<00:12,  2.53s/it][A
+target_only blocks:  56%|█████▌    | 5/9 [00:12<00:10,  2.75s/it][A
+target_only blocks:  67%|██████▋   | 6/9 [00:16<00:08,  2.98s/it][A
+target_only blocks:  78%|███████▊  | 7/9 [00:19<00:06,  3.23s/it][A
+target_only blocks:  89%|████████▉ | 8/9 [00:23<00:03,  3.39s/it][A
+target_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.50s/it][Atarget_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.04s/it]
+
+target_regen blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_regen blocks:  11%|█         | 1/9 [00:02<00:20,  2.59s/it][A
+target_regen blocks:  22%|██▏       | 2/9 [00:05<00:19,  2.84s/it][A
+target_regen blocks:  33%|███▎      | 3/9 [00:08<00:18,  3.09s/it][A
+target_regen blocks:  44%|████▍     | 4/9 [00:12<00:16,  3.35s/it][A
+target_regen blocks:  56%|█████▌    | 5/9 [00:16<00:14,  3.63s/it][A
+target_regen blocks:  67%|██████▋   | 6/9 [00:21<00:11,  3.92s/it][A
+target_regen blocks:  78%|███████▊  | 7/9 [00:26<00:08,  4.23s/it][A
+target_regen blocks:  89%|████████▉ | 8/9 [00:31<00:04,  4.43s/it][A
+target_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.56s/it][Atarget_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  3.99s/it]
+prompts:  25%|██▌       | 4/16 [04:30<13:29, 67.48s/it]
+target_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_only blocks:  11%|█         | 1/9 [00:01<00:15,  1.97s/it][A
+target_only blocks:  22%|██▏       | 2/9 [00:04<00:14,  2.13s/it][A
+target_only blocks:  33%|███▎      | 3/9 [00:06<00:13,  2.32s/it][A
+target_only blocks:  44%|████▍     | 4/9 [00:09<00:12,  2.53s/it][A
+target_only blocks:  56%|█████▌    | 5/9 [00:12<00:11,  2.75s/it][A
+target_only blocks:  67%|██████▋   | 6/9 [00:16<00:08,  2.99s/it][A
+target_only blocks:  78%|███████▊  | 7/9 [00:19<00:06,  3.23s/it][A
+target_only blocks:  89%|████████▉ | 8/9 [00:23<00:03,  3.39s/it][A
+target_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.50s/it][Atarget_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.04s/it]
+
+target_regen blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_regen blocks:  11%|█         | 1/9 [00:02<00:21,  2.64s/it][A
+target_regen blocks:  22%|██▏       | 2/9 [00:05<00:20,  2.87s/it][A
+target_regen blocks:  33%|███▎      | 3/9 [00:09<00:18,  3.10s/it][A
+target_regen blocks:  44%|████▍     | 4/9 [00:12<00:16,  3.36s/it][A
+target_regen blocks:  56%|█████▌    | 5/9 [00:16<00:14,  3.64s/it][A
+target_regen blocks:  67%|██████▋   | 6/9 [00:21<00:11,  3.93s/it][A
+target_regen blocks:  78%|███████▊  | 7/9 [00:26<00:08,  4.23s/it][A
+target_regen blocks:  89%|████████▉ | 8/9 [00:31<00:04,  4.43s/it][A
+target_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.56s/it][Atarget_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.00s/it]
+prompts:  31%|███▏      | 5/16 [05:37<12:21, 67.44s/it]
+target_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_only blocks:  11%|█         | 1/9 [00:01<00:15,  1.96s/it][A
+target_only blocks:  22%|██▏       | 2/9 [00:04<00:14,  2.13s/it][A
+target_only blocks:  33%|███▎      | 3/9 [00:06<00:13,  2.33s/it][A
+target_only blocks:  44%|████▍     | 4/9 [00:09<00:12,  2.53s/it][A
+target_only blocks:  56%|█████▌    | 5/9 [00:12<00:11,  2.75s/it][A
+target_only blocks:  67%|██████▋   | 6/9 [00:16<00:08,  2.99s/it][A
+target_only blocks:  78%|███████▊  | 7/9 [00:19<00:06,  3.23s/it][A
+target_only blocks:  89%|████████▉ | 8/9 [00:23<00:03,  3.39s/it][A
+target_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.50s/it][Atarget_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.05s/it]
+
+target_regen blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_regen blocks:  11%|█         | 1/9 [00:02<00:20,  2.59s/it][A
+target_regen blocks:  22%|██▏       | 2/9 [00:05<00:19,  2.84s/it][A
+target_regen blocks:  33%|███▎      | 3/9 [00:08<00:18,  3.09s/it][A
+target_regen blocks:  44%|████▍     | 4/9 [00:12<00:16,  3.35s/it][A
+target_regen blocks:  56%|█████▌    | 5/9 [00:16<00:14,  3.62s/it][A
+target_regen blocks:  67%|██████▋   | 6/9 [00:21<00:11,  3.92s/it][A
+target_regen blocks:  78%|███████▊  | 7/9 [00:26<00:08,  4.22s/it][A
+target_regen blocks:  89%|████████▉ | 8/9 [00:31<00:04,  4.42s/it][A
+target_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.56s/it][Atarget_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  3.99s/it]
+prompts:  38%|███▊      | 6/16 [06:44<11:14, 67.45s/it]
+target_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_only blocks:  11%|█         | 1/9 [00:01<00:15,  1.95s/it][A
+target_only blocks:  22%|██▏       | 2/9 [00:04<00:14,  2.13s/it][A
+target_only blocks:  33%|███▎      | 3/9 [00:06<00:13,  2.32s/it][A
+target_only blocks:  44%|████▍     | 4/9 [00:09<00:12,  2.52s/it][A
+target_only blocks:  56%|█████▌    | 5/9 [00:12<00:11,  2.75s/it][A
+target_only blocks:  67%|██████▋   | 6/9 [00:16<00:08,  2.99s/it][A
+target_only blocks:  78%|███████▊  | 7/9 [00:19<00:06,  3.23s/it][A
+target_only blocks:  89%|████████▉ | 8/9 [00:23<00:03,  3.39s/it][A
+target_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.50s/it][Atarget_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.04s/it]
+
+target_regen blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_regen blocks:  11%|█         | 1/9 [00:02<00:20,  2.62s/it][A
+target_regen blocks:  22%|██▏       | 2/9 [00:05<00:20,  2.87s/it][A
+target_regen blocks:  33%|███▎      | 3/9 [00:09<00:18,  3.11s/it][A
+target_regen blocks:  44%|████▍     | 4/9 [00:12<00:16,  3.36s/it][A
+target_regen blocks:  56%|█████▌    | 5/9 [00:16<00:14,  3.64s/it][A
+target_regen blocks:  67%|██████▋   | 6/9 [00:21<00:11,  3.92s/it][A
+target_regen blocks:  78%|███████▊  | 7/9 [00:26<00:08,  4.23s/it][A
+target_regen blocks:  89%|████████▉ | 8/9 [00:31<00:04,  4.43s/it][A
+target_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.56s/it][Atarget_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.00s/it]
+prompts:  44%|████▍     | 7/16 [07:52<10:06, 67.43s/it]
+target_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_only blocks:  11%|█         | 1/9 [00:01<00:15,  1.96s/it][A
+target_only blocks:  22%|██▏       | 2/9 [00:04<00:14,  2.13s/it][A
+target_only blocks:  33%|███▎      | 3/9 [00:06<00:13,  2.32s/it][A
+target_only blocks:  44%|████▍     | 4/9 [00:09<00:12,  2.53s/it][A
+target_only blocks:  56%|█████▌    | 5/9 [00:12<00:10,  2.75s/it][A
+target_only blocks:  67%|██████▋   | 6/9 [00:16<00:08,  2.98s/it][A
+target_only blocks:  78%|███████▊  | 7/9 [00:19<00:06,  3.23s/it][A
+target_only blocks:  89%|████████▉ | 8/9 [00:23<00:03,  3.39s/it][A
+target_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.50s/it][Atarget_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.04s/it]
+
+target_regen blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_regen blocks:  11%|█         | 1/9 [00:02<00:20,  2.60s/it][A
+target_regen blocks:  22%|██▏       | 2/9 [00:05<00:19,  2.84s/it][A
+target_regen blocks:  33%|███▎      | 3/9 [00:08<00:18,  3.09s/it][A
+target_regen blocks:  44%|████▍     | 4/9 [00:12<00:16,  3.35s/it][A
+target_regen blocks:  56%|█████▌    | 5/9 [00:16<00:14,  3.62s/it][A
+target_regen blocks:  67%|██████▋   | 6/9 [00:21<00:11,  3.91s/it][A
+target_regen blocks:  78%|███████▊  | 7/9 [00:26<00:08,  4.22s/it][A
+target_regen blocks:  89%|████████▉ | 8/9 [00:31<00:04,  4.42s/it][A
+target_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.56s/it][Atarget_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  3.99s/it]
+prompts:  50%|█████     | 8/16 [08:59<08:58, 67.35s/it]
+target_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_only blocks:  11%|█         | 1/9 [00:01<00:15,  1.96s/it][A
+target_only blocks:  22%|██▏       | 2/9 [00:04<00:14,  2.13s/it][A
+target_only blocks:  33%|███▎      | 3/9 [00:06<00:13,  2.32s/it][A
+target_only blocks:  44%|████▍     | 4/9 [00:09<00:12,  2.52s/it][A
+target_only blocks:  56%|█████▌    | 5/9 [00:12<00:10,  2.74s/it][A
+target_only blocks:  67%|██████▋   | 6/9 [00:16<00:08,  2.98s/it][A
+target_only blocks:  78%|███████▊  | 7/9 [00:19<00:06,  3.22s/it][A
+target_only blocks:  89%|████████▉ | 8/9 [00:23<00:03,  3.38s/it][A
+target_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.49s/it][Atarget_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.04s/it]
+
+target_regen blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_regen blocks:  11%|█         | 1/9 [00:02<00:20,  2.59s/it][A
+target_regen blocks:  22%|██▏       | 2/9 [00:05<00:19,  2.83s/it][A
+target_regen blocks:  33%|███▎      | 3/9 [00:08<00:18,  3.08s/it][A
+target_regen blocks:  44%|████▍     | 4/9 [00:12<00:16,  3.34s/it][A
+target_regen blocks:  56%|█████▌    | 5/9 [00:16<00:14,  3.61s/it][A
+target_regen blocks:  67%|██████▋   | 6/9 [00:21<00:11,  3.90s/it][A
+target_regen blocks:  78%|███████▊  | 7/9 [00:26<00:08,  4.21s/it][A
+target_regen blocks:  89%|████████▉ | 8/9 [00:30<00:04,  4.41s/it][A
+target_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.55s/it][Atarget_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  3.98s/it]
+prompts:  56%|█████▋    | 9/16 [10:06<07:50, 67.26s/it]
+target_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_only blocks:  11%|█         | 1/9 [00:01<00:15,  1.95s/it][A
+target_only blocks:  22%|██▏       | 2/9 [00:04<00:14,  2.12s/it][A
+target_only blocks:  33%|███▎      | 3/9 [00:06<00:13,  2.31s/it][A
+target_only blocks:  44%|████▍     | 4/9 [00:09<00:12,  2.52s/it][A
+target_only blocks:  56%|█████▌    | 5/9 [00:12<00:10,  2.74s/it][A
+target_only blocks:  67%|██████▋   | 6/9 [00:16<00:08,  2.97s/it][A
+target_only blocks:  78%|███████▊  | 7/9 [00:19<00:06,  3.22s/it][A
+target_only blocks:  89%|████████▉ | 8/9 [00:23<00:03,  3.38s/it][A
+target_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.49s/it][Atarget_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.03s/it]
+
+target_regen blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_regen blocks:  11%|█         | 1/9 [00:02<00:20,  2.60s/it][A
+target_regen blocks:  22%|██▏       | 2/9 [00:05<00:19,  2.85s/it][A
+target_regen blocks:  33%|███▎      | 3/9 [00:09<00:18,  3.09s/it][A
+target_regen blocks:  44%|████▍     | 4/9 [00:12<00:16,  3.35s/it][A
+target_regen blocks:  56%|█████▌    | 5/9 [00:16<00:14,  3.63s/it][A
+target_regen blocks:  67%|██████▋   | 6/9 [00:21<00:11,  3.92s/it][A
+target_regen blocks:  78%|███████▊  | 7/9 [00:26<00:08,  4.23s/it][A
+target_regen blocks:  89%|████████▉ | 8/9 [00:31<00:04,  4.43s/it][A
+target_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.56s/it][Atarget_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  3.99s/it]
+prompts:  62%|██████▎   | 10/16 [11:14<06:43, 67.33s/it]
+target_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_only blocks:  11%|█         | 1/9 [00:01<00:15,  1.96s/it][A
+target_only blocks:  22%|██▏       | 2/9 [00:04<00:14,  2.13s/it][A
+target_only blocks:  33%|███▎      | 3/9 [00:06<00:13,  2.32s/it][A
+target_only blocks:  44%|████▍     | 4/9 [00:09<00:12,  2.53s/it][A
+target_only blocks:  56%|█████▌    | 5/9 [00:12<00:10,  2.74s/it][A
+target_only blocks:  67%|██████▋   | 6/9 [00:16<00:08,  2.98s/it][A
+target_only blocks:  78%|███████▊  | 7/9 [00:19<00:06,  3.22s/it][A
+target_only blocks:  89%|████████▉ | 8/9 [00:23<00:03,  3.39s/it][A
+target_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.50s/it][Atarget_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.04s/it]
+
+target_regen blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_regen blocks:  11%|█         | 1/9 [00:02<00:20,  2.60s/it][A
+target_regen blocks:  22%|██▏       | 2/9 [00:05<00:19,  2.84s/it][A
+target_regen blocks:  33%|███▎      | 3/9 [00:08<00:18,  3.09s/it][A
+target_regen blocks:  44%|████▍     | 4/9 [00:12<00:16,  3.35s/it][A
+target_regen blocks:  56%|█████▌    | 5/9 [00:16<00:14,  3.63s/it][A
+target_regen blocks:  67%|██████▋   | 6/9 [00:21<00:11,  3.92s/it][A
+target_regen blocks:  78%|███████▊  | 7/9 [00:26<00:08,  4.22s/it][A
+target_regen blocks:  89%|████████▉ | 8/9 [00:31<00:04,  4.42s/it][A
+target_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.56s/it][Atarget_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  3.99s/it]
+prompts:  69%|██████▉   | 11/16 [12:21<05:36, 67.29s/it]
+target_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_only blocks:  11%|█         | 1/9 [00:01<00:15,  1.96s/it][A
+target_only blocks:  22%|██▏       | 2/9 [00:04<00:14,  2.13s/it][A
+target_only blocks:  33%|███▎      | 3/9 [00:06<00:13,  2.32s/it][A
+target_only blocks:  44%|████▍     | 4/9 [00:09<00:12,  2.52s/it][A
+target_only blocks:  56%|█████▌    | 5/9 [00:12<00:10,  2.74s/it][A
+target_only blocks:  67%|██████▋   | 6/9 [00:16<00:08,  2.98s/it][A
+target_only blocks:  78%|███████▊  | 7/9 [00:19<00:06,  3.22s/it][A
+target_only blocks:  89%|████████▉ | 8/9 [00:23<00:03,  3.39s/it][A
+target_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.50s/it][Atarget_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.04s/it]
+
+target_regen blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_regen blocks:  11%|█         | 1/9 [00:02<00:20,  2.60s/it][A
+target_regen blocks:  22%|██▏       | 2/9 [00:05<00:19,  2.85s/it][A
+target_regen blocks:  33%|███▎      | 3/9 [00:09<00:18,  3.10s/it][A
+target_regen blocks:  44%|████▍     | 4/9 [00:12<00:16,  3.37s/it][A
+target_regen blocks:  56%|█████▌    | 5/9 [00:16<00:14,  3.64s/it][A
+target_regen blocks:  67%|██████▋   | 6/9 [00:21<00:11,  3.93s/it][A
+target_regen blocks:  78%|███████▊  | 7/9 [00:26<00:08,  4.24s/it][A
+target_regen blocks:  89%|████████▉ | 8/9 [00:31<00:04,  4.43s/it][A
+target_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.56s/it][Atarget_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.00s/it]
+prompts:  75%|███████▌  | 12/16 [13:28<04:29, 67.30s/it]
+target_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_only blocks:  11%|█         | 1/9 [00:01<00:15,  1.96s/it][A
+target_only blocks:  22%|██▏       | 2/9 [00:04<00:14,  2.13s/it][A
+target_only blocks:  33%|███▎      | 3/9 [00:06<00:13,  2.32s/it][A
+target_only blocks:  44%|████▍     | 4/9 [00:09<00:12,  2.53s/it][A
+target_only blocks:  56%|█████▌    | 5/9 [00:12<00:11,  2.75s/it][A
+target_only blocks:  67%|██████▋   | 6/9 [00:16<00:08,  2.98s/it][A
+target_only blocks:  78%|███████▊  | 7/9 [00:19<00:06,  3.23s/it][A
+target_only blocks:  89%|████████▉ | 8/9 [00:23<00:03,  3.39s/it][A
+target_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.50s/it][Atarget_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.04s/it]
+
+target_regen blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_regen blocks:  11%|█         | 1/9 [00:02<00:20,  2.60s/it][A
+target_regen blocks:  22%|██▏       | 2/9 [00:05<00:19,  2.85s/it][A
+target_regen blocks:  33%|███▎      | 3/9 [00:08<00:18,  3.09s/it][A
+target_regen blocks:  44%|████▍     | 4/9 [00:12<00:16,  3.35s/it][A
+target_regen blocks:  56%|█████▌    | 5/9 [00:16<00:14,  3.62s/it][A
+target_regen blocks:  67%|██████▋   | 6/9 [00:21<00:11,  3.92s/it][A
+target_regen blocks:  78%|███████▊  | 7/9 [00:26<00:08,  4.22s/it][A
+target_regen blocks:  89%|████████▉ | 8/9 [00:31<00:04,  4.42s/it][A
+target_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.56s/it][Atarget_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  3.99s/it]
+prompts:  81%|████████▏ | 13/16 [14:35<03:21, 67.29s/it]
+target_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_only blocks:  11%|█         | 1/9 [00:01<00:15,  1.96s/it][A
+target_only blocks:  22%|██▏       | 2/9 [00:04<00:14,  2.13s/it][A
+target_only blocks:  33%|███▎      | 3/9 [00:06<00:13,  2.32s/it][A
+target_only blocks:  44%|████▍     | 4/9 [00:09<00:12,  2.53s/it][A
+target_only blocks:  56%|█████▌    | 5/9 [00:12<00:10,  2.75s/it][A
+target_only blocks:  67%|██████▋   | 6/9 [00:16<00:08,  2.98s/it][A
+target_only blocks:  78%|███████▊  | 7/9 [00:19<00:06,  3.23s/it][A
+target_only blocks:  89%|████████▉ | 8/9 [00:23<00:03,  3.39s/it][A
+target_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.50s/it][Atarget_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.04s/it]
+
+target_regen blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_regen blocks:  11%|█         | 1/9 [00:02<00:20,  2.58s/it][A
+target_regen blocks:  22%|██▏       | 2/9 [00:05<00:19,  2.83s/it][A
+target_regen blocks:  33%|███▎      | 3/9 [00:08<00:18,  3.09s/it][A
+target_regen blocks:  44%|████▍     | 4/9 [00:12<00:16,  3.35s/it][A
+target_regen blocks:  56%|█████▌    | 5/9 [00:16<00:14,  3.62s/it][A
+target_regen blocks:  67%|██████▋   | 6/9 [00:21<00:11,  3.92s/it][A
+target_regen blocks:  78%|███████▊  | 7/9 [00:26<00:08,  4.23s/it][A
+target_regen blocks:  89%|████████▉ | 8/9 [00:31<00:04,  4.42s/it][A
+target_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.56s/it][Atarget_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  3.99s/it]
+prompts:  88%|████████▊ | 14/16 [15:43<02:14, 67.33s/it]
+target_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_only blocks:  11%|█         | 1/9 [00:01<00:15,  1.97s/it][A
+target_only blocks:  22%|██▏       | 2/9 [00:04<00:14,  2.13s/it][A
+target_only blocks:  33%|███▎      | 3/9 [00:06<00:13,  2.31s/it][A
+target_only blocks:  44%|████▍     | 4/9 [00:09<00:12,  2.52s/it][A
+target_only blocks:  56%|█████▌    | 5/9 [00:12<00:10,  2.74s/it][A
+target_only blocks:  67%|██████▋   | 6/9 [00:16<00:08,  2.98s/it][A
+target_only blocks:  78%|███████▊  | 7/9 [00:19<00:06,  3.22s/it][A
+target_only blocks:  89%|████████▉ | 8/9 [00:23<00:03,  3.39s/it][A
+target_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.50s/it][Atarget_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.04s/it]
+
+target_regen blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_regen blocks:  11%|█         | 1/9 [00:02<00:20,  2.59s/it][A
+target_regen blocks:  22%|██▏       | 2/9 [00:05<00:19,  2.84s/it][A
+target_regen blocks:  33%|███▎      | 3/9 [00:08<00:18,  3.09s/it][A
+target_regen blocks:  44%|████▍     | 4/9 [00:12<00:16,  3.35s/it][A
+target_regen blocks:  56%|█████▌    | 5/9 [00:16<00:14,  3.63s/it][A
+target_regen blocks:  67%|██████▋   | 6/9 [00:21<00:11,  3.91s/it][A
+target_regen blocks:  78%|███████▊  | 7/9 [00:26<00:08,  4.22s/it][A
+target_regen blocks:  89%|████████▉ | 8/9 [00:31<00:04,  4.42s/it][A
+target_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.56s/it][Atarget_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  3.99s/it]
+prompts:  94%|█████████▍| 15/16 [16:50<01:07, 67.32s/it]
+target_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_only blocks:  11%|█         | 1/9 [00:01<00:15,  1.95s/it][A
+target_only blocks:  22%|██▏       | 2/9 [00:04<00:14,  2.13s/it][A
+target_only blocks:  33%|███▎      | 3/9 [00:06<00:13,  2.32s/it][A
+target_only blocks:  44%|████▍     | 4/9 [00:09<00:12,  2.53s/it][A
+target_only blocks:  56%|█████▌    | 5/9 [00:12<00:10,  2.75s/it][A
+target_only blocks:  67%|██████▋   | 6/9 [00:16<00:08,  2.98s/it][A
+target_only blocks:  78%|███████▊  | 7/9 [00:19<00:06,  3.23s/it][A
+target_only blocks:  89%|████████▉ | 8/9 [00:23<00:03,  3.39s/it][A
+target_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.50s/it][Atarget_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.04s/it]
+
+target_regen blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_regen blocks:  11%|█         | 1/9 [00:02<00:20,  2.60s/it][A
+target_regen blocks:  22%|██▏       | 2/9 [00:05<00:19,  2.84s/it][A
+target_regen blocks:  33%|███▎      | 3/9 [00:08<00:18,  3.09s/it][A
+target_regen blocks:  44%|████▍     | 4/9 [00:12<00:16,  3.35s/it][A
+target_regen blocks:  56%|█████▌    | 5/9 [00:16<00:14,  3.63s/it][A
+target_regen blocks:  67%|██████▋   | 6/9 [00:21<00:11,  3.92s/it][A
+target_regen blocks:  78%|███████▊  | 7/9 [00:26<00:08,  4.23s/it][A
+target_regen blocks:  89%|████████▉ | 8/9 [00:31<00:04,  4.43s/it][A
+target_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.56s/it][Atarget_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  3.99s/it]
+prompts: 100%|██████████| 16/16 [17:58<00:00, 67.35s/it]prompts: 100%|██████████| 16/16 [17:58<00:00, 67.38s/it]
+Wrote profile: /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_1p0/profile.json
+target_only: 29.80s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_1p0/prompt_0000_target_only.mp4
+target_regen: 35.90s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_1p0/prompt_0000_target_regen.mp4
+target_only: 29.51s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_1p0/prompt_0001_target_only.mp4
+target_regen: 35.93s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_1p0/prompt_0001_target_regen.mp4
+target_only: 29.54s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_1p0/prompt_0002_target_only.mp4
+target_regen: 35.89s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_1p0/prompt_0002_target_regen.mp4
+target_only: 29.52s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_1p0/prompt_0003_target_only.mp4
+target_regen: 35.91s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_1p0/prompt_0003_target_regen.mp4
+target_only: 29.54s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_1p0/prompt_0004_target_only.mp4
+target_regen: 35.98s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_1p0/prompt_0004_target_regen.mp4
+target_only: 29.57s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_1p0/prompt_0005_target_only.mp4
+target_regen: 35.90s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_1p0/prompt_0005_target_regen.mp4
+target_only: 29.53s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_1p0/prompt_0006_target_only.mp4
+target_regen: 35.97s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_1p0/prompt_0006_target_regen.mp4
+target_only: 29.51s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_1p0/prompt_0007_target_only.mp4
+target_regen: 35.88s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_1p0/prompt_0007_target_regen.mp4
+target_only: 29.48s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_1p0/prompt_0008_target_only.mp4
+target_regen: 35.81s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_1p0/prompt_0008_target_regen.mp4
+target_only: 29.45s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_1p0/prompt_0009_target_only.mp4
+target_regen: 35.93s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_1p0/prompt_0009_target_regen.mp4
+target_only: 29.50s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_1p0/prompt_0010_target_only.mp4
+target_regen: 35.90s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_1p0/prompt_0010_target_regen.mp4
+target_only: 29.49s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_1p0/prompt_0011_target_only.mp4
+target_regen: 35.98s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_1p0/prompt_0011_target_regen.mp4
+target_only: 29.54s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_1p0/prompt_0012_target_only.mp4
+target_regen: 35.89s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_1p0/prompt_0012_target_regen.mp4
+target_only: 29.53s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_1p0/prompt_0013_target_only.mp4
+target_regen: 35.90s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_1p0/prompt_0013_target_regen.mp4
+target_only: 29.50s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_1p0/prompt_0014_target_only.mp4
+target_regen: 35.88s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_1p0/prompt_0014_target_regen.mp4
+target_only: 29.52s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_1p0/prompt_0015_target_only.mp4
+target_regen: 35.93s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_1p0/prompt_0015_target_regen.mp4
+[2026-05-28 03:35:48] Profile JSON: /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_1p0/profile.json
+[2026-05-28 03:35:48] Sweep complete. Outputs saved under: /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007

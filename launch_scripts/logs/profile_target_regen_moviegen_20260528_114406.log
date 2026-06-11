@@ -1,0 +1,25 @@
+[2026-05-28 11:44:06] Dataset:   /root/Self-Forcing/prompts/MovieGenVideoBench.txt
+[2026-05-28 11:44:06] Prompts:   start=0 max=0
+[2026-05-28 11:44:06] Mode:      target_regen
+[2026-05-28 11:44:06] Agreement: rmse tau_delta_sweep=[0.0]
+[2026-05-28 11:44:06] Save pairs: 0 (STORE_CONTEXT=0)
+[2026-05-28 11:44:06] Draft-head dataset: /root/Self-Forcing/outputs/sdvg/draft_head_dataset/moviegen_target_context
+[2026-05-28 11:44:06] Draft-head capture layers: blocks.8 blocks.16 blocks.24
+[2026-05-28 11:44:06] Expected draft-head records per tau: about 8024 (block 0 has no prior target context)
+[2026-05-28 11:44:06] Reuse block decodes for output: 1
+[2026-05-28 11:44:06] Blocks:    9
+[2026-05-28 11:44:06] Output:    /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max0_0p0_20260528_114406
+[2026-05-28 11:44:06] === Running tau_delta=0.0 -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max0_0p0_20260528_114406/tau_delta_0p0 ===
+Loading target: Wan2.1-T2V-14B /mnt/lanxiangh/models/realtime-video/checkpoints/krea-realtime-video-14b.safetensors
+KV inference with 3 frames per block
+prompts:   0%|          | 0/1003 [00:00<?, ?it/s]
+target_regen blocks:   0%|          | 0/9 [00:00<?, ?it/s][Atarget_regen blocks:   0%|          | 0/9 [00:00<?, ?it/s]
+prompts:   0%|          | 0/1003 [00:00<?, ?it/s]
+Traceback (most recent call last):
+  File "/root/Self-Forcing/sdvg_inference.py", line 930, in <module>
+    main()
+  File "/root/Self-Forcing/sdvg_inference.py", line 879, in main
+    summary = run_mode(
+  File "/root/Self-Forcing/sdvg_inference.py", line 473, in run_mode
+    raise ValueError("target_regen mode requires a draft pipeline")
+ValueError: target_regen mode requires a draft pipeline

@@ -1,0 +1,24 @@
+[2026-06-02 21:29:42] Draft-head oracle-context diagnostic
+[2026-06-02 21:29:42] Checkpoint: /root/Self-Forcing/outputs/draft_head/checkpoints/20260602_094953_dh_kv_cache_attention_clean_latent_flow_one_step_h5120_ctx4680_p1x1x1_st1000_750_500_250_0_bs1_g4_lr5e-5_fl0_25_ampbf16_gc0_cfg7ecf3eb4/latest.pt
+[2026-06-02 21:29:42] Output:     /root/Self-Forcing/outputs/draft_head/test_runs/kv_cache_20260602_094953_latest_production_20260602_212942
+[2026-06-02 21:29:42] Blocks:     3
+[2026-06-02 21:29:42] Metric:     rmse
+Traceback (most recent call last):
+  File "/root/Self-Forcing/sdvg_inference.py", line 1254, in <module>
+    main()
+  File "/root/Self-Forcing/sdvg_inference.py", line 1110, in main
+    text_encoder = WanTextEncoder().to(device=device, dtype=dtype).eval().requires_grad_(False)
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1383, in to
+    return self._apply(convert)
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 933, in _apply
+    module._apply(fn)
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 933, in _apply
+    module._apply(fn)
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 933, in _apply
+    module._apply(fn)
+  [Previous line repeated 2 more times]
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 964, in _apply
+    param_applied = fn(param)
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1369, in convert
+    return t.to(
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 32.00 MiB. GPU 0 has a total capacity of 139.81 GiB of which 15.88 MiB is free. Process 1898818 has 134.08 GiB memory in use. Including non-PyTorch memory, this process has 5.70 GiB memory in use. Of the allocated memory 5.19 GiB is allocated by PyTorch, and 1.82 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/docs/stable/notes/cuda.html#optimizing-memory-usage-with-pytorch-cuda-alloc-conf)

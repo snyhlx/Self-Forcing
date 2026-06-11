@@ -1,0 +1,7 @@
+[2026-05-30 10:54:15] Training latent draft head
+[2026-05-30 10:54:15] Manifest: /mnt/lanxiangh/data/ff_exec/draft_head_full_dataset/tau_delta_0p0/manifest.json
+[2026-05-30 10:54:15] Output:   /root/Self-Forcing/outputs/sdvg/draft_head/moviegen_draft_head_attention_draft_latents_h512_l4_heads8_ctx512_pool1x4x4_ffn4_blocks9.pt
+[2026-05-30 10:54:15] Layers:   infer from manifest records
+[2026-05-30 10:54:15] Head:     attention input_source=draft_latents hidden=512 layers=4 heads=8
+[2026-05-30 10:54:15] GPUs:     4 visible=0,1,2,3
+[2026-05-30 10:54:15] Epochs:   3 batch_size=4 lr=1e-4

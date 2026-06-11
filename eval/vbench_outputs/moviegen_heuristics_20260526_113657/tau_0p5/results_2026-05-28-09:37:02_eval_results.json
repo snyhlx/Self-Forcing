@@ -1,0 +1,864 @@
+{
+    "subject_consistency": [
+        0.9531093925918237,
+        [
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0008_sdvg.mp4",
+                "video_results": 0.9761475075322849
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0001_sdvg.mp4",
+                "video_results": 0.9355479968855014
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0002_sdvg.mp4",
+                "video_results": 0.9729979599897678
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0006_sdvg.mp4",
+                "video_results": 0.9704511692890754
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0000_target_only.mp4",
+                "video_results": 0.9643062396118274
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0011_sdvg.mp4",
+                "video_results": 0.9799647351297048
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0010_sdvg.mp4",
+                "video_results": 0.97436621469947
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0011_target_only.mp4",
+                "video_results": 0.979450721007127
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0012_sdvg.mp4",
+                "video_results": 0.9467094560655264
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0003_sdvg.mp4",
+                "video_results": 0.9745488794377217
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0008_target_only.mp4",
+                "video_results": 0.9742378924901669
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0004_target_only.mp4",
+                "video_results": 0.9697586031487355
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0003_target_only.mp4",
+                "video_results": 0.9686752540560869
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0000_sdvg.mp4",
+                "video_results": 0.9412689131612961
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0013_sdvg.mp4",
+                "video_results": 0.9188384926662996
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0015_target_only.mp4",
+                "video_results": 0.9512431211769581
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0007_sdvg.mp4",
+                "video_results": 0.9585388440352219
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0006_target_only.mp4",
+                "video_results": 0.9751354645077999
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0012_target_only.mp4",
+                "video_results": 0.9576536250802187
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0009_sdvg.mp4",
+                "video_results": 0.9148874351611505
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0005_target_only.mp4",
+                "video_results": 0.9732622438325331
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0013_target_only.mp4",
+                "video_results": 0.9154527591398129
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0015_sdvg.mp4",
+                "video_results": 0.8647592457441183
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0002_target_only.mp4",
+                "video_results": 0.9682869724929333
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0001_target_only.mp4",
+                "video_results": 0.9215091607318475
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0004_sdvg.mp4",
+                "video_results": 0.9703353987290309
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0009_target_only.mp4",
+                "video_results": 0.8819087594747543
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0005_sdvg.mp4",
+                "video_results": 0.9456849972215983
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0014_target_only.mp4",
+                "video_results": 0.9707537686022428
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0007_target_only.mp4",
+                "video_results": 0.9719941472777953
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0010_target_only.mp4",
+                "video_results": 0.9770762404570212
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0014_sdvg.mp4",
+                "video_results": 0.9337483441027311
+            }
+        ]
+    ],
+    "background_consistency": [
+        0.9499122546269343,
+        [
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0008_sdvg.mp4",
+                "video_results": 0.9761915940504807,
+                "video_sim": 101.52392578125,
+                "cnt_per_video": 104
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0001_sdvg.mp4",
+                "video_results": 0.9343637319711539,
+                "video_sim": 97.173828125,
+                "cnt_per_video": 104
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0002_sdvg.mp4",
+                "video_results": 0.9571134127103366,
+                "video_sim": 99.539794921875,
+                "cnt_per_video": 104
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0006_sdvg.mp4",
+                "video_results": 0.9796635554387019,
+                "video_sim": 101.885009765625,
+                "cnt_per_video": 104
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0000_target_only.mp4",
+                "video_results": 0.9651277982271634,
+                "video_sim": 100.373291015625,
+                "cnt_per_video": 104
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0011_sdvg.mp4",
+                "video_results": 0.9573199932391827,
+                "video_sim": 99.561279296875,
+                "cnt_per_video": 104
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0010_sdvg.mp4",
+                "video_results": 0.9437208909254807,
+                "video_sim": 98.14697265625,
+                "cnt_per_video": 104
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0011_target_only.mp4",
+                "video_results": 0.9531789926382211,
+                "video_sim": 99.130615234375,
+                "cnt_per_video": 104
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0012_sdvg.mp4",
+                "video_results": 0.9693580040564904,
+                "video_sim": 100.813232421875,
+                "cnt_per_video": 104
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0003_sdvg.mp4",
+                "video_results": 0.9383333646334134,
+                "video_sim": 97.586669921875,
+                "cnt_per_video": 104
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0008_target_only.mp4",
+                "video_results": 0.9617638221153846,
+                "video_sim": 100.0234375,
+                "cnt_per_video": 104
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0004_target_only.mp4",
+                "video_results": 0.9780437762920673,
+                "video_sim": 101.716552734375,
+                "cnt_per_video": 104
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0003_target_only.mp4",
+                "video_results": 0.9359811636117789,
+                "video_sim": 97.342041015625,
+                "cnt_per_video": 104
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0000_sdvg.mp4",
+                "video_results": 0.9573692908653846,
+                "video_sim": 99.56640625,
+                "cnt_per_video": 104
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0013_sdvg.mp4",
+                "video_results": 0.9382817195012019,
+                "video_sim": 97.581298828125,
+                "cnt_per_video": 104
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0015_target_only.mp4",
+                "video_results": 0.9249478853665866,
+                "video_sim": 96.194580078125,
+                "cnt_per_video": 104
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0007_sdvg.mp4",
+                "video_results": 0.9652686485877404,
+                "video_sim": 100.387939453125,
+                "cnt_per_video": 104
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0006_target_only.mp4",
+                "video_results": 0.9764146071213943,
+                "video_sim": 101.547119140625,
+                "cnt_per_video": 104
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0012_target_only.mp4",
+                "video_results": 0.9598106971153846,
+                "video_sim": 99.8203125,
+                "cnt_per_video": 104
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0009_sdvg.mp4",
+                "video_results": 0.9391197791466346,
+                "video_sim": 97.66845703125,
+                "cnt_per_video": 104
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0005_target_only.mp4",
+                "video_results": 0.9744403545673077,
+                "video_sim": 101.341796875,
+                "cnt_per_video": 104
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0013_target_only.mp4",
+                "video_results": 0.9143841083233173,
+                "video_sim": 95.095947265625,
+                "cnt_per_video": 104
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0015_sdvg.mp4",
+                "video_results": 0.8558079646183894,
+                "video_sim": 89.0040283203125,
+                "cnt_per_video": 104
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0002_target_only.mp4",
+                "video_results": 0.9489957369290866,
+                "video_sim": 98.695556640625,
+                "cnt_per_video": 104
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0001_target_only.mp4",
+                "video_results": 0.9544771634615384,
+                "video_sim": 99.265625,
+                "cnt_per_video": 104
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0004_sdvg.mp4",
+                "video_results": 0.9788184532752404,
+                "video_sim": 101.797119140625,
+                "cnt_per_video": 104
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0009_target_only.mp4",
+                "video_results": 0.9061490572415866,
+                "video_sim": 94.239501953125,
+                "cnt_per_video": 104
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0005_sdvg.mp4",
+                "video_results": 0.9656160794771634,
+                "video_sim": 100.424072265625,
+                "cnt_per_video": 104
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0014_target_only.mp4",
+                "video_results": 0.9478853665865384,
+                "video_sim": 98.580078125,
+                "cnt_per_video": 104
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0007_target_only.mp4",
+                "video_results": 0.9657029371995193,
+                "video_sim": 100.43310546875,
+                "cnt_per_video": 104
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0010_target_only.mp4",
+                "video_results": 0.9484675480769231,
+                "video_sim": 98.640625,
+                "cnt_per_video": 104
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0014_sdvg.mp4",
+                "video_results": 0.9250746506911057,
+                "video_sim": 96.207763671875,
+                "cnt_per_video": 104
+            }
+        ]
+    ],
+    "motion_smoothness": [
+        0.9889441473785154,
+        [
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0008_sdvg.mp4",
+                "video_results": 0.994386238884679
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0001_sdvg.mp4",
+                "video_results": 0.9812079021633205
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0002_sdvg.mp4",
+                "video_results": 0.993622078193385
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0006_sdvg.mp4",
+                "video_results": 0.9883298729827956
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0000_target_only.mp4",
+                "video_results": 0.9909761646160252
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0011_sdvg.mp4",
+                "video_results": 0.9943675890726318
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0010_sdvg.mp4",
+                "video_results": 0.9921304943867957
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0011_target_only.mp4",
+                "video_results": 0.9944168352873899
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0012_sdvg.mp4",
+                "video_results": 0.9915979736129844
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0003_sdvg.mp4",
+                "video_results": 0.986978224926096
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0008_target_only.mp4",
+                "video_results": 0.9941513898356021
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0004_target_only.mp4",
+                "video_results": 0.9933779512906925
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0003_target_only.mp4",
+                "video_results": 0.9883795513872976
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0000_sdvg.mp4",
+                "video_results": 0.9909963491234038
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0013_sdvg.mp4",
+                "video_results": 0.9854051080773985
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0015_target_only.mp4",
+                "video_results": 0.9821893477905523
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0007_sdvg.mp4",
+                "video_results": 0.9909863677812101
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0006_target_only.mp4",
+                "video_results": 0.9883290129466069
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0012_target_only.mp4",
+                "video_results": 0.987207296443037
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0009_sdvg.mp4",
+                "video_results": 0.9767405341004128
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0005_target_only.mp4",
+                "video_results": 0.9915743001144718
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0013_target_only.mp4",
+                "video_results": 0.9771128968491366
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0015_sdvg.mp4",
+                "video_results": 0.985093649399119
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0002_target_only.mp4",
+                "video_results": 0.9926388024635293
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0001_target_only.mp4",
+                "video_results": 0.9845324797201919
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0004_sdvg.mp4",
+                "video_results": 0.993453996668677
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0009_target_only.mp4",
+                "video_results": 0.9840938997242245
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0005_sdvg.mp4",
+                "video_results": 0.9875785193589783
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0014_target_only.mp4",
+                "video_results": 0.9912536114847607
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0007_target_only.mp4",
+                "video_results": 0.9924374649262854
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0010_target_only.mp4",
+                "video_results": 0.9915391477167893
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0014_sdvg.mp4",
+                "video_results": 0.9891276647840164
+            }
+        ]
+    ],
+    "dynamic_degree": [
+        0.5,
+        [
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0008_sdvg.mp4",
+                "video_results": false
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0001_sdvg.mp4",
+                "video_results": true
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0002_sdvg.mp4",
+                "video_results": false
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0006_sdvg.mp4",
+                "video_results": false
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0000_target_only.mp4",
+                "video_results": false
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0011_sdvg.mp4",
+                "video_results": true
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0010_sdvg.mp4",
+                "video_results": false
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0011_target_only.mp4",
+                "video_results": true
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0012_sdvg.mp4",
+                "video_results": false
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0003_sdvg.mp4",
+                "video_results": true
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0008_target_only.mp4",
+                "video_results": true
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0004_target_only.mp4",
+                "video_results": false
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0003_target_only.mp4",
+                "video_results": true
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0000_sdvg.mp4",
+                "video_results": false
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0013_sdvg.mp4",
+                "video_results": true
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0015_target_only.mp4",
+                "video_results": true
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0007_sdvg.mp4",
+                "video_results": false
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0006_target_only.mp4",
+                "video_results": false
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0012_target_only.mp4",
+                "video_results": false
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0009_sdvg.mp4",
+                "video_results": true
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0005_target_only.mp4",
+                "video_results": false
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0013_target_only.mp4",
+                "video_results": true
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0015_sdvg.mp4",
+                "video_results": true
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0002_target_only.mp4",
+                "video_results": true
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0001_target_only.mp4",
+                "video_results": true
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0004_sdvg.mp4",
+                "video_results": false
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0009_target_only.mp4",
+                "video_results": true
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0005_sdvg.mp4",
+                "video_results": true
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0014_target_only.mp4",
+                "video_results": false
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0007_target_only.mp4",
+                "video_results": false
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0010_target_only.mp4",
+                "video_results": false
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0014_sdvg.mp4",
+                "video_results": true
+            }
+        ]
+    ],
+    "aesthetic_quality": [
+        0.6481588780879974,
+        [
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0008_sdvg.mp4",
+                "video_results": 0.6865354776382446
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0001_sdvg.mp4",
+                "video_results": 0.6491525173187256
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0002_sdvg.mp4",
+                "video_results": 0.722794771194458
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0006_sdvg.mp4",
+                "video_results": 0.5776371955871582
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0000_target_only.mp4",
+                "video_results": 0.6479008793830872
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0011_sdvg.mp4",
+                "video_results": 0.604189932346344
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0010_sdvg.mp4",
+                "video_results": 0.6377320885658264
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0011_target_only.mp4",
+                "video_results": 0.5804513096809387
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0012_sdvg.mp4",
+                "video_results": 0.8357024192810059
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0003_sdvg.mp4",
+                "video_results": 0.6595999598503113
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0008_target_only.mp4",
+                "video_results": 0.6971928477287292
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0004_target_only.mp4",
+                "video_results": 0.6671954989433289
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0003_target_only.mp4",
+                "video_results": 0.6892805695533752
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0000_sdvg.mp4",
+                "video_results": 0.6501944661140442
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0013_sdvg.mp4",
+                "video_results": 0.6659733653068542
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0015_target_only.mp4",
+                "video_results": 0.5464990139007568
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0007_sdvg.mp4",
+                "video_results": 0.6477984189987183
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0006_target_only.mp4",
+                "video_results": 0.5620090961456299
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0012_target_only.mp4",
+                "video_results": 0.6792498230934143
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0009_sdvg.mp4",
+                "video_results": 0.63996422290802
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0005_target_only.mp4",
+                "video_results": 0.6763828992843628
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0013_target_only.mp4",
+                "video_results": 0.6052879691123962
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0015_sdvg.mp4",
+                "video_results": 0.5302146077156067
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0002_target_only.mp4",
+                "video_results": 0.7382039427757263
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0001_target_only.mp4",
+                "video_results": 0.665740430355072
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0004_sdvg.mp4",
+                "video_results": 0.6598601341247559
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0009_target_only.mp4",
+                "video_results": 0.6975118517875671
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0005_sdvg.mp4",
+                "video_results": 0.6744997501373291
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0014_target_only.mp4",
+                "video_results": 0.5668357610702515
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0007_target_only.mp4",
+                "video_results": 0.652296245098114
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0010_target_only.mp4",
+                "video_results": 0.6596675515174866
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0014_sdvg.mp4",
+                "video_results": 0.5675290822982788
+            }
+        ]
+    ],
+    "imaging_quality": [
+        0.717520476738612,
+        [
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0008_sdvg.mp4",
+                "video_results": 72.47017800467354
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0001_sdvg.mp4",
+                "video_results": 76.00416332426525
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0002_sdvg.mp4",
+                "video_results": 74.64339396158854
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0006_sdvg.mp4",
+                "video_results": 69.2839139665876
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0000_target_only.mp4",
+                "video_results": 56.45803059169224
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0011_sdvg.mp4",
+                "video_results": 76.37325308663505
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0010_sdvg.mp4",
+                "video_results": 75.18637259347098
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0011_target_only.mp4",
+                "video_results": 75.87695683070592
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0012_sdvg.mp4",
+                "video_results": 69.57655109223866
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0003_sdvg.mp4",
+                "video_results": 77.17438594273159
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0008_target_only.mp4",
+                "video_results": 71.8679936000279
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0004_target_only.mp4",
+                "video_results": 70.68711562383743
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0003_target_only.mp4",
+                "video_results": 76.7679209391276
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0000_sdvg.mp4",
+                "video_results": 59.280721028645836
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0013_sdvg.mp4",
+                "video_results": 78.83022184826079
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0015_target_only.mp4",
+                "video_results": 69.5985965183803
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0007_sdvg.mp4",
+                "video_results": 67.62802879696801
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0006_target_only.mp4",
+                "video_results": 72.25241401309059
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0012_target_only.mp4",
+                "video_results": 58.83144331432524
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0009_sdvg.mp4",
+                "video_results": 76.60234393165226
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0005_target_only.mp4",
+                "video_results": 76.67345522925967
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0013_target_only.mp4",
+                "video_results": 79.35399242582776
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0015_sdvg.mp4",
+                "video_results": 63.441443525041855
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0002_target_only.mp4",
+                "video_results": 73.70418475923084
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0001_target_only.mp4",
+                "video_results": 76.2517349969773
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0004_sdvg.mp4",
+                "video_results": 68.51318530128115
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0009_target_only.mp4",
+                "video_results": 80.46084536597843
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0005_sdvg.mp4",
+                "video_results": 76.2667008172898
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0014_target_only.mp4",
+                "video_results": 75.33360610235304
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0007_target_only.mp4",
+                "video_results": 69.28004949660529
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0010_target_only.mp4",
+                "video_results": 61.224234590076264
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_heuristics_20260526_113657/tau_0p5/prompt_0014_sdvg.mp4",
+                "video_results": 70.16809394473121
+            }
+        ]
+    ]
+}

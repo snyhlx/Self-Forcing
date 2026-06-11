@@ -1,0 +1,29 @@
+[2026-05-27 22:35:39] Profiling draft_only MovieGen subset
+[2026-05-27 22:35:39] Dataset: /root/Self-Forcing/prompts/MovieGenVideoBench.txt
+[2026-05-27 22:35:39] Prompts: start=0 max=16
+[2026-05-27 22:35:39] Blocks:  9
+[2026-05-27 22:35:39] Drafter: /mnt/lanxiangh/models/Self-Forcing/checkpoints/self_forcing_dmd.pt
+[2026-05-27 22:35:39] Output:  /root/Self-Forcing/outputs/sdvg/moviegen_draft_only_blocks9_start0_max16_20260527_223539
+Loading drafter: Wan2.1-T2V-1.3B /mnt/lanxiangh/models/Self-Forcing/checkpoints/self_forcing_dmd.pt
+KV inference with 3 frames per block
+Traceback (most recent call last):
+  File "/root/Self-Forcing/sdvg_inference.py", line 689, in <module>
+    main()
+  File "/root/Self-Forcing/sdvg_inference.py", line 624, in main
+    draft_pipeline = build_pipeline(
+  File "/root/Self-Forcing/sdvg_inference.py", line 126, in build_pipeline
+    pipeline.generator.to(device=device)
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1383, in to
+    return self._apply(convert)
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 933, in _apply
+    module._apply(fn)
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 933, in _apply
+    module._apply(fn)
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 933, in _apply
+    module._apply(fn)
+  [Previous line repeated 2 more times]
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 964, in _apply
+    param_applied = fn(param)
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1369, in convert
+    return t.to(
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 20.00 MiB. GPU 0 has a total capacity of 139.81 GiB of which 3.88 MiB is free. Process 534583 has 126.63 GiB memory in use. Including non-PyTorch memory, this process has 13.17 GiB memory in use. Of the allocated memory 12.51 GiB is allocated by PyTorch, and 149.24 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/docs/stable/notes/cuda.html#optimizing-memory-usage-with-pytorch-cuda-alloc-conf)

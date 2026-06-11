@@ -1,0 +1,39 @@
+[2026-06-07 05:13:35] Training bidirectional prompt-anchor draft head
+[2026-06-07 05:13:35] Manifest: /mnt/lanxiangh/data/ff_exec/draft_head_full_dataset_6layer_uniform/tau_delta_0p0/manifest.json
+[2026-06-07 05:13:35] Dataset cache: /mnt/lanxiangh/data/cache/specgen index_workers=8 wait_seconds=3600
+[2026-06-07 05:13:35] Run dir:   /root/Self-Forcing/outputs/draft_head/checkpoints/20260607_051335_bidirectional_prompt_anchor_wan_targetinit_unrolled_h5120_l6_st1000_750_500_250_0_bs1_g4_lr1e-5_fl1_0_dt0_0_td0_0_bd0_0
+[2026-06-07 05:13:35] Output:    /root/Self-Forcing/outputs/draft_head/checkpoints/20260607_051335_bidirectional_prompt_anchor_wan_targetinit_unrolled_h5120_l6_st1000_750_500_250_0_bs1_g4_lr1e-5_fl1_0_dt0_0_td0_0_bd0_0/final.pt
+[2026-06-07 05:13:35] GPUs:      4 visible=0,1,2,3
+[2026-06-07 05:13:35] Anchor:    online_target target=Wan2.1-T2V-14B seed=42
+[2026-06-07 05:13:35] Model:     wan hidden=5120 layers=6 heads=40 ffn_dim=13824 prompt_dim=4096 gradient_checkpointing=1
+[2026-06-07 05:13:35] Parallel:  strategy=fsdp fsdp_min_num_params=100000000 fsdp_mixed_precision=none
+[2026-06-07 05:13:35] Init:      target_blocks=[0 8 16 24 32 39]
+[2026-06-07 05:13:35] Training:  mode=unrolled steps=[1000 750 500 250 0] unroll_noise=fixed weights=auto num_workers=8
+[2026-06-07 05:13:35] Loss:      clean=0.0 flow=1.0 detail=0.0 temporal_delta=0.0 boundary=0.0
+[startup rank0 2026-06-07 05:13:42] building/loading bidirectional dataset index
+Loaded bidirectional dataset index cache: /mnt/lanxiangh/data/cache/specgen/bidirectional_prompt_anchor/c9e59c8913f6f06a4fcb.json examples=1003
+Loaded bidirectional dataset index cache: /mnt/lanxiangh/data/cache/specgen/bidirectional_prompt_anchor/c9e59c8913f6f06a4fcb.json examples=1003
+Loaded bidirectional dataset index cache: /mnt/lanxiangh/data/cache/specgen/bidirectional_prompt_anchor/c9e59c8913f6f06a4fcb.json examples=1003
+Loaded bidirectional dataset index cache: /mnt/lanxiangh/data/cache/specgen/bidirectional_prompt_anchor/c9e59c8913f6f06a4fcb.json examples=1003
+[startup rank0 2026-06-07 05:13:42] dataset index ready in 0.2s examples=1003
+[startup rank0 2026-06-07 05:13:42] loading one sample to infer latent shape
+[startup rank0 2026-06-07 05:14:06] sample shape ready in 23.9s latent_channels=16 frames=27
+[startup rank0 2026-06-07 05:14:10] loading Wan text encoder
+[startup rank0 2026-06-07 05:15:12] Wan text encoder ready in 62.3s
+[startup rank0 2026-06-07 05:15:12] loading online target Wan anchor generator
+KV inference with 3 frames per block
+KV inference with 3 frames per block
+KV inference with 3 frames per block
+KV inference with 3 frames per block
+[startup rank0 2026-06-07 05:16:54] online target Wan anchor generator ready in 102.0s
+[startup rank0 2026-06-07 05:16:54] building bidirectional Wan draft head
+[startup rank0 2026-06-07 05:17:03] bidirectional Wan draft head ready in 8.7s
+[startup rank0 2026-06-07 05:17:03] initializing draft head from target blocks [0, 8, 16, 24, 32, 39]
+[startup rank0 2026-06-07 05:17:03] target block initialization ready in 0.0s report={'patch_embedding': 1, 'time_embedding': 1, 'time_projection': 1, 'head': 1, 'attention': 6, 'norm': 12, 'ffn': 6, 'skipped': 0}
+Initialized bidirectional Wan head from target blocks [0, 8, 16, 24, 32, 39]: {'patch_embedding': 1, 'time_embedding': 1, 'time_projection': 1, 'head': 1, 'attention': 6, 'norm': 12, 'ffn': 6, 'skipped': 0}
+[startup rank0 2026-06-07 05:17:03] wrapping model with fsdp
+[startup rank0 2026-06-07 05:17:03] parallel wrapper ready in 0.0s
+[startup rank0 2026-06-07 05:17:03] creating AdamW optimizer
+[startup rank0 2026-06-07 05:17:03] optimizer ready in 0.0s
+Training bidirectional draft head prompts=1003 train=953 val=50 latent_channels=16 frames=27 hidden=5120 layers=6 heads=40 ffn_dim=13824 world_size=4 parallel=fsdp
+epoch 1:   0%|          | 0/239 [00:00<?, ?it/s]W0607 05:19:25.236000 2937316 sf_venv/lib/python3.10/site-packages/torch/distributed/elastic/rendezvous/dynamic_rendezvous.py:1343] The node 'lanxiang-prl-pod-2-67d469f5c6-f2kks_2937316_0' has failed to send a keep-alive heartbeat to the rendezvous 'e86dcf84-c2d7-47b0-80d1-1dc6bff64717' due to an error of type RendezvousTimeoutError.

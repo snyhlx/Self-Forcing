@@ -1,0 +1,190 @@
+[2026-06-09 12:48:48] Bidirectional prompt-anchor video diagnostic
+[2026-06-09 12:48:48] Checkpoint: /root/Self-Forcing/outputs/draft_head/checkpoints/20260609_121943_bidirectional_prompt_anchor_wan_targetinit_tempmix2_random_timestep_h5120_l6_st1000_750_500_250_0_dense50_bs1_g4_lr1e-5_fl1_0_dt0_0_td0_0_bd0_0/final.pt
+[2026-06-09 12:48:48] Output:     /root/Self-Forcing/outputs/draft_head/test_runs/bidirectional_prompt_anchor_20260609_124848
+[2026-06-09 12:48:48] Blocks:     9
+[2026-06-09 12:48:48] Prompts:    /root/Self-Forcing/prompts/MovieGenVideoBench.txt start=2 max=1
+[2026-06-09 12:48:48] Head steps: 50
+[2026-06-09 12:48:48] Refine:     target_timestep=0 save_raw=0 save_target=1
+video prompts:   0%|          | 0/1 [00:00<?, ?it/s]
+  0%|          | 0/50 [00:00<?, ?it/s][A
+  2%|▏         | 1/50 [00:12<10:09, 12.44s/it][A
+  4%|▍         | 2/50 [00:24<09:53, 12.37s/it][A
+  6%|▌         | 3/50 [00:37<09:40, 12.35s/it][A
+  8%|▊         | 4/50 [00:49<09:27, 12.34s/it][A
+ 10%|█         | 5/50 [01:01<09:15, 12.34s/it][A
+ 12%|█▏        | 6/50 [01:14<09:02, 12.34s/it][A
+ 14%|█▍        | 7/50 [01:26<08:50, 12.34s/it][A
+ 16%|█▌        | 8/50 [01:38<08:38, 12.34s/it][A
+ 18%|█▊        | 9/50 [01:51<08:25, 12.34s/it][A
+ 20%|██        | 10/50 [02:03<08:13, 12.34s/it][A
+ 22%|██▏       | 11/50 [02:15<08:01, 12.35s/it][A
+ 24%|██▍       | 12/50 [02:28<07:49, 12.35s/it][A
+ 26%|██▌       | 13/50 [02:40<07:37, 12.35s/it][A
+ 28%|██▊       | 14/50 [02:52<07:24, 12.35s/it][A
+ 30%|███       | 15/50 [03:05<07:12, 12.35s/it][A
+ 32%|███▏      | 16/50 [03:17<07:00, 12.36s/it][A
+ 34%|███▍      | 17/50 [03:29<06:47, 12.36s/it][A
+ 36%|███▌      | 18/50 [03:42<06:35, 12.36s/it][A
+ 38%|███▊      | 19/50 [03:54<06:23, 12.36s/it][A
+ 40%|████      | 20/50 [04:07<06:10, 12.35s/it][A
+ 42%|████▏     | 21/50 [04:19<05:58, 12.35s/it][A
+ 44%|████▍     | 22/50 [04:31<05:45, 12.35s/it][A
+ 46%|████▌     | 23/50 [04:44<05:33, 12.35s/it][A
+ 48%|████▊     | 24/50 [04:56<05:21, 12.35s/it][A
+ 50%|█████     | 25/50 [05:08<05:08, 12.35s/it][A
+ 52%|█████▏    | 26/50 [05:21<04:56, 12.35s/it][A
+ 54%|█████▍    | 27/50 [05:33<04:44, 12.35s/it][A
+ 56%|█████▌    | 28/50 [05:45<04:31, 12.35s/it][A
+ 58%|█████▊    | 29/50 [05:58<04:19, 12.35s/it][A
+ 60%|██████    | 30/50 [06:10<04:07, 12.35s/it][A
+ 62%|██████▏   | 31/50 [06:22<03:54, 12.35s/it][A
+ 64%|██████▍   | 32/50 [06:35<03:42, 12.35s/it][A
+ 66%|██████▌   | 33/50 [06:47<03:29, 12.35s/it][A
+ 68%|██████▊   | 34/50 [06:59<03:17, 12.35s/it][A
+ 70%|███████   | 35/50 [07:12<03:05, 12.35s/it][A
+ 72%|███████▏  | 36/50 [07:24<02:52, 12.35s/it][A
+ 74%|███████▍  | 37/50 [07:37<02:40, 12.35s/it][A
+ 76%|███████▌  | 38/50 [07:49<02:28, 12.35s/it][A
+ 78%|███████▊  | 39/50 [08:01<02:15, 12.35s/it][A
+ 80%|████████  | 40/50 [08:14<02:03, 12.35s/it][A
+ 82%|████████▏ | 41/50 [08:26<01:51, 12.35s/it][A
+ 84%|████████▍ | 42/50 [08:38<01:38, 12.35s/it][A
+ 86%|████████▌ | 43/50 [08:51<01:26, 12.35s/it][A
+ 88%|████████▊ | 44/50 [09:03<01:14, 12.35s/it][A
+ 90%|█████████ | 45/50 [09:15<01:01, 12.35s/it][A
+ 92%|█████████▏| 46/50 [09:28<00:49, 12.35s/it][A
+ 94%|█████████▍| 47/50 [09:40<00:37, 12.35s/it][A
+ 96%|█████████▌| 48/50 [09:52<00:24, 12.34s/it][A
+ 98%|█████████▊| 49/50 [10:05<00:12, 12.35s/it][A
+100%|██████████| 50/50 [10:17<00:00, 12.34s/it][A100%|██████████| 50/50 [10:17<00:00, 12.35s/it]
+
+draft head denoise:   0%|          | 0/50 [00:00<?, ?it/s][A
+draft head denoise:   2%|▏         | 1/50 [00:00<00:26,  1.84it/s][A
+draft head denoise:   4%|▍         | 2/50 [00:00<00:22,  2.11it/s][A
+draft head denoise:   6%|▌         | 3/50 [00:01<00:21,  2.16it/s][A
+draft head denoise:   8%|▊         | 4/50 [00:01<00:20,  2.23it/s][A
+draft head denoise:  10%|█         | 5/50 [00:02<00:20,  2.24it/s][A
+draft head denoise:  12%|█▏        | 6/50 [00:02<00:19,  2.27it/s][A
+draft head denoise:  14%|█▍        | 7/50 [00:03<00:18,  2.28it/s][A
+draft head denoise:  16%|█▌        | 8/50 [00:03<00:18,  2.29it/s][A
+draft head denoise:  18%|█▊        | 9/50 [00:04<00:17,  2.29it/s][A
+draft head denoise:  20%|██        | 10/50 [00:04<00:17,  2.29it/s][A
+draft head denoise:  22%|██▏       | 11/50 [00:04<00:16,  2.30it/s][A
+draft head denoise:  24%|██▍       | 12/50 [00:05<00:16,  2.30it/s][A
+draft head denoise:  26%|██▌       | 13/50 [00:05<00:16,  2.30it/s][A
+draft head denoise:  28%|██▊       | 14/50 [00:06<00:15,  2.31it/s][A
+draft head denoise:  30%|███       | 15/50 [00:06<00:15,  2.30it/s][A
+draft head denoise:  32%|███▏      | 16/50 [00:07<00:14,  2.30it/s][A
+draft head denoise:  34%|███▍      | 17/50 [00:07<00:14,  2.30it/s][A
+draft head denoise:  36%|███▌      | 18/50 [00:07<00:13,  2.30it/s][A
+draft head denoise:  38%|███▊      | 19/50 [00:08<00:13,  2.30it/s][A
+draft head denoise:  40%|████      | 20/50 [00:08<00:12,  2.31it/s][A
+draft head denoise:  42%|████▏     | 21/50 [00:09<00:12,  2.30it/s][A
+draft head denoise:  44%|████▍     | 22/50 [00:09<00:12,  2.30it/s][A
+draft head denoise:  46%|████▌     | 23/50 [00:10<00:11,  2.30it/s][A
+draft head denoise:  48%|████▊     | 24/50 [00:10<00:11,  2.30it/s][A
+draft head denoise:  50%|█████     | 25/50 [00:10<00:10,  2.30it/s][A
+draft head denoise:  52%|█████▏    | 26/50 [00:11<00:10,  2.30it/s][A
+draft head denoise:  54%|█████▍    | 27/50 [00:11<00:10,  2.29it/s][A
+draft head denoise:  56%|█████▌    | 28/50 [00:12<00:09,  2.29it/s][A
+draft head denoise:  58%|█████▊    | 29/50 [00:12<00:09,  2.30it/s][A
+draft head denoise:  60%|██████    | 30/50 [00:13<00:08,  2.29it/s][A
+draft head denoise:  62%|██████▏   | 31/50 [00:13<00:08,  2.29it/s][A
+draft head denoise:  64%|██████▍   | 32/50 [00:14<00:07,  2.30it/s][A
+draft head denoise:  66%|██████▌   | 33/50 [00:14<00:07,  2.30it/s][A
+draft head denoise:  68%|██████▊   | 34/50 [00:14<00:06,  2.30it/s][A
+draft head denoise:  70%|███████   | 35/50 [00:15<00:06,  2.30it/s][A
+draft head denoise:  72%|███████▏  | 36/50 [00:15<00:06,  2.30it/s][A
+draft head denoise:  74%|███████▍  | 37/50 [00:16<00:05,  2.30it/s][A
+draft head denoise:  76%|███████▌  | 38/50 [00:16<00:05,  2.30it/s][A
+draft head denoise:  78%|███████▊  | 39/50 [00:17<00:04,  2.30it/s][A
+draft head denoise:  80%|████████  | 40/50 [00:17<00:04,  2.30it/s][A
+draft head denoise:  82%|████████▏ | 41/50 [00:17<00:03,  2.30it/s][A
+draft head denoise:  84%|████████▍ | 42/50 [00:18<00:03,  2.31it/s][A
+draft head denoise:  86%|████████▌ | 43/50 [00:18<00:03,  2.29it/s][A
+draft head denoise:  88%|████████▊ | 44/50 [00:19<00:02,  2.30it/s][A
+draft head denoise:  90%|█████████ | 45/50 [00:19<00:02,  2.31it/s][A
+draft head denoise:  92%|█████████▏| 46/50 [00:20<00:01,  2.30it/s][A
+draft head denoise:  94%|█████████▍| 47/50 [00:20<00:01,  2.31it/s][A
+draft head denoise:  96%|█████████▌| 48/50 [00:20<00:00,  2.31it/s][A
+draft head denoise:  98%|█████████▊| 49/50 [00:21<00:00,  2.32it/s][A
+draft head denoise: 100%|██████████| 50/50 [00:21<00:00,  2.33it/s][A
+                                                                   [Avideo prompts: 100%|██████████| 1/1 [10:47<00:00, 647.11s/it]video prompts: 100%|██████████| 1/1 [10:47<00:00, 647.11s/it]
+{
+  "checkpoint_path": "/root/Self-Forcing/outputs/draft_head/checkpoints/20260609_121943_bidirectional_prompt_anchor_wan_targetinit_tempmix2_random_timestep_h5120_l6_st1000_750_500_250_0_dense50_bs1_g4_lr1e-5_fl1_0_dt0_0_td0_0_bd0_0/final.pt",
+  "num_prompts": 2,
+  "training_mode": "unrolled",
+  "denoising_step_list": [
+    1000,
+    980,
+    959,
+    939,
+    918,
+    898,
+    878,
+    857,
+    837,
+    816,
+    796,
+    776,
+    755,
+    735,
+    714,
+    694,
+    673,
+    653,
+    633,
+    612,
+    592,
+    571,
+    551,
+    531,
+    510,
+    490,
+    469,
+    449,
+    429,
+    408,
+    388,
+    367,
+    347,
+    327,
+    306,
+    286,
+    265,
+    245,
+    224,
+    204,
+    184,
+    163,
+    143,
+    122,
+    102,
+    82,
+    61,
+    41,
+    20,
+    0
+  ],
+  "unroll_noise_mode": "fixed",
+  "target_refine_timestep": 0,
+  "runs": [
+    {
+      "mode": "bidirectional_target_teacher",
+      "prompt_index": 2,
+      "prompt": "A movie trailer featuring the adventures of the 30 year old space man wearing a red wool knitted motorcycle helmet, blue sky, salt desert, cinematic style, shot on 35mm film, vivid colors.",
+      "video_path": "/root/Self-Forcing/outputs/draft_head/test_runs/bidirectional_prompt_anchor_20260609_124848/prompt_0002_bidirectional_target_teacher.mp4",
+      "num_blocks": 9,
+      "target_refine_timestep": 0
+    },
+    {
+      "mode": "bidirectional_draft_head",
+      "prompt_index": 2,
+      "prompt": "A movie trailer featuring the adventures of the 30 year old space man wearing a red wool knitted motorcycle helmet, blue sky, salt desert, cinematic style, shot on 35mm film, vivid colors.",
+      "video_path": "/root/Self-Forcing/outputs/draft_head/test_runs/bidirectional_prompt_anchor_20260609_124848/prompt_0002_bidirectional_draft_head.mp4",
+      "num_blocks": 9,
+      "target_refine_timestep": 0
+    }
+  ]
+}
+[2026-06-09 13:01:02] Done. Profile: /root/Self-Forcing/outputs/draft_head/test_runs/bidirectional_prompt_anchor_20260609_124848/profile.json

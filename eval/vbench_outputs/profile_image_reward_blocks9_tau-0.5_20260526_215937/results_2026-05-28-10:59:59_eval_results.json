@@ -1,0 +1,84 @@
+{
+    "subject_consistency": [
+        0.8831468725290436,
+        [
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/profile_image_reward_blocks9_tau-0.5_20260526_215937/prompt_single_sdvg.mp4",
+                "video_results": 0.8326061157366405
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/profile_image_reward_blocks9_tau-0.5_20260526_215937/prompt_single_target_only.mp4",
+                "video_results": 0.9336876293214468
+            }
+        ]
+    ],
+    "background_consistency": [
+        0.9513056828425481,
+        [
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/profile_image_reward_blocks9_tau-0.5_20260526_215937/prompt_single_sdvg.mp4",
+                "video_results": 0.9333214393028846,
+                "video_sim": 97.0654296875,
+                "cnt_per_video": 104
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/profile_image_reward_blocks9_tau-0.5_20260526_215937/prompt_single_target_only.mp4",
+                "video_results": 0.9692899263822116,
+                "video_sim": 100.80615234375,
+                "cnt_per_video": 104
+            }
+        ]
+    ],
+    "motion_smoothness": [
+        0.9653133780073759,
+        [
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/profile_image_reward_blocks9_tau-0.5_20260526_215937/prompt_single_sdvg.mp4",
+                "video_results": 0.9525011376296595
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/profile_image_reward_blocks9_tau-0.5_20260526_215937/prompt_single_target_only.mp4",
+                "video_results": 0.9781256183850924
+            }
+        ]
+    ],
+    "dynamic_degree": [
+        1.0,
+        [
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/profile_image_reward_blocks9_tau-0.5_20260526_215937/prompt_single_sdvg.mp4",
+                "video_results": true
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/profile_image_reward_blocks9_tau-0.5_20260526_215937/prompt_single_target_only.mp4",
+                "video_results": true
+            }
+        ]
+    ],
+    "aesthetic_quality": [
+        0.6287053823471069,
+        [
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/profile_image_reward_blocks9_tau-0.5_20260526_215937/prompt_single_sdvg.mp4",
+                "video_results": 0.6362982988357544
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/profile_image_reward_blocks9_tau-0.5_20260526_215937/prompt_single_target_only.mp4",
+                "video_results": 0.6211124658584595
+            }
+        ]
+    ],
+    "imaging_quality": [
+        0.5693607081458683,
+        [
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/profile_image_reward_blocks9_tau-0.5_20260526_215937/prompt_single_sdvg.mp4",
+                "video_results": 61.8405143011184
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/profile_image_reward_blocks9_tau-0.5_20260526_215937/prompt_single_target_only.mp4",
+                "video_results": 52.031627328055244
+            }
+        ]
+    ]
+}

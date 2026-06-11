@@ -1,0 +1,34 @@
+[2026-05-30 11:50:10] Training latent draft head
+[2026-05-30 11:50:10] Manifest: /mnt/lanxiangh/data/ff_exec/draft_head_full_dataset/tau_delta_0p0/manifest.json
+[2026-05-30 11:50:10] Output:   /root/Self-Forcing/outputs/sdvg/draft_head/moviegen_draft_head_attention_draft_latents_h512_l4_heads8_ctx512_pool1x4x4_ffn4_blocks9.pt
+[2026-05-30 11:50:10] Layers:   infer from manifest records
+[2026-05-30 11:50:10] Head:     attention input_source=draft_latents hidden=512 layers=4 heads=8
+[2026-05-30 11:50:10] GPUs:     4 visible=0,1,2,3
+[2026-05-30 11:50:10] Epochs:   3 batch_size=128 lr=1e-4
+Training draft head records=8024 train=7623 val=401 layers=['blocks.16', 'blocks.24', 'blocks.8'] latent_channels=16 feature_dim=15360 head_type=attention input_source=draft_latents world_size=4
+epoch 1:   0%|          | 0/15 [00:00<?, ?it/s]/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/autograd/graph.py:882: UserWarning: Grad strides do not match bucket view strides. This may indicate grad was not created according to the gradient layout contract, or that the param's strides changed since DDP was constructed.  This is not an error, but may impair performance.
+grad.sizes() = [16, 512, 1, 1, 1], strides() = [512, 1, 512, 512, 512]
+bucket_view.sizes() = [16, 512, 1, 1, 1], strides() = [512, 1, 1, 1, 1] (Triggered internally at /pytorch/torch/csrc/distributed/c10d/reducer.cpp:334.)
+  return Variable._execution_engine.run_backward(  # Calls into the C++ engine to run the backward pass
+/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/autograd/graph.py:882: UserWarning: Grad strides do not match bucket view strides. This may indicate grad was not created according to the gradient layout contract, or that the param's strides changed since DDP was constructed.  This is not an error, but may impair performance.
+grad.sizes() = [16, 512, 1, 1, 1], strides() = [512, 1, 512, 512, 512]
+bucket_view.sizes() = [16, 512, 1, 1, 1], strides() = [512, 1, 1, 1, 1] (Triggered internally at /pytorch/torch/csrc/distributed/c10d/reducer.cpp:334.)
+  return Variable._execution_engine.run_backward(  # Calls into the C++ engine to run the backward pass
+/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/autograd/graph.py:882: UserWarning: Grad strides do not match bucket view strides. This may indicate grad was not created according to the gradient layout contract, or that the param's strides changed since DDP was constructed.  This is not an error, but may impair performance.
+grad.sizes() = [16, 512, 1, 1, 1], strides() = [512, 1, 512, 512, 512]
+bucket_view.sizes() = [16, 512, 1, 1, 1], strides() = [512, 1, 1, 1, 1] (Triggered internally at /pytorch/torch/csrc/distributed/c10d/reducer.cpp:334.)
+  return Variable._execution_engine.run_backward(  # Calls into the C++ engine to run the backward pass
+/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/autograd/graph.py:882: UserWarning: Grad strides do not match bucket view strides. This may indicate grad was not created according to the gradient layout contract, or that the param's strides changed since DDP was constructed.  This is not an error, but may impair performance.
+grad.sizes() = [16, 512, 1, 1, 1], strides() = [512, 1, 512, 512, 512]
+bucket_view.sizes() = [16, 512, 1, 1, 1], strides() = [512, 1, 1, 1, 1] (Triggered internally at /pytorch/torch/csrc/distributed/c10d/reducer.cpp:334.)
+  return Variable._execution_engine.run_backward(  # Calls into the C++ engine to run the backward pass
+epoch 1:   0%|          | 0/15 [01:49<?, ?it/s, avg=0.182, loss=0.182, rmse=0.427, sec=13.6]step=1 epoch=1 batch=1 loss=0.182192 running_mse=0.182192 running_rmse=0.426840 step_seconds=13.631516
+epoch 1:   7%|▋         | 1/15 [01:49<25:32, 109.43s/it, avg=0.182, loss=0.182, rmse=0.427, sec=13.6]epoch 1:   7%|▋         | 1/15 [03:51<25:32, 109.43s/it, avg=0.186, loss=0.19, rmse=0.432, sec=13.2] step=2 epoch=1 batch=2 loss=0.190365 running_mse=0.186279 running_rmse=0.431600 step_seconds=13.244146
+epoch 1:  13%|█▎        | 2/15 [03:51<25:21, 117.08s/it, avg=0.186, loss=0.19, rmse=0.432, sec=13.2]epoch 1:  13%|█▎        | 2/15 [05:51<25:21, 117.08s/it, avg=0.198, loss=0.223, rmse=0.445, sec=13.4]step=3 epoch=1 batch=3 loss=0.222700 running_mse=0.198419 running_rmse=0.445443 step_seconds=13.380428
+epoch 1:  20%|██        | 3/15 [05:51<23:39, 118.29s/it, avg=0.198, loss=0.223, rmse=0.445, sec=13.4]epoch 1:  20%|██        | 3/15 [07:49<23:39, 118.29s/it, avg=0.193, loss=0.176, rmse=0.439, sec=13.3]step=4 epoch=1 batch=4 loss=0.176368 running_mse=0.192906 running_rmse=0.439211 step_seconds=13.254123
+epoch 1:  27%|██▋       | 4/15 [07:49<21:38, 118.04s/it, avg=0.193, loss=0.176, rmse=0.439, sec=13.3]epoch 1:  27%|██▋       | 4/15 [09:57<21:38, 118.04s/it, avg=0.193, loss=0.195, rmse=0.44, sec=13.8] step=5 epoch=1 batch=5 loss=0.195151 running_mse=0.193355 running_rmse=0.439722 step_seconds=13.833609
+epoch 1:  33%|███▎      | 5/15 [09:57<20:15, 121.55s/it, avg=0.193, loss=0.195, rmse=0.44, sec=13.8]epoch 1:  33%|███▎      | 5/15 [11:54<20:15, 121.55s/it, avg=0.196, loss=0.207, rmse=0.442, sec=14.2]step=6 epoch=1 batch=6 loss=0.206734 running_mse=0.195585 running_rmse=0.442250 step_seconds=14.162848
+epoch 1:  40%|████      | 6/15 [11:54<18:00, 120.10s/it, avg=0.196, loss=0.207, rmse=0.442, sec=14.2]epoch 1:  40%|████      | 6/15 [13:51<18:00, 120.10s/it, avg=0.195, loss=0.19, rmse=0.441, sec=12.4] step=7 epoch=1 batch=7 loss=0.190233 running_mse=0.194820 running_rmse=0.441385 step_seconds=12.398288
+epoch 1:  47%|████▋     | 7/15 [13:51<15:53, 119.24s/it, avg=0.195, loss=0.19, rmse=0.441, sec=12.4]epoch 1:  47%|████▋     | 7/15 [15:51<15:53, 119.24s/it, avg=0.189, loss=0.15, rmse=0.435, sec=14.4]step=8 epoch=1 batch=8 loss=0.150415 running_mse=0.189270 running_rmse=0.435051 step_seconds=14.414074
+epoch 1:  53%|█████▎    | 8/15 [15:51<13:54, 119.25s/it, avg=0.189, loss=0.15, rmse=0.435, sec=14.4]epoch 1:  53%|█████▎    | 8/15 [17:52<13:54, 119.25s/it, avg=0.187, loss=0.169, rmse=0.432, sec=13.8]step=9 epoch=1 batch=9 loss=0.168777 running_mse=0.186993 running_rmse=0.432427 step_seconds=13.789612
+epoch 1:  60%|██████    | 9/15 [17:52<12:00, 120.08s/it, avg=0.187, loss=0.169, rmse=0.432, sec=13.8]

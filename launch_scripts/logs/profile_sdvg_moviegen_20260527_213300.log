@@ -1,0 +1,9 @@
+[2026-05-27 21:33:00] Dataset:   /root/Self-Forcing/prompts/MovieGenVideoBench.txt
+[2026-05-27 21:33:00] Prompts:   start=0 max=16 (set MAX_PROMPTS=0 for all)
+[2026-05-27 21:33:00] Mode:      compare
+[2026-05-27 21:33:00] Router:    latent_verifier tau_sweep=[-2 -1 0 1 2]
+[2026-05-27 21:33:00] Verifier:  /root/Self-Forcing/outputs/sdvg/verifier/moviegen_20260527_183818/verifier.pt on cuda:0
+[2026-05-27 21:33:00] Reuse scoring decodes for output: 1
+[2026-05-27 21:33:00] Blocks:    9
+[2026-05-27 21:33:00] Output:    /root/Self-Forcing/outputs/sdvg/moviegen_latent_verifier_blocks9_start0_max16_neg_2_neg_1_0_1_2_20260527_213300
+[2026-05-27 21:33:00] === Running tau=-2 -> /root/Self-Forcing/outputs/sdvg/moviegen_latent_verifier_blocks9_start0_max16_neg_2_neg_1_0_1_2_20260527_213300/tau_neg_2 ===

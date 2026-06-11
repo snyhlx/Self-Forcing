@@ -1,0 +1,46 @@
+[2026-06-02 04:55:02] Draft-head oracle-context diagnostic
+[2026-06-02 04:55:02] Checkpoint: /root/Self-Forcing/outputs/draft_head/checkpoints/20260602_010333_moviegen_draft_head_attention_clean_latent_flow_unrolled_h5120_l3_heads40_ctx4680_pool1x1x1_ffn13824_steps1000_750_500_250_0_blocks9_targetinit8_16_24/latest.pt
+[2026-06-02 04:55:02] Output:     /root/Self-Forcing/outputs/draft_head/test_runs/tmp_unrolled_latest_production_20260602_045501
+[2026-06-02 04:55:02] Blocks:     3
+[2026-06-02 04:55:02] Metric:     rmse
+Loading target: Wan2.1-T2V-14B /mnt/lanxiangh/models/realtime-video/checkpoints/krea-realtime-video-14b.safetensors
+KV inference with 3 frames per block
+Loading draft head: /root/Self-Forcing/outputs/draft_head/checkpoints/20260602_010333_moviegen_draft_head_attention_clean_latent_flow_unrolled_h5120_l3_heads40_ctx4680_pool1x1x1_ffn13824_steps1000_750_500_250_0_blocks9_targetinit8_16_24/latest.pt
+prompts:   0%|          | 0/1 [00:00<?, ?it/s]
+target_only blocks:   0%|          | 0/3 [00:00<?, ?it/s][A
+target_only blocks:  33%|███▎      | 1/3 [00:04<00:08,  4.13s/it][A
+target_only blocks:  67%|██████▋   | 2/3 [00:09<00:04,  4.58s/it][A
+target_only blocks: 100%|██████████| 3/3 [00:14<00:00,  5.03s/it][Atarget_only blocks: 100%|██████████| 3/3 [00:14<00:00,  4.86s/it]
+prompts:   0%|          | 0/1 [00:15<?, ?it/s]
+Traceback (most recent call last):
+  File "/root/Self-Forcing/sdvg_inference.py", line 1123, in <module>
+    main()
+  File "/root/Self-Forcing/sdvg_inference.py", line 1068, in main
+    summary = run_mode(
+  File "/root/Self-Forcing/sdvg_inference.py", line 774, in run_mode
+    video = target_pipeline.vae.decode_to_pixel(output, use_cache=False)
+  File "/root/Self-Forcing/utils/wan_wrapper.py", line 107, in decode_to_pixel
+    output.append(decode_function(u.unsqueeze(0), scale).float().clamp_(-1, 1).squeeze(0))
+  File "/root/Self-Forcing/wan/modules/vae.py", line 563, in decode
+    out_ = self.decoder(
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/root/Self-Forcing/wan/modules/vae.py", line 451, in forward
+    x = layer(x, feat_cache, feat_idx)
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/root/Self-Forcing/wan/modules/vae.py", line 215, in forward
+    x = layer(x, feat_cache[idx])
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/root/Self-Forcing/wan/modules/vae.py", line 34, in forward
+    x = F.pad(x, padding)
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/functional.py", line 5462, in pad
+    return torch._C._nn.pad(input, pad, mode, value)
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 442.00 MiB. GPU 0 has a total capacity of 139.81 GiB of which 157.88 MiB is free. Process 1763029 has 70.02 GiB memory in use. Including non-PyTorch memory, this process has 69.62 GiB memory in use. Of the allocated memory 67.76 GiB is allocated by PyTorch, and 1.19 GiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/docs/stable/notes/cuda.html#optimizing-memory-usage-with-pytorch-cuda-alloc-conf)

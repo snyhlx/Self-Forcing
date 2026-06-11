@@ -1,0 +1,5 @@
+[2026-06-06 07:49:19] Draft-head oracle-context quality diagnostic
+[2026-06-06 07:49:19] Checkpoint: /root/Self-Forcing/outputs/draft_head/checkpoints/20260606_002809_wan_dflash_6layer_uniform_targetinit_unrolled_freeze_copied_wan0_dh_wan_dflash_attention_clean_latent_flow_unrolled_h5120_ctx4680_p1x1x1_st1000_750_500_250_0_bs1_g4_lr5e-5_fl0_25_ampbf16_gc1_fw0_cfg8e6d3222/final.pt
+[2026-06-06 07:49:19] Output:     /root/Self-Forcing/outputs/draft_head/test_runs/wan_dflash_6layer_uniform_20260606_002809_frozenwan_0epoch_unrolled_prompt002_oracle_20260606_074919
+[2026-06-06 07:49:19] Blocks:     9
+[2026-06-06 07:49:19] Metric:     rmse

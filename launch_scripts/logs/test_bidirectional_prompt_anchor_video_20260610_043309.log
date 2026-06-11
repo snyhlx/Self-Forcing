@@ -1,0 +1,35 @@
+[2026-06-10 04:33:09] Bidirectional prompt-anchor video diagnostic
+[2026-06-10 04:33:09] Checkpoint: /root/Self-Forcing/outputs/draft_head/checkpoints/20260610_overfit1_idx0_unrolled5_flow1_clean1_detail0p1/epoch_0045.pt
+[2026-06-10 04:33:09] Output:     /root/Self-Forcing/outputs/draft_head/test_runs/true_overfit1_idx0_head5_20260610_043308
+[2026-06-10 04:33:09] Blocks:     9
+[2026-06-10 04:33:09] Prompts:    single prompt start=0 max=1
+[2026-06-10 04:33:09] Manifest:   /mnt/lanxiangh/data/ff_exec/bidirectional_wan_draft_head_dataset/tau_delta_0p0/manifest.json dataset_index=0 prompt_index=off split=all split_index=0
+[2026-06-10 04:33:09] Head steps: 5
+[2026-06-10 04:33:09] Refine:     target_timestep=0 save_raw=0 save_target=0
+draft head denoise:   0%|          | 0/5 [00:00<?, ?it/s]draft head denoise:  20%|██        | 1/5 [00:00<00:02,  1.42it/s]draft head denoise:  40%|████      | 2/5 [00:01<00:01,  1.86it/s]draft head denoise:  60%|██████    | 3/5 [00:01<00:00,  2.03it/s]draft head denoise:  80%|████████  | 4/5 [00:01<00:00,  2.15it/s]draft head denoise: 100%|██████████| 5/5 [00:02<00:00,  2.22it/s]                                                                 {
+  "checkpoint_path": "/root/Self-Forcing/outputs/draft_head/checkpoints/20260610_overfit1_idx0_unrolled5_flow1_clean1_detail0p1/epoch_0045.pt",
+  "manifest_path": "/mnt/lanxiangh/data/ff_exec/bidirectional_wan_draft_head_dataset/tau_delta_0p0/manifest.json",
+  "dataset_index": 0,
+  "prompt_index": 0,
+  "prompt": "A stylish woman walks down a Tokyo street filled with warm glowing neon and animated city signage. She wears a black leather jacket, a long red dress, and black boots, and carries a black purse. She wears sunglasses and red lipstick. She walks confidently and casually. The street is damp and reflective, creating a mirror effect of the colorful lights. Many pedestrians walk about.",
+  "training_mode": "unrolled",
+  "denoising_step_list": [
+    1000,
+    750,
+    500,
+    250,
+    0
+  ],
+  "unroll_noise_mode": "fixed",
+  "runs": [
+    {
+      "mode": "stored_target_teacher",
+      "video_path": "/root/Self-Forcing/outputs/draft_head/test_runs/true_overfit1_idx0_head5_20260610_043308/train_prompt_0000_idx_00000_stored_target_teacher.mp4"
+    },
+    {
+      "mode": "bidirectional_draft_head",
+      "video_path": "/root/Self-Forcing/outputs/draft_head/test_runs/true_overfit1_idx0_head5_20260610_043308/train_prompt_0000_idx_00000_bidirectional_draft_head.mp4"
+    }
+  ]
+}
+[2026-06-10 04:34:43] Done. Profile: /root/Self-Forcing/outputs/draft_head/test_runs/true_overfit1_idx0_head5_20260610_043308/profile.json

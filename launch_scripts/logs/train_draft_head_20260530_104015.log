@@ -1,0 +1,8 @@
+[2026-05-30 10:40:15] Training latent draft head
+[2026-05-30 10:40:15] Manifest: /mnt/lanxiangh/data/ff_exec/draft_head_full_dataset/tau_delta_0p0/manifest.json
+[2026-05-30 10:40:15] Output:   /root/Self-Forcing/outputs/sdvg/draft_head/moviegen_draft_head_attention_draft_latents_h512_l4_heads8_ctx512_pool1x4x4_ffn4_blocks9.pt
+[2026-05-30 10:40:15] Layers:   infer from manifest records
+[2026-05-30 10:40:15] Head:     attention input_source=draft_latents hidden=512 layers=4 heads=8
+[2026-05-30 10:40:15] Epochs:   20 batch_size=4 lr=1e-4
+Training draft head records=8024 train=7623 val=401 layers=['blocks.16', 'blocks.24', 'blocks.8'] latent_channels=16 feature_dim=15360 head_type=attention input_source=draft_latents
+epoch 1:   0%|          | 0/1906 [00:00<?, ?it/s]epoch 1:   0%|          | 1/1906 [01:04<33:53:14, 64.04s/it]epoch 1:   0%|          | 2/1906 [01:57<30:28:46, 57.63s/it]epoch 1:   0%|          | 3/1906 [02:46<28:25:36, 53.78s/it]epoch 1:   0%|          | 4/1906 [03:37<27:46:13, 52.56s/it]epoch 1:   0%|          | 5/1906 [04:22<26:28:27, 50.14s/it]epoch 1:   0%|          | 6/1906 [05:18<27:22:09, 51.86s/it]epoch 1:   0%|          | 7/1906 [06:08<27:06:23, 51.39s/it]epoch 1:   0%|          | 8/1906 [07:04<27:48:32, 52.75s/it]

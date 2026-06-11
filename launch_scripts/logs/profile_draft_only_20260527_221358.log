@@ -1,0 +1,23 @@
+[2026-05-27 22:13:58] Profiling draft_only
+[2026-05-27 22:13:58] Prompt:  /root/Self-Forcing/prompts/MovieGenVideoBench.txt index=2
+[2026-05-27 22:13:58] Blocks:  9
+[2026-05-27 22:13:58] Drafter: /mnt/lanxiangh/models/Self-Forcing/checkpoints/self_forcing_dmd.pt
+[2026-05-27 22:13:58] Output:  /root/Self-Forcing/outputs/sdvg/profile_draft_only_blocks9_prompt2_20260527_221358
+Loading drafter: Wan2.1-T2V-1.3B /mnt/lanxiangh/models/Self-Forcing/checkpoints/self_forcing_dmd.pt
+KV inference with 3 frames per block
+prompts:   0%|          | 0/1 [00:00<?, ?it/s]
+draft_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+draft_only blocks:  11%|█         | 1/9 [00:00<00:04,  1.97it/s][A
+draft_only blocks:  22%|██▏       | 2/9 [00:00<00:03,  2.05it/s][A
+draft_only blocks:  33%|███▎      | 3/9 [00:01<00:03,  1.95it/s][A
+draft_only blocks:  44%|████▍     | 4/9 [00:02<00:02,  1.80it/s][A
+draft_only blocks:  56%|█████▌    | 5/9 [00:02<00:02,  1.66it/s][A
+draft_only blocks:  67%|██████▋   | 6/9 [00:03<00:01,  1.53it/s][A
+draft_only blocks:  78%|███████▊  | 7/9 [00:04<00:01,  1.41it/s][A
+draft_only blocks:  89%|████████▉ | 8/9 [00:05<00:00,  1.34it/s][A
+draft_only blocks: 100%|██████████| 9/9 [00:06<00:00,  1.29it/s][Adraft_only blocks: 100%|██████████| 9/9 [00:06<00:00,  1.48it/s]
+prompts: 100%|██████████| 1/1 [00:09<00:00,  9.38s/it]prompts: 100%|██████████| 1/1 [00:09<00:00,  9.38s/it]
+Wrote profile: /root/Self-Forcing/outputs/sdvg/profile_draft_only_blocks9_prompt2_20260527_221358/profile.json
+draft_only: 8.28s -> /root/Self-Forcing/outputs/sdvg/profile_draft_only_blocks9_prompt2_20260527_221358/prompt_0002_draft_only.mp4
+[2026-05-27 22:15:10] Profile JSON: /root/Self-Forcing/outputs/sdvg/profile_draft_only_blocks9_prompt2_20260527_221358/profile.json
+[2026-05-27 22:15:10] Videos: /root/Self-Forcing/outputs/sdvg/profile_draft_only_blocks9_prompt2_20260527_221358/prompt_0002_draft_only.mp4

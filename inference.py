@@ -4,11 +4,11 @@ import os
 from omegaconf import OmegaConf
 from tqdm import tqdm
 from torchvision import transforms
-from torchvision.io import write_video
 from einops import rearrange
 import torch.distributed as dist
 from torch.utils.data import DataLoader, SequentialSampler
 from torch.utils.data.distributed import DistributedSampler
+import imageio.v3 as iio
 
 from pipeline import (
     CausalDiffusionInferencePipeline,
@@ -118,6 +118,15 @@ def encode(self, videos: torch.Tensor) -> torch.Tensor:
 
     output = torch.stack(output, dim=0)
     return output
+
+
+def write_video(output_path: str, video: torch.Tensor, fps: int = 16):
+    """Write [T, H, W, C] RGB video tensor using imageio.
+
+    torchvision.io.write_video was removed in newer torchvision versions.
+    """
+    video = video.detach().cpu().clamp(0, 255).to(torch.uint8).numpy()
+    iio.imwrite(output_path, video, fps=fps, codec="libx264", pixelformat="yuv420p")
 
 
 for i, batch_data in tqdm(enumerate(dataloader), disable=(local_rank != 0)):

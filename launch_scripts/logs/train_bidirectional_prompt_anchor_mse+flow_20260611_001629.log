@@ -1,0 +1,64 @@
+[2026-06-11 00:16:29] Training bidirectional prompt-anchor draft head
+[2026-06-11 00:16:29] Teacher setup: bidirectional_wan
+[2026-06-11 00:16:29] Manifest: /mnt/lanxiangh/data/ff_exec/bidirectional_wan_draft_head_dataset/tau_delta_0p0/manifest.json
+[2026-06-11 00:16:29] Dataset cache: /mnt/lanxiangh/data/cache/specgen index_workers=8 wait_seconds=3600
+[2026-06-11 00:16:29] Run dir:   /root/Self-Forcing/outputs/draft_head/checkpoints/corrected_flow_bidirectional_prompt_anchor_wan_targetinit_tempmix2_unrolled_h5120_l6_st1000_750_500_250_0_dense10_overfit0_bs1_g4PARALLEL_STRATEGY=fsdp_lr1e-5_fl1_0_dt0_05_td0_0_bd0^C
+[2026-06-11 00:16:29] Output:    /root/Self-Forcing/outputs/draft_head/checkpoints/corrected_flow_bidirectional_prompt_anchor_wan_targetinit_tempmix2_unrolled_h5120_l6_st1000_750_500_250_0_dense10_overfit0_bs1_g4PARALLEL_STRATEGY=fsdp_lr1e-5_fl1_0_dt0_05_td0_0_bd0^C/final.pt
+[2026-06-11 00:16:29] GPUs:      4PARALLEL_STRATEGY=fsdp visible=0
+[2026-06-11 00:16:29] Anchor:    online_target target=Wan2.1-T2V-14B seed=42
+[2026-06-11 00:16:29] Model:     wan hidden=5120 layers=6 heads=40 ffn_dim=13824 prompt_dim=4096 temporal_mixer_layers=2 temporal_mixer_ffn_dim=2048 gradient_checkpointing=1
+[2026-06-11 00:16:29] Parallel:  strategy=fsdp fsdp_min_num_params=100000000 fsdp_mixed_precision=none
+[2026-06-11 00:16:29] Attention: backend=math
+[2026-06-11 00:16:29] Init:      target_blocks=[0 8 16 24 32 39]
+[2026-06-11 00:16:29] Training:  mode=unrolled prediction_type=flow steps=[1000 750 500 250 0] dense_schedule_steps=10 random_sampling=uniform_schedule logit_mean=0.0 logit_std=1.0 unroll_noise=fixed weights=auto overfit_num=0 overfit_start=0 num_workers=0
+[2026-06-11 00:16:29] Loss:      clean=0.1 flow=1.0 detail=0.05 temporal_delta=0.0 boundary=0^C
+usage: train_bidirectional_draft_head.py [-h] --manifest_path MANIFEST_PATH
+                                         --output_path OUTPUT_PATH
+                                         [--dataset_cache_dir DATASET_CACHE_DIR]
+                                         [--disable_dataset_cache]
+                                         [--dataset_index_workers DATASET_INDEX_WORKERS]
+                                         [--dataset_cache_wait_seconds DATASET_CACHE_WAIT_SECONDS]
+                                         [--model_root MODEL_ROOT]
+                                         [--config_path CONFIG_PATH]
+                                         [--target_model_name TARGET_MODEL_NAME]
+                                         [--target_checkpoint_path TARGET_CHECKPOINT_PATH]
+                                         [--anchor_noise_seed ANCHOR_NOISE_SEED]
+                                         [--num_blocks NUM_BLOCKS]
+                                         [--hidden_channels HIDDEN_CHANNELS]
+                                         [--num_layers NUM_LAYERS]
+                                         [--num_heads NUM_HEADS]
+                                         [--ffn_dim FFN_DIM]
+                                         [--temporal_mixer_layers TEMPORAL_MIXER_LAYERS]
+                                         [--temporal_mixer_ffn_dim TEMPORAL_MIXER_FFN_DIM]
+                                         [--init_target_blocks INIT_TARGET_BLOCKS [INIT_TARGET_BLOCKS ...]]
+                                         [--prompt_dim PROMPT_DIM]
+                                         [--gradient_checkpointing]
+                                         [--denoising_step_list DENOISING_STEP_LIST [DENOISING_STEP_LIST ...]]
+                                         [--dense_schedule_steps DENSE_SCHEDULE_STEPS]
+                                         [--timestep_shift TIMESTEP_SHIFT]
+                                         [--prediction_type {flow,clean_latent}]
+                                         [--training_mode {one_step,unrolled,random_timestep}]
+                                         [--random_timestep_sampling {uniform_schedule,logit_normal}]
+                                         [--logit_normal_mean LOGIT_NORMAL_MEAN]
+                                         [--logit_normal_std LOGIT_NORMAL_STD]
+                                         [--unroll_step_weights UNROLL_STEP_WEIGHTS [UNROLL_STEP_WEIGHTS ...]]
+                                         [--unroll_noise_mode {fixed,fresh}]
+                                         [--epochs EPOCHS]
+                                         [--batch_size BATCH_SIZE] [--lr LR]
+                                         [--weight_decay WEIGHT_DECAY]
+                                         [--val_fraction VAL_FRACTION]
+                                         [--overfit_num_examples OVERFIT_NUM_EXAMPLES]
+                                         [--overfit_start_index OVERFIT_START_INDEX]
+                                         [--clean_latent_loss_weight CLEAN_LATENT_LOSS_WEIGHT]
+                                         [--flow_loss_weight FLOW_LOSS_WEIGHT]
+                                         [--detail_loss_weight DETAIL_LOSS_WEIGHT]
+                                         [--temporal_delta_weight TEMPORAL_DELTA_WEIGHT]
+                                         [--boundary_weight BOUNDARY_WEIGHT]
+                                         [--amp_dtype {none,bf16,fp16}]
+                                         [--log_every LOG_EVERY] [--seed SEED]
+                                         [--num_workers NUM_WORKERS]
+                                         [--parallel_strategy {ddp,fsdp}]
+                                         [--fsdp_min_num_params FSDP_MIN_NUM_PARAMS]
+                                         [--fsdp_mixed_precision {none,bf16,fp16}]
+                                         [--attention_backend {auto,no_cudnn,math}]
+train_bidirectional_draft_head.py: error: argument --boundary_weight: invalid float value: '0^C'

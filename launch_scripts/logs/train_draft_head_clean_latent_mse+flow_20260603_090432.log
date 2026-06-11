@@ -1,0 +1,83 @@
+[2026-06-03 09:04:32] Training latent draft head with clean-latent + flow loss
+[2026-06-03 09:04:32] Manifest: /mnt/lanxiangh/data/ff_exec/draft_head_full_dataset/tau_delta_0p0/manifest.json
+[2026-06-03 09:04:32] Run dir:   /root/Self-Forcing/outputs/draft_head/checkpoints/20260603_090432_dh_wan_dflash_attention_clean_latent_flow_one_step_h5120_ctx4680_p1x1x1_st1000_750_500_250_0_bs1_g4_lr5e-5_fl0_25_ampbf16_gc0_cfg8c1279c4
+[2026-06-03 09:04:32] Output:    /root/Self-Forcing/outputs/draft_head/checkpoints/20260603_090432_dh_wan_dflash_attention_clean_latent_flow_one_step_h5120_ctx4680_p1x1x1_st1000_750_500_250_0_bs1_g4_lr5e-5_fl0_25_ampbf16_gc0_cfg8c1279c4/final.pt
+[2026-06-03 09:04:32] Config:    dh_wan_dflash_attention_clean_latent_flow_one_step_h5120_l3_nh40_ctx4680_pool1x1x1_ffm4_ffn13824_st1000_750_500_250_0_sh5_0_nb9_bs1_gpu4_ep3_lr5e-5_wd0_0_val0_05_cl1_0_fl0_25_dmd0_0_de1_ampbf16_gc0_layersblocks_8_blocks_16_blocks_24_tinit8_16_24
+[2026-06-03 09:04:32] Config hash: 8c1279c4
+[2026-06-03 09:04:32] Layers:   blocks.8 blocks.16 blocks.24
+[2026-06-03 09:04:32] Head:     wan_dflash_attention input_source=scheduled_latents hidden=5120 layers=3 heads=40 ffn_dim=13824
+[2026-06-03 09:04:32] Loss:     type=clean_latent_flow clean_latent=1.0 flow=0.25 dmd=0.0 every=1
+[2026-06-03 09:04:32] Training: mode=one_step unroll_noise=fixed weights=auto
+[2026-06-03 09:04:32] Memory:   amp_dtype=bf16 gradient_checkpointing=0
+[2026-06-03 09:04:32] Schedule: [1000 750 500 250 0] timestep_shift=5.0
+[2026-06-03 09:04:32] Target init: 8 16 24
+[2026-06-03 09:04:32] Draft init: disabled
+[2026-06-03 09:04:32] GPUs:     4 visible=0,1,2,3
+[2026-06-03 09:04:32] Epochs:   3 batch_size=1 lr=5e-5
+KV inference with 3 frames per block
+[rank0]: Traceback (most recent call last):
+[rank0]:   File "/root/Self-Forcing/train_draft_head.py", line 1291, in <module>
+[rank0]:     main()
+[rank0]:   File "/root/Self-Forcing/train_draft_head.py", line 968, in main
+[rank0]:     init_report = initialize_wan_dflash_head_from_target_blocks(
+[rank0]:   File "/root/Self-Forcing/sdvg_draft_head.py", line 1443, in initialize_wan_dflash_head_from_target_blocks
+[rank0]:     if hasattr(source, "norm1") and source.norm1.weight.shape == draft_block.norm1.weight.shape:
+[rank0]: AttributeError: 'NoneType' object has no attribute 'shape'
+[rank0]:[W603 09:06:12.333758339 ProcessGroupNCCL.cpp:1647] Warning: WARNING: destroy_process_group() was not called before program exit, which can leak resources. For more info, please see https://pytorch.org/docs/stable/distributed.html#shutdown (function operator())
+W0603 09:06:14.841000 2161952 sf_venv/lib/python3.10/site-packages/torch/distributed/elastic/multiprocessing/api.py:1014] Sending process 2162058 closing signal SIGTERM
+W0603 09:06:14.842000 2161952 sf_venv/lib/python3.10/site-packages/torch/distributed/elastic/multiprocessing/api.py:1014] Sending process 2162059 closing signal SIGTERM
+W0603 09:06:14.842000 2161952 sf_venv/lib/python3.10/site-packages/torch/distributed/elastic/multiprocessing/api.py:1014] Sending process 2162060 closing signal SIGTERM
+E0603 09:06:16.443000 2161952 sf_venv/lib/python3.10/site-packages/torch/distributed/elastic/multiprocessing/api.py:988] failed (exitcode: 1) local_rank: 0 (pid: 2162057) of binary: /root/Self-Forcing/sf_venv/bin/python
+Traceback (most recent call last):
+  File "/root/.local/share/uv/python/cpython-3.10-linux-x86_64-gnu/lib/python3.10/runpy.py", line 196, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "/root/.local/share/uv/python/cpython-3.10-linux-x86_64-gnu/lib/python3.10/runpy.py", line 86, in _run_code
+    exec(code, run_globals)
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/distributed/run.py", line 1020, in <module>
+    main()
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 367, in wrapper
+    return f(*args, **kwargs)
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/distributed/run.py", line 1016, in main
+    run(args)
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/distributed/run.py", line 1007, in run
+    elastic_launch(
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/distributed/launcher/api.py", line 191, in __call__
+    return launch_agent(self._config, self._entrypoint, list(args))
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/distributed/launcher/api.py", line 371, in launch_agent
+    raise ChildFailedError(
+torch.distributed.elastic.multiprocessing.errors.ChildFailedError: 
+============================================================
+train_draft_head.py FAILED
+------------------------------------------------------------
+Failures:
+[1]:
+  time      : 2026-06-03_09:06:16
+  host      : lanxiang-prl-pod-2-67d469f5c6-f2kks
+  rank      : 1 (local_rank: 1)
+  exitcode  : -15 (pid: 2162058)  (SIGTERM)
+  error_file: <N/A>
+  traceback : Signal 15 (SIGTERM) received by PID 2162058
+[2]:
+  time      : 2026-06-03_09:06:16
+  host      : lanxiang-prl-pod-2-67d469f5c6-f2kks
+  rank      : 2 (local_rank: 2)
+  exitcode  : -15 (pid: 2162059)  (SIGTERM)
+  error_file: <N/A>
+  traceback : Signal 15 (SIGTERM) received by PID 2162059
+[3]:
+  time      : 2026-06-03_09:06:16
+  host      : lanxiang-prl-pod-2-67d469f5c6-f2kks
+  rank      : 3 (local_rank: 3)
+  exitcode  : -15 (pid: 2162060)  (SIGTERM)
+  error_file: <N/A>
+  traceback : Signal 15 (SIGTERM) received by PID 2162060
+------------------------------------------------------------
+Root Cause (first observed failure):
+[0]:
+  time      : 2026-06-03_09:06:14
+  host      : lanxiang-prl-pod-2-67d469f5c6-f2kks
+  rank      : 0 (local_rank: 0)
+  exitcode  : 1 (pid: 2162057) 
+  error_file: <N/A>
+  traceback : To enable traceback see: https://pytorch.org/docs/stable/elastic/errors.html
+============================================================

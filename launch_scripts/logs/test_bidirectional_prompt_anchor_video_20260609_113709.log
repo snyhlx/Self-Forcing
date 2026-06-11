@@ -1,0 +1,21 @@
+[2026-06-09 11:37:09] Bidirectional prompt-anchor video diagnostic
+[2026-06-09 11:37:09] Checkpoint: /root/Self-Forcing/outputs/draft_head/checkpoints/20260609_092217_bidirectional_prompt_anchor_wan_targetinit_tempmix2_unrolled_h5120_l6_st1000_750_500_250_0_bs1_g4_lr1e-5_fl1_0_dt0_0_td0_0_bd0_0/final.pt
+[2026-06-09 11:37:09] Output:     /root/Self-Forcing/outputs/draft_head/test_runs/bidirectional_optionb_with_target_prompt002_20260609_113709
+[2026-06-09 11:37:09] Blocks:     9
+[2026-06-09 11:37:09] Prompts:    /root/Self-Forcing/prompts/MovieGenVideoBench.txt start=2 max=1
+[2026-06-09 11:37:09] Refine:     target_timestep=0 save_raw=0 save_target=1
+video prompts:   0%|          | 0/1 [00:00<?, ?it/s]
+  0%|          | 0/50 [00:00<?, ?it/s][A
+  2%|▏         | 1/50 [00:12<10:07, 12.40s/it][A
+  4%|▍         | 2/50 [00:24<09:52, 12.34s/it][A
+  6%|▌         | 3/50 [00:37<09:39, 12.33s/it][A
+  8%|▊         | 4/50 [00:49<09:26, 12.32s/it][A
+ 10%|█         | 5/50 [01:01<09:14, 12.32s/it][A
+ 12%|█▏        | 6/50 [01:13<09:02, 12.32s/it][A
+ 14%|█▍        | 7/50 [01:26<08:50, 12.33s/it][A
+ 16%|█▌        | 8/50 [01:38<08:38, 12.33s/it][A
+ 18%|█▊        | 9/50 [01:51<08:26, 12.34s/it][A
+ 20%|██        | 10/50 [02:03<08:13, 12.34s/it][A
+ 22%|██▏       | 11/50 [02:15<08:01, 12.35s/it][A
+ 24%|██▍       | 12/50 [02:28<07:49, 12.35s/it][A
+ 26%|██▌       | 13/50 [02:40<07:37, 12.36s/it][A

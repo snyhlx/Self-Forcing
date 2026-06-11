@@ -1,0 +1,114 @@
+[2026-06-04 10:32:00] Training latent draft head with clean-latent + flow loss
+[2026-06-04 10:32:00] Manifest: /mnt/lanxiangh/data/ff_exec/draft_head_full_dataset/tau_delta_0p0/manifest.json
+[2026-06-04 10:32:00] Run dir:   /root/Self-Forcing/outputs/draft_head/checkpoints/20260604_103200_wan_dflash_6layer_targetinit_unrolled_dh_wan_dflash_attention_clean_latent_flow_unrolled_h5120_ctx4680_p1x1x1_st1000_750_500_250_0_bs1_g4_lr3e-5_fl0_25_ampbf16_gc1_fw1_cfg2d764df3
+[2026-06-04 10:32:00] Output:    /root/Self-Forcing/outputs/draft_head/checkpoints/20260604_103200_wan_dflash_6layer_targetinit_unrolled_dh_wan_dflash_attention_clean_latent_flow_unrolled_h5120_ctx4680_p1x1x1_st1000_750_500_250_0_bs1_g4_lr3e-5_fl0_25_ampbf16_gc1_fw1_cfg2d764df3/final.pt
+[2026-06-04 10:32:00] Config:    dh_wan_dflash_attention_clean_latent_flow_unrolled_h5120_l6_nh40_ctx4680_pool1x1x1_ffm4_ffn13824_st1000_750_500_250_0_sh5_0_nb9_bs1_gpu4_ep3_lr3e-5_wd0_0_val0_05_cl1_0_fl0_25_dmd0_0_de1_ampbf16_gc1_fw1_layersblocks_4_blocks_8_blocks_12_blocks_16_blocks_20_blocks_24_unoisefixed_uwauto_tinit4_8_12_16_20_24
+[2026-06-04 10:32:00] Config hash: 2d764df3
+[2026-06-04 10:32:00] Layers:   blocks.4 blocks.8 blocks.12 blocks.16 blocks.20 blocks.24
+[2026-06-04 10:32:00] Head:     wan_dflash_attention input_source=scheduled_latents hidden=5120 layers=6 heads=40 ffn_dim=13824
+[2026-06-04 10:32:00] Loss:     type=clean_latent_flow clean_latent=1.0 flow=0.25 dmd=0.0 every=1
+[2026-06-04 10:32:00] Training: mode=unrolled unroll_noise=fixed weights=auto
+[2026-06-04 10:32:00] Memory:   amp_dtype=bf16 gradient_checkpointing=1 freeze_copied_wan_epochs=1
+[2026-06-04 10:32:00] Schedule: [1000 750 500 250 0] timestep_shift=5.0
+[2026-06-04 10:32:00] Target init: 4 8 12 16 20 24
+[2026-06-04 10:32:00] Draft init: disabled
+[2026-06-04 10:32:00] GPUs:     4 visible=0,1,2,3
+[2026-06-04 10:32:00] Epochs:   3 batch_size=1 lr=3e-5
+[rank2]: Traceback (most recent call last):
+[rank2]:   File "/root/Self-Forcing/train_draft_head.py", line 1353, in <module>
+[rank2]:     main()
+[rank2]:   File "/root/Self-Forcing/train_draft_head.py", line 858, in main
+[rank2]:     latent_channels, feature_dim = infer_model_dims(sample, layer_names)
+[rank2]:   File "/root/Self-Forcing/train_draft_head.py", line 61, in infer_model_dims
+[rank2]:     pool_target_features(sample["target_features"], layer_names=layer_names).shape[-1]
+[rank2]:   File "/root/Self-Forcing/sdvg_draft_head.py", line 349, in pool_target_features
+[rank2]:     raise ValueError(f"Missing target feature layer: {name}")
+[rank2]: ValueError: Missing target feature layer: blocks.4
+[rank1]: Traceback (most recent call last):
+[rank1]:   File "/root/Self-Forcing/train_draft_head.py", line 1353, in <module>
+[rank1]:     main()
+[rank1]:   File "/root/Self-Forcing/train_draft_head.py", line 858, in main
+[rank1]:     latent_channels, feature_dim = infer_model_dims(sample, layer_names)
+[rank1]:   File "/root/Self-Forcing/train_draft_head.py", line 61, in infer_model_dims
+[rank1]:     pool_target_features(sample["target_features"], layer_names=layer_names).shape[-1]
+[rank1]:   File "/root/Self-Forcing/sdvg_draft_head.py", line 349, in pool_target_features
+[rank1]:     raise ValueError(f"Missing target feature layer: {name}")
+[rank1]: ValueError: Missing target feature layer: blocks.4
+[rank3]: Traceback (most recent call last):
+[rank3]:   File "/root/Self-Forcing/train_draft_head.py", line 1353, in <module>
+[rank3]:     main()
+[rank3]:   File "/root/Self-Forcing/train_draft_head.py", line 858, in main
+[rank3]:     latent_channels, feature_dim = infer_model_dims(sample, layer_names)
+[rank3]:   File "/root/Self-Forcing/train_draft_head.py", line 61, in infer_model_dims
+[rank3]:     pool_target_features(sample["target_features"], layer_names=layer_names).shape[-1]
+[rank3]:   File "/root/Self-Forcing/sdvg_draft_head.py", line 349, in pool_target_features
+[rank3]:     raise ValueError(f"Missing target feature layer: {name}")
+[rank3]: ValueError: Missing target feature layer: blocks.4
+[rank0]: Traceback (most recent call last):
+[rank0]:   File "/root/Self-Forcing/train_draft_head.py", line 1353, in <module>
+[rank0]:     main()
+[rank0]:   File "/root/Self-Forcing/train_draft_head.py", line 858, in main
+[rank0]:     latent_channels, feature_dim = infer_model_dims(sample, layer_names)
+[rank0]:   File "/root/Self-Forcing/train_draft_head.py", line 61, in infer_model_dims
+[rank0]:     pool_target_features(sample["target_features"], layer_names=layer_names).shape[-1]
+[rank0]:   File "/root/Self-Forcing/sdvg_draft_head.py", line 349, in pool_target_features
+[rank0]:     raise ValueError(f"Missing target feature layer: {name}")
+[rank0]: ValueError: Missing target feature layer: blocks.4
+[rank0]:[W604 10:32:20.262903071 ProcessGroupNCCL.cpp:1647] Warning: WARNING: destroy_process_group() was not called before program exit, which can leak resources. For more info, please see https://pytorch.org/docs/stable/distributed.html#shutdown (function operator())
+W0604 10:32:21.940000 2463744 sf_venv/lib/python3.10/site-packages/torch/distributed/elastic/multiprocessing/api.py:1014] Sending process 2463852 closing signal SIGTERM
+W0604 10:32:21.941000 2463744 sf_venv/lib/python3.10/site-packages/torch/distributed/elastic/multiprocessing/api.py:1014] Sending process 2463853 closing signal SIGTERM
+W0604 10:32:21.941000 2463744 sf_venv/lib/python3.10/site-packages/torch/distributed/elastic/multiprocessing/api.py:1014] Sending process 2463855 closing signal SIGTERM
+E0604 10:32:22.356000 2463744 sf_venv/lib/python3.10/site-packages/torch/distributed/elastic/multiprocessing/api.py:988] failed (exitcode: 1) local_rank: 2 (pid: 2463854) of binary: /root/Self-Forcing/sf_venv/bin/python
+Traceback (most recent call last):
+  File "/root/.local/share/uv/python/cpython-3.10-linux-x86_64-gnu/lib/python3.10/runpy.py", line 196, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "/root/.local/share/uv/python/cpython-3.10-linux-x86_64-gnu/lib/python3.10/runpy.py", line 86, in _run_code
+    exec(code, run_globals)
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/distributed/run.py", line 1020, in <module>
+    main()
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 367, in wrapper
+    return f(*args, **kwargs)
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/distributed/run.py", line 1016, in main
+    run(args)
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/distributed/run.py", line 1007, in run
+    elastic_launch(
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/distributed/launcher/api.py", line 191, in __call__
+    return launch_agent(self._config, self._entrypoint, list(args))
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/distributed/launcher/api.py", line 371, in launch_agent
+    raise ChildFailedError(
+torch.distributed.elastic.multiprocessing.errors.ChildFailedError: 
+============================================================
+train_draft_head.py FAILED
+------------------------------------------------------------
+Failures:
+[1]:
+  time      : 2026-06-04_10:32:22
+  host      : lanxiang-prl-pod-2-67d469f5c6-f2kks
+  rank      : 0 (local_rank: 0)
+  exitcode  : 1 (pid: 2463852) 
+  error_file: <N/A>
+  traceback : To enable traceback see: https://pytorch.org/docs/stable/elastic/errors.html
+[2]:
+  time      : 2026-06-04_10:32:22
+  host      : lanxiang-prl-pod-2-67d469f5c6-f2kks
+  rank      : 1 (local_rank: 1)
+  exitcode  : 1 (pid: 2463853) 
+  error_file: <N/A>
+  traceback : To enable traceback see: https://pytorch.org/docs/stable/elastic/errors.html
+[3]:
+  time      : 2026-06-04_10:32:22
+  host      : lanxiang-prl-pod-2-67d469f5c6-f2kks
+  rank      : 3 (local_rank: 3)
+  exitcode  : 1 (pid: 2463855) 
+  error_file: <N/A>
+  traceback : To enable traceback see: https://pytorch.org/docs/stable/elastic/errors.html
+------------------------------------------------------------
+Root Cause (first observed failure):
+[0]:
+  time      : 2026-06-04_10:32:21
+  host      : lanxiang-prl-pod-2-67d469f5c6-f2kks
+  rank      : 2 (local_rank: 2)
+  exitcode  : 1 (pid: 2463854) 
+  error_file: <N/A>
+  traceback : To enable traceback see: https://pytorch.org/docs/stable/elastic/errors.html
+============================================================

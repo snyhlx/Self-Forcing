@@ -1,0 +1,25 @@
+collect bidirectional wan:   0%|          | 0/251 [00:00<?, ?it/s]
+  0%|          | 0/50 [00:00<?, ?it/s][A  0%|          | 0/50 [00:00<?, ?it/s]
+collect bidirectional wan:   0%|          | 0/251 [00:00<?, ?it/s]
+Traceback (most recent call last):
+  File "/root/Self-Forcing/collect_bidirectional_wan_dataset.py", line 156, in <module>
+    main()
+  File "/root/Self-Forcing/collect_bidirectional_wan_dataset.py", line 126, in main
+    _video, latents = pipeline.inference(noise=noise, text_prompts=[prompt], return_latents=True)
+  File "/root/Self-Forcing/pipeline/bidirectional_diffusion_inference.py", line 65, in inference
+    flow_pred_cond, _ = self.generator(latent_model_input, conditional_dict, timestep)
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/root/Self-Forcing/utils/wan_wrapper.py", line 274, in forward
+    flow_pred = self.model(
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/root/Self-Forcing/wan/modules/model.py", line 635, in forward
+    return self._forward(*args, **kwargs)
+  File "/root/Self-Forcing/wan/modules/model.py", line 688, in _forward
+    assert seq_lens.max() <= seq_len
+AssertionError

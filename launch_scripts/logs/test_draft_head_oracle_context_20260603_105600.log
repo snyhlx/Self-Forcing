@@ -1,0 +1,5 @@
+[2026-06-03 10:56:00] Draft-head oracle-context quality diagnostic
+[2026-06-03 10:56:00] Checkpoint: /root/Self-Forcing/outputs/draft_head/checkpoints/20260603_090857_dh_wan_dflash_attention_clean_latent_flow_one_step_h5120_ctx4680_p1x1x1_st1000_750_500_250_0_bs1_g4_lr5e-5_fl0_25_ampbf16_gc0_cfg8c1279c4/latest.pt
+[2026-06-03 10:56:00] Output:     /root/Self-Forcing/outputs/draft_head/test_runs/wan_dflash_20260603_090857_moviegen_prompt002_latest_oracle_context_20260603_105600
+[2026-06-03 10:56:00] Blocks:     3
+[2026-06-03 10:56:00] Metric:     rmse

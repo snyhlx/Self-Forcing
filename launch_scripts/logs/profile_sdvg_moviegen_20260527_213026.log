@@ -1,0 +1,27 @@
+[2026-05-27 21:30:26] Dataset:   /root/Self-Forcing/prompts/MovieGenVideoBench.txt
+[2026-05-27 21:30:26] Prompts:   start=0 max=16 (set MAX_PROMPTS=0 for all)
+[2026-05-27 21:30:26] Mode:      compare
+[2026-05-27 21:30:26] Router:    latent_verifier tau_sweep=[-2 -1 0 1 2]
+[2026-05-27 21:30:26] Verifier:  /root/Self-Forcing/outputs/sdvg/verifier/moviegen_20260527_183818/verifier.pt on cuda:0
+[2026-05-27 21:30:26] Reuse scoring decodes for output: 1
+[2026-05-27 21:30:26] Blocks:    9
+[2026-05-27 21:30:26] Output:    /root/Self-Forcing/outputs/sdvg/moviegen_latent_verifier_blocks9_start0_max16_neg_2_neg_1_0_1_2_20260527_213026
+[2026-05-27 21:30:26] === Running tau=-2 -> /root/Self-Forcing/outputs/sdvg/moviegen_latent_verifier_blocks9_start0_max16_neg_2_neg_1_0_1_2_20260527_213026/tau_neg_2 ===
+Loading target: Wan2.1-T2V-14B /mnt/lanxiangh/models/realtime-video/checkpoints/krea-realtime-video-14b.safetensors
+KV inference with 3 frames per block
+Loading drafter: Wan2.1-T2V-1.3B /mnt/lanxiangh/models/Self-Forcing/checkpoints/self_forcing_dmd.pt
+KV inference with 3 frames per block
+Traceback (most recent call last):
+  File "/root/Self-Forcing/sdvg_inference.py", line 677, in <module>
+    main()
+  File "/root/Self-Forcing/sdvg_inference.py", line 624, in main
+    router = Router(
+  File "/root/Self-Forcing/sdvg_inference.py", line 268, in __init__
+    checkpoint = torch.load(verifier_checkpoint_path, map_location="cpu", weights_only=False)
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/serialization.py", line 1579, in load
+    return _load(
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/serialization.py", line 2190, in _load
+    result = unpickler.load()
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/serialization.py", line 2179, in find_class
+    return super().find_class(mod_name, name)
+AttributeError: Can't get attribute 'train_verifier' on <module '__main__' from '/root/Self-Forcing/sdvg_inference.py'>

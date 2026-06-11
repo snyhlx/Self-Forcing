@@ -1,0 +1,33 @@
+[2026-06-07 04:10:55] Bidirectional prompt-anchor video diagnostic
+[2026-06-07 04:10:55] Checkpoint: /root/Self-Forcing/outputs/draft_head/checkpoints/20260606_142446_bidirectional_prompt_anchor_wan_targetinit_unrolled_h5120_l6_st1000_750_500_250_0_bs1_g4_lr5e-4_fl0_25_td0_0_bd0_0/final.pt
+[2026-06-07 04:10:55] Output:     /root/Self-Forcing/outputs/draft_head/test_runs/bidirectional_final_prompt002_20260607_041055
+[2026-06-07 04:10:55] Blocks:     9
+[2026-06-07 04:10:55] Prompts:    /root/Self-Forcing/prompts/MovieGenVideoBench.txt start=2 max=1
+Traceback (most recent call last):
+  File "/root/Self-Forcing/eval_bidirectional_draft_head.py", line 425, in <module>
+    main()
+  File "/root/Self-Forcing/eval_bidirectional_draft_head.py", line 320, in main
+    profile = generate_videos(
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/utils/_contextlib.py", line 124, in decorate_context
+    return func(*args, **kwargs)
+  File "/root/Self-Forcing/eval_bidirectional_draft_head.py", line 96, in generate_videos
+    config.scheduler.shift = float(timestep_shift)
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/omegaconf/dictconfig.py", line 355, in __getattr__
+    self._format_and_raise(
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/omegaconf/base.py", line 231, in _format_and_raise
+    format_and_raise(
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/omegaconf/_utils.py", line 899, in format_and_raise
+    _raise(ex, cause)
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/omegaconf/_utils.py", line 797, in _raise
+    raise ex.with_traceback(sys.exc_info()[2])  # set env var OC_CAUSE=1 for full trace
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/omegaconf/dictconfig.py", line 351, in __getattr__
+    return self._get_impl(
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/omegaconf/dictconfig.py", line 442, in _get_impl
+    node = self._get_child(
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/omegaconf/basecontainer.py", line 73, in _get_child
+    child = self._get_node(
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/omegaconf/dictconfig.py", line 480, in _get_node
+    raise ConfigKeyError(f"Missing key {key!s}")
+omegaconf.errors.ConfigAttributeError: Missing key scheduler
+    full_key: scheduler
+    object_type=dict

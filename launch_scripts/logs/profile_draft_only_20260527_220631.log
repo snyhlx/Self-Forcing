@@ -1,0 +1,20 @@
+[2026-05-27 22:06:31] Profiling draft_only
+[2026-05-27 22:06:31] Prompt:  /root/Self-Forcing/prompts/MovieGenVideoBench.txt index=2
+[2026-05-27 22:06:31] Blocks:  9
+[2026-05-27 22:06:31] Drafter: /mnt/lanxiangh/models/Self-Forcing/checkpoints/self_forcing_dmd.pt
+[2026-05-27 22:06:31] Output:  /root/Self-Forcing/outputs/sdvg/profile_draft_only_blocks9_prompt2_20260527_220631
+Loading target: Wan2.1-T2V-14B /mnt/lanxiangh/models/realtime-video/checkpoints/krea-realtime-video-14b.safetensors
+KV inference with 3 frames per block
+Loading drafter: Wan2.1-T2V-1.3B /mnt/lanxiangh/models/Self-Forcing/checkpoints/self_forcing_dmd.pt
+KV inference with 3 frames per block
+prompts:   0%|          | 0/1 [00:00<?, ?it/s]
+draft_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][Adraft_only blocks:   0%|          | 0/9 [00:00<?, ?it/s]
+prompts:   0%|          | 0/1 [00:00<?, ?it/s]
+Traceback (most recent call last):
+  File "/root/Self-Forcing/sdvg_inference.py", line 683, in <module>
+    main()
+  File "/root/Self-Forcing/sdvg_inference.py", line 654, in main
+    summary = run_mode(
+  File "/root/Self-Forcing/sdvg_inference.py", line 391, in run_mode
+    output[:, start:end] = draft_latents
+TypeError: can't assign a NoneType to a torch.cuda.BFloat16Tensor

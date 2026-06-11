@@ -1,0 +1,179 @@
+collect bidirectional wan:   0%|          | 0/250 [00:00<?, ?it/s]
+  0%|          | 0/50 [00:00<?, ?it/s][A
+  2%|▏         | 1/50 [00:12<10:07, 12.39s/it][A
+  4%|▍         | 2/50 [00:24<09:50, 12.30s/it][A
+  6%|▌         | 3/50 [00:36<09:37, 12.30s/it][A
+  8%|▊         | 4/50 [00:49<09:25, 12.29s/it][A
+ 10%|█         | 5/50 [01:01<09:12, 12.28s/it][A
+ 12%|█▏        | 6/50 [01:13<09:00, 12.29s/it][A
+ 14%|█▍        | 7/50 [01:26<08:48, 12.30s/it][A
+ 16%|█▌        | 8/50 [01:38<08:36, 12.30s/it][A
+ 18%|█▊        | 9/50 [01:50<08:24, 12.30s/it][A
+ 20%|██        | 10/50 [02:02<08:12, 12.30s/it][A
+ 22%|██▏       | 11/50 [02:15<07:59, 12.30s/it][A
+ 24%|██▍       | 12/50 [02:27<07:47, 12.31s/it][A
+ 26%|██▌       | 13/50 [02:39<07:35, 12.31s/it][A
+ 28%|██▊       | 14/50 [02:52<07:23, 12.31s/it][A
+ 30%|███       | 15/50 [03:04<07:10, 12.31s/it][A
+ 32%|███▏      | 16/50 [03:16<06:58, 12.31s/it][A
+ 34%|███▍      | 17/50 [03:29<06:46, 12.31s/it][A
+ 36%|███▌      | 18/50 [03:41<06:34, 12.31s/it][A
+ 38%|███▊      | 19/50 [03:53<06:21, 12.31s/it][A
+ 40%|████      | 20/50 [04:06<06:09, 12.31s/it][A
+ 42%|████▏     | 21/50 [04:18<05:56, 12.31s/it][A
+ 44%|████▍     | 22/50 [04:30<05:44, 12.31s/it][A
+ 46%|████▌     | 23/50 [04:43<05:32, 12.31s/it][A
+ 48%|████▊     | 24/50 [04:55<05:20, 12.31s/it][A
+ 50%|█████     | 25/50 [05:07<05:07, 12.31s/it][A
+ 52%|█████▏    | 26/50 [05:19<04:55, 12.31s/it][A
+ 54%|█████▍    | 27/50 [05:32<04:43, 12.31s/it][A
+ 56%|█████▌    | 28/50 [05:44<04:30, 12.31s/it][A
+ 58%|█████▊    | 29/50 [05:56<04:18, 12.31s/it][A
+ 60%|██████    | 30/50 [06:09<04:06, 12.31s/it][A
+ 62%|██████▏   | 31/50 [06:21<03:53, 12.31s/it][A
+ 64%|██████▍   | 32/50 [06:33<03:41, 12.31s/it][A
+ 66%|██████▌   | 33/50 [06:46<03:29, 12.31s/it][A
+ 68%|██████▊   | 34/50 [06:58<03:17, 12.31s/it][A
+ 70%|███████   | 35/50 [07:10<03:04, 12.31s/it][A
+ 72%|███████▏  | 36/50 [07:23<02:52, 12.31s/it][A
+ 74%|███████▍  | 37/50 [07:35<02:40, 12.31s/it][A
+ 76%|███████▌  | 38/50 [07:47<02:27, 12.31s/it][A
+ 78%|███████▊  | 39/50 [08:00<02:15, 12.31s/it][A
+ 80%|████████  | 40/50 [08:12<02:03, 12.31s/it][A
+ 82%|████████▏ | 41/50 [08:24<01:50, 12.31s/it][A
+ 84%|████████▍ | 42/50 [08:36<01:38, 12.31s/it][A
+ 86%|████████▌ | 43/50 [08:49<01:26, 12.31s/it][A
+ 88%|████████▊ | 44/50 [09:01<01:13, 12.31s/it][A
+ 90%|█████████ | 45/50 [09:13<01:01, 12.31s/it][A
+ 92%|█████████▏| 46/50 [09:26<00:49, 12.31s/it][A
+ 94%|█████████▍| 47/50 [09:38<00:36, 12.31s/it][A
+ 96%|█████████▌| 48/50 [09:50<00:24, 12.30s/it][A
+ 98%|█████████▊| 49/50 [10:03<00:12, 12.30s/it][A
+100%|██████████| 50/50 [10:15<00:00, 12.30s/it][A100%|██████████| 50/50 [10:15<00:00, 12.31s/it]
+collect bidirectional wan:   0%|          | 1/250 [10:18<42:45:21, 618.16s/it]
+  0%|          | 0/50 [00:00<?, ?it/s][A
+  2%|▏         | 1/50 [00:12<10:04, 12.34s/it][A
+  4%|▍         | 2/50 [00:24<09:51, 12.32s/it][A
+  6%|▌         | 3/50 [00:36<09:39, 12.32s/it][A
+  8%|▊         | 4/50 [00:49<09:26, 12.32s/it][A
+ 10%|█         | 5/50 [01:01<09:14, 12.32s/it][A
+ 12%|█▏        | 6/50 [01:13<09:02, 12.32s/it][A
+ 14%|█▍        | 7/50 [01:26<08:49, 12.32s/it][A
+ 16%|█▌        | 8/50 [01:38<08:37, 12.32s/it][A
+ 18%|█▊        | 9/50 [01:50<08:25, 12.32s/it][A
+ 20%|██        | 10/50 [02:03<08:13, 12.33s/it][A
+ 22%|██▏       | 11/50 [02:15<08:00, 12.33s/it][A
+ 24%|██▍       | 12/50 [02:27<07:48, 12.33s/it][A
+ 26%|██▌       | 13/50 [02:40<07:36, 12.33s/it][A
+ 28%|██▊       | 14/50 [02:52<07:23, 12.33s/it][A
+ 30%|███       | 15/50 [03:04<07:11, 12.33s/it][A
+ 32%|███▏      | 16/50 [03:17<06:59, 12.33s/it][A
+ 34%|███▍      | 17/50 [03:29<06:46, 12.32s/it][A
+ 36%|███▌      | 18/50 [03:41<06:34, 12.32s/it][A
+ 38%|███▊      | 19/50 [03:54<06:22, 12.33s/it][A
+ 40%|████      | 20/50 [04:06<06:09, 12.33s/it][A
+ 42%|████▏     | 21/50 [04:18<05:57, 12.33s/it][A
+ 44%|████▍     | 22/50 [04:31<05:45, 12.33s/it][A
+ 46%|████▌     | 23/50 [04:43<05:32, 12.32s/it][A
+ 48%|████▊     | 24/50 [04:55<05:20, 12.33s/it][A
+ 50%|█████     | 25/50 [05:08<05:08, 12.33s/it][A
+ 52%|█████▏    | 26/50 [05:20<04:55, 12.33s/it][A
+ 54%|█████▍    | 27/50 [05:32<04:43, 12.33s/it][A
+ 56%|█████▌    | 28/50 [05:45<04:31, 12.33s/it][A
+ 58%|█████▊    | 29/50 [05:57<04:18, 12.33s/it][A
+ 60%|██████    | 30/50 [06:09<04:06, 12.33s/it][A
+ 62%|██████▏   | 31/50 [06:22<03:54, 12.33s/it][A
+ 64%|██████▍   | 32/50 [06:34<03:41, 12.33s/it][A
+ 66%|██████▌   | 33/50 [06:46<03:29, 12.33s/it][A
+ 68%|██████▊   | 34/50 [06:59<03:17, 12.33s/it][A
+ 70%|███████   | 35/50 [07:11<03:04, 12.33s/it][A
+ 72%|███████▏  | 36/50 [07:23<02:52, 12.33s/it][A
+ 74%|███████▍  | 37/50 [07:36<02:40, 12.33s/it][A
+ 76%|███████▌  | 38/50 [07:48<02:27, 12.33s/it][A
+ 78%|███████▊  | 39/50 [08:00<02:15, 12.33s/it][A
+ 80%|████████  | 40/50 [08:13<02:03, 12.33s/it][A
+ 82%|████████▏ | 41/50 [08:25<01:50, 12.33s/it][A
+ 84%|████████▍ | 42/50 [08:37<01:38, 12.33s/it][A
+ 86%|████████▌ | 43/50 [08:50<01:26, 12.33s/it][A
+ 88%|████████▊ | 44/50 [09:02<01:13, 12.33s/it][A
+ 90%|█████████ | 45/50 [09:14<01:01, 12.33s/it][A
+ 92%|█████████▏| 46/50 [09:27<00:49, 12.33s/it][A
+ 94%|█████████▍| 47/50 [09:39<00:36, 12.33s/it][A
+ 96%|█████████▌| 48/50 [09:51<00:24, 12.32s/it][A
+ 98%|█████████▊| 49/50 [10:03<00:12, 12.32s/it][A
+100%|██████████| 50/50 [10:16<00:00, 12.31s/it][A100%|██████████| 50/50 [10:16<00:00, 12.33s/it]
+collect bidirectional wan:   1%|          | 2/250 [20:36<42:35:53, 618.36s/it]
+  0%|          | 0/50 [00:00<?, ?it/s][A
+  2%|▏         | 1/50 [00:12<10:03, 12.31s/it][A
+  4%|▍         | 2/50 [00:24<09:51, 12.31s/it][A
+  6%|▌         | 3/50 [00:36<09:38, 12.32s/it][A
+  8%|▊         | 4/50 [00:49<09:26, 12.32s/it][A
+ 10%|█         | 5/50 [01:01<09:14, 12.32s/it][A
+ 12%|█▏        | 6/50 [01:13<09:01, 12.32s/it][A
+ 14%|█▍        | 7/50 [01:26<08:49, 12.32s/it][A
+ 16%|█▌        | 8/50 [01:38<08:37, 12.32s/it][A
+ 18%|█▊        | 9/50 [01:50<08:25, 12.33s/it][A
+ 20%|██        | 10/50 [02:03<08:13, 12.33s/it][A
+ 22%|██▏       | 11/50 [02:15<08:00, 12.33s/it][A
+ 24%|██▍       | 12/50 [02:27<07:48, 12.32s/it][A
+ 26%|██▌       | 13/50 [02:40<07:36, 12.33s/it][A
+ 28%|██▊       | 14/50 [02:52<07:23, 12.33s/it][A
+ 30%|███       | 15/50 [03:04<07:11, 12.33s/it][A
+ 32%|███▏      | 16/50 [03:17<06:59, 12.33s/it][A
+ 34%|███▍      | 17/50 [03:29<06:46, 12.32s/it][A
+ 36%|███▌      | 18/50 [03:41<06:34, 12.32s/it][A
+ 38%|███▊      | 19/50 [03:54<06:22, 12.32s/it][A
+ 40%|████      | 20/50 [04:06<06:09, 12.32s/it][A
+ 42%|████▏     | 21/50 [04:18<05:57, 12.32s/it][A
+ 44%|████▍     | 22/50 [04:31<05:44, 12.32s/it][A
+ 46%|████▌     | 23/50 [04:43<05:32, 12.32s/it][A
+ 48%|████▊     | 24/50 [04:55<05:20, 12.31s/it][A
+ 50%|█████     | 25/50 [05:08<05:07, 12.31s/it][A
+ 52%|█████▏    | 26/50 [05:20<04:55, 12.32s/it][A
+ 54%|█████▍    | 27/50 [05:32<04:43, 12.32s/it][A
+ 56%|█████▌    | 28/50 [05:44<04:31, 12.32s/it][A
+ 58%|█████▊    | 29/50 [05:57<04:18, 12.32s/it][A
+ 60%|██████    | 30/50 [06:09<04:06, 12.32s/it][A 60%|██████    | 30/50 [06:10<04:07, 12.35s/it]
+collect bidirectional wan:   1%|          | 2/250 [26:47<55:21:42, 803.64s/it]
+Traceback (most recent call last):
+  File "/root/Self-Forcing/collect_bidirectional_wan_dataset.py", line 156, in <module>
+    main()
+  File "/root/Self-Forcing/collect_bidirectional_wan_dataset.py", line 126, in main
+    _video, latents = pipeline.inference(noise=noise, text_prompts=[prompt], return_latents=True)
+  File "/root/Self-Forcing/pipeline/bidirectional_diffusion_inference.py", line 74, in inference
+    flow_pred_cond, _ = self.generator(latent_model_input, conditional_dict, timestep)
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/root/Self-Forcing/utils/wan_wrapper.py", line 274, in forward
+    flow_pred = self.model(
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/root/Self-Forcing/wan/modules/model.py", line 635, in forward
+    return self._forward(*args, **kwargs)
+  File "/root/Self-Forcing/wan/modules/model.py", line 748, in _forward
+    x = block(x, **kwargs)
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/root/Self-Forcing/wan/modules/model.py", line 339, in forward
+    y = self.self_attn(
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/root/Self-Forcing/wan/modules/model.py", line 144, in forward
+    q, k, v = qkv_fn(x)
+  File "/root/Self-Forcing/wan/modules/model.py", line 141, in qkv_fn
+    v = self.v(x).view(b, s, n, d)
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/modules/linear.py", line 134, in forward
+    return F.linear(input, self.weight, self.bias)
+KeyboardInterrupt

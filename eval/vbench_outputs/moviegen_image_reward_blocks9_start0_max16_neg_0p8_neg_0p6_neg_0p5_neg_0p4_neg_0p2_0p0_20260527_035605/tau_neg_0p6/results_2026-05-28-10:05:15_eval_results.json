@@ -1,0 +1,864 @@
+{
+    "subject_consistency": [
+        0.9058512367370825,
+        [
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0008_sdvg.mp4",
+                "video_results": 0.7437731663768108
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0001_sdvg.mp4",
+                "video_results": 0.9414681328030733
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0002_sdvg.mp4",
+                "video_results": 0.7904374536413413
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0006_sdvg.mp4",
+                "video_results": 0.7513903108640358
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0000_target_only.mp4",
+                "video_results": 0.9643062396118274
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0011_sdvg.mp4",
+                "video_results": 0.978174592439945
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0010_sdvg.mp4",
+                "video_results": 0.7360401809788667
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0011_target_only.mp4",
+                "video_results": 0.9725344920387635
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0012_sdvg.mp4",
+                "video_results": 0.9537827146167939
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0003_sdvg.mp4",
+                "video_results": 0.9704271990519303
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0008_target_only.mp4",
+                "video_results": 0.9722705085117084
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0004_target_only.mp4",
+                "video_results": 0.9689246989213504
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0003_target_only.mp4",
+                "video_results": 0.9693456487013743
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0000_sdvg.mp4",
+                "video_results": 0.7351102263021928
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0013_sdvg.mp4",
+                "video_results": 0.9015392202597398
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0015_target_only.mp4",
+                "video_results": 0.8929067019086617
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0007_sdvg.mp4",
+                "video_results": 0.8077803533524275
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0006_target_only.mp4",
+                "video_results": 0.9687117097469476
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0012_target_only.mp4",
+                "video_results": 0.9295036208171111
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0009_sdvg.mp4",
+                "video_results": 0.8941636334818143
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0005_target_only.mp4",
+                "video_results": 0.9719140429336292
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0013_target_only.mp4",
+                "video_results": 0.8863620288096942
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0015_sdvg.mp4",
+                "video_results": 0.8588582430607997
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0002_target_only.mp4",
+                "video_results": 0.9735479970964102
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0001_target_only.mp4",
+                "video_results": 0.9213627694317927
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0004_sdvg.mp4",
+                "video_results": 0.8314468703017786
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0009_target_only.mp4",
+                "video_results": 0.8944314221063485
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0005_sdvg.mp4",
+                "video_results": 0.9794002653887639
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0014_target_only.mp4",
+                "video_results": 0.9693638014678772
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0007_target_only.mp4",
+                "video_results": 0.958057810480778
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0010_target_only.mp4",
+                "video_results": 0.9666805596878896
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0014_sdvg.mp4",
+                "video_results": 0.9332229603941624
+            }
+        ]
+    ],
+    "background_consistency": [
+        0.931628153874324,
+        [
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0008_sdvg.mp4",
+                "video_results": 0.8962308443509616,
+                "video_sim": 93.2080078125,
+                "cnt_per_video": 104
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0001_sdvg.mp4",
+                "video_results": 0.9469956618088943,
+                "video_sim": 98.487548828125,
+                "cnt_per_video": 104
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0002_sdvg.mp4",
+                "video_results": 0.8524122971754807,
+                "video_sim": 88.65087890625,
+                "cnt_per_video": 104
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0006_sdvg.mp4",
+                "video_results": 0.9156869741586539,
+                "video_sim": 95.2314453125,
+                "cnt_per_video": 104
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0000_target_only.mp4",
+                "video_results": 0.9651277982271634,
+                "video_sim": 100.373291015625,
+                "cnt_per_video": 104
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0011_sdvg.mp4",
+                "video_results": 0.9623483511117789,
+                "video_sim": 100.084228515625,
+                "cnt_per_video": 104
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0010_sdvg.mp4",
+                "video_results": 0.83221435546875,
+                "video_sim": 86.55029296875,
+                "cnt_per_video": 104
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0011_target_only.mp4",
+                "video_results": 0.9387465256911057,
+                "video_sim": 97.629638671875,
+                "cnt_per_video": 104
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0012_sdvg.mp4",
+                "video_results": 0.9734520545372596,
+                "video_sim": 101.239013671875,
+                "cnt_per_video": 104
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0003_sdvg.mp4",
+                "video_results": 0.9395845853365384,
+                "video_sim": 97.716796875,
+                "cnt_per_video": 104
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0008_target_only.mp4",
+                "video_results": 0.9683908315805289,
+                "video_sim": 100.712646484375,
+                "cnt_per_video": 104
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0004_target_only.mp4",
+                "video_results": 0.9772526667668269,
+                "video_sim": 101.63427734375,
+                "cnt_per_video": 104
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0003_target_only.mp4",
+                "video_results": 0.9560617300180289,
+                "video_sim": 99.430419921875,
+                "cnt_per_video": 104
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0000_sdvg.mp4",
+                "video_results": 0.8723027155949519,
+                "video_sim": 90.719482421875,
+                "cnt_per_video": 104
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0013_sdvg.mp4",
+                "video_results": 0.8780095027043269,
+                "video_sim": 91.31298828125,
+                "cnt_per_video": 104
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0015_target_only.mp4",
+                "video_results": 0.9000314565805289,
+                "video_sim": 93.603271484375,
+                "cnt_per_video": 104
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0007_sdvg.mp4",
+                "video_results": 0.9051771897536057,
+                "video_sim": 94.138427734375,
+                "cnt_per_video": 104
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0006_target_only.mp4",
+                "video_results": 0.9724543644831731,
+                "video_sim": 101.13525390625,
+                "cnt_per_video": 104
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0012_target_only.mp4",
+                "video_results": 0.9597543569711539,
+                "video_sim": 99.814453125,
+                "cnt_per_video": 104
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0009_sdvg.mp4",
+                "video_results": 0.9121469350961539,
+                "video_sim": 94.86328125,
+                "cnt_per_video": 104
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0005_target_only.mp4",
+                "video_results": 0.9747643103966346,
+                "video_sim": 101.37548828125,
+                "cnt_per_video": 104
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0013_target_only.mp4",
+                "video_results": 0.9193678635817307,
+                "video_sim": 95.6142578125,
+                "cnt_per_video": 104
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0015_sdvg.mp4",
+                "video_results": 0.8894113393930289,
+                "video_sim": 92.498779296875,
+                "cnt_per_video": 104
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0002_target_only.mp4",
+                "video_results": 0.9460003192608173,
+                "video_sim": 98.384033203125,
+                "cnt_per_video": 104
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0001_target_only.mp4",
+                "video_results": 0.9440237192007211,
+                "video_sim": 98.178466796875,
+                "cnt_per_video": 104
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0004_sdvg.mp4",
+                "video_results": 0.9285912146935096,
+                "video_sim": 96.573486328125,
+                "cnt_per_video": 104
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0009_target_only.mp4",
+                "video_results": 0.9258023775540866,
+                "video_sim": 96.283447265625,
+                "cnt_per_video": 104
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0005_sdvg.mp4",
+                "video_results": 0.9884314903846154,
+                "video_sim": 102.796875,
+                "cnt_per_video": 104
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0014_target_only.mp4",
+                "video_results": 0.9401339017427884,
+                "video_sim": 97.77392578125,
+                "cnt_per_video": 104
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0007_target_only.mp4",
+                "video_results": 0.9544795109675481,
+                "video_sim": 99.265869140625,
+                "cnt_per_video": 104
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0010_target_only.mp4",
+                "video_results": 0.9432373046875,
+                "video_sim": 98.0966796875,
+                "cnt_per_video": 104
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0014_sdvg.mp4",
+                "video_results": 0.9334763746995193,
+                "video_sim": 97.08154296875,
+                "cnt_per_video": 104
+            }
+        ]
+    ],
+    "motion_smoothness": [
+        0.986397474212495,
+        [
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0008_sdvg.mp4",
+                "video_results": 0.9923054097465951
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0001_sdvg.mp4",
+                "video_results": 0.9821523487982985
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0002_sdvg.mp4",
+                "video_results": 0.9846991939868999
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0006_sdvg.mp4",
+                "video_results": 0.9883065081732582
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0000_target_only.mp4",
+                "video_results": 0.9909761671338798
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0011_sdvg.mp4",
+                "video_results": 0.9928371552729718
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0010_sdvg.mp4",
+                "video_results": 0.986178050479057
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0011_target_only.mp4",
+                "video_results": 0.9937994963006672
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0012_sdvg.mp4",
+                "video_results": 0.9907016101957199
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0003_sdvg.mp4",
+                "video_results": 0.9840086707233333
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0008_target_only.mp4",
+                "video_results": 0.994916460038928
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0004_target_only.mp4",
+                "video_results": 0.9940471575788229
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0003_target_only.mp4",
+                "video_results": 0.9870572829800682
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0000_sdvg.mp4",
+                "video_results": 0.9798965953620312
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0013_sdvg.mp4",
+                "video_results": 0.9760215091632787
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0015_target_only.mp4",
+                "video_results": 0.9704393405768988
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0007_sdvg.mp4",
+                "video_results": 0.9762455019156845
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0006_target_only.mp4",
+                "video_results": 0.9857293675285181
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0012_target_only.mp4",
+                "video_results": 0.9919607005321133
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0009_sdvg.mp4",
+                "video_results": 0.9801283293843303
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0005_target_only.mp4",
+                "video_results": 0.9906039253680701
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0013_target_only.mp4",
+                "video_results": 0.9767044562652684
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0015_sdvg.mp4",
+                "video_results": 0.9807799833302917
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0002_target_only.mp4",
+                "video_results": 0.9923847480377855
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0001_target_only.mp4",
+                "video_results": 0.9863842612609537
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0004_sdvg.mp4",
+                "video_results": 0.9867553006252942
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0009_target_only.mp4",
+                "video_results": 0.9750991597868808
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0005_sdvg.mp4",
+                "video_results": 0.9924844103255002
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0014_target_only.mp4",
+                "video_results": 0.9906954432144222
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0007_target_only.mp4",
+                "video_results": 0.9925415459229489
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0010_target_only.mp4",
+                "video_results": 0.9912482150299201
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0014_sdvg.mp4",
+                "video_results": 0.9866308697611502
+            }
+        ]
+    ],
+    "dynamic_degree": [
+        0.40625,
+        [
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0008_sdvg.mp4",
+                "video_results": false
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0001_sdvg.mp4",
+                "video_results": true
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0002_sdvg.mp4",
+                "video_results": false
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0006_sdvg.mp4",
+                "video_results": false
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0000_target_only.mp4",
+                "video_results": false
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0011_sdvg.mp4",
+                "video_results": true
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0010_sdvg.mp4",
+                "video_results": false
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0011_target_only.mp4",
+                "video_results": true
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0012_sdvg.mp4",
+                "video_results": false
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0003_sdvg.mp4",
+                "video_results": true
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0008_target_only.mp4",
+                "video_results": false
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0004_target_only.mp4",
+                "video_results": false
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0003_target_only.mp4",
+                "video_results": true
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0000_sdvg.mp4",
+                "video_results": false
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0013_sdvg.mp4",
+                "video_results": true
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0015_target_only.mp4",
+                "video_results": true
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0007_sdvg.mp4",
+                "video_results": true
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0006_target_only.mp4",
+                "video_results": false
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0012_target_only.mp4",
+                "video_results": false
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0009_sdvg.mp4",
+                "video_results": true
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0005_target_only.mp4",
+                "video_results": false
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0013_target_only.mp4",
+                "video_results": true
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0015_sdvg.mp4",
+                "video_results": false
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0002_target_only.mp4",
+                "video_results": true
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0001_target_only.mp4",
+                "video_results": true
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0004_sdvg.mp4",
+                "video_results": false
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0009_target_only.mp4",
+                "video_results": true
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0005_sdvg.mp4",
+                "video_results": false
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0014_target_only.mp4",
+                "video_results": false
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0007_target_only.mp4",
+                "video_results": false
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0010_target_only.mp4",
+                "video_results": false
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0014_sdvg.mp4",
+                "video_results": false
+            }
+        ]
+    ],
+    "aesthetic_quality": [
+        0.6395769771188498,
+        [
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0008_sdvg.mp4",
+                "video_results": 0.6809900999069214
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0001_sdvg.mp4",
+                "video_results": 0.6207353472709656
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0002_sdvg.mp4",
+                "video_results": 0.6880735158920288
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0006_sdvg.mp4",
+                "video_results": 0.5925928354263306
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0000_target_only.mp4",
+                "video_results": 0.6479008793830872
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0011_sdvg.mp4",
+                "video_results": 0.5804929137229919
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0010_sdvg.mp4",
+                "video_results": 0.6312503218650818
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0011_target_only.mp4",
+                "video_results": 0.5869148969650269
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0012_sdvg.mp4",
+                "video_results": 0.7520783543586731
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0003_sdvg.mp4",
+                "video_results": 0.6803029775619507
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0008_target_only.mp4",
+                "video_results": 0.7128502726554871
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0004_target_only.mp4",
+                "video_results": 0.7127803564071655
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0003_target_only.mp4",
+                "video_results": 0.6848411560058594
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0000_sdvg.mp4",
+                "video_results": 0.6262749433517456
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0013_sdvg.mp4",
+                "video_results": 0.58516925573349
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0015_target_only.mp4",
+                "video_results": 0.5477275252342224
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0007_sdvg.mp4",
+                "video_results": 0.6044241189956665
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0006_target_only.mp4",
+                "video_results": 0.5607343912124634
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0012_target_only.mp4",
+                "video_results": 0.6591395139694214
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0009_sdvg.mp4",
+                "video_results": 0.6772343516349792
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0005_target_only.mp4",
+                "video_results": 0.6573617458343506
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0013_target_only.mp4",
+                "video_results": 0.53263920545578
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0015_sdvg.mp4",
+                "video_results": 0.5506049394607544
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0002_target_only.mp4",
+                "video_results": 0.7033182978630066
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0001_target_only.mp4",
+                "video_results": 0.6515381932258606
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0004_sdvg.mp4",
+                "video_results": 0.6401885747909546
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0009_target_only.mp4",
+                "video_results": 0.7165864109992981
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0005_sdvg.mp4",
+                "video_results": 0.6736268997192383
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0014_target_only.mp4",
+                "video_results": 0.5931572318077087
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0007_target_only.mp4",
+                "video_results": 0.6703546047210693
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0010_target_only.mp4",
+                "video_results": 0.6638827919960022
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0014_sdvg.mp4",
+                "video_results": 0.5806963443756104
+            }
+        ]
+    ],
+    "imaging_quality": [
+        0.7113193836495988,
+        [
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0008_sdvg.mp4",
+                "video_results": 73.07106105259487
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0001_sdvg.mp4",
+                "video_results": 77.74999280657087
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0002_sdvg.mp4",
+                "video_results": 70.55277005150205
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0006_sdvg.mp4",
+                "video_results": 68.98093861171178
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0000_target_only.mp4",
+                "video_results": 56.45803059169224
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0011_sdvg.mp4",
+                "video_results": 75.90208863757906
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0010_sdvg.mp4",
+                "video_results": 65.58289377121699
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0011_target_only.mp4",
+                "video_results": 76.42797059558687
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0012_sdvg.mp4",
+                "video_results": 61.688031332833425
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0003_sdvg.mp4",
+                "video_results": 74.74348936535063
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0008_target_only.mp4",
+                "video_results": 69.65991348993211
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0004_target_only.mp4",
+                "video_results": 68.5015648251488
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0003_target_only.mp4",
+                "video_results": 75.36331053234282
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0000_sdvg.mp4",
+                "video_results": 56.28757912772043
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0013_sdvg.mp4",
+                "video_results": 77.8768332345145
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0015_target_only.mp4",
+                "video_results": 66.08936969212124
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0007_sdvg.mp4",
+                "video_results": 70.24393728347052
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0006_target_only.mp4",
+                "video_results": 69.67399673461914
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0012_target_only.mp4",
+                "video_results": 65.4801631745838
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0009_sdvg.mp4",
+                "video_results": 79.01353105817522
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0005_target_only.mp4",
+                "video_results": 74.4315926688058
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0013_target_only.mp4",
+                "video_results": 77.08152538481212
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0015_sdvg.mp4",
+                "video_results": 69.20321117582775
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0002_target_only.mp4",
+                "video_results": 74.25052134195964
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0001_target_only.mp4",
+                "video_results": 78.83812008812313
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0004_sdvg.mp4",
+                "video_results": 69.64002736409505
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0009_target_only.mp4",
+                "video_results": 76.5525244939895
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0005_sdvg.mp4",
+                "video_results": 75.13020898728143
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0014_target_only.mp4",
+                "video_results": 73.91306588309152
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0007_target_only.mp4",
+                "video_results": 70.74735608782088
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0010_target_only.mp4",
+                "video_results": 66.00920384724935
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_image_reward_blocks9_start0_max16_neg_0p8_neg_0p6_neg_0p5_neg_0p4_neg_0p2_0p0_20260527_035605/tau_neg_0p6/prompt_0014_sdvg.mp4",
+                "video_results": 71.07720438639323
+            }
+        ]
+    ]
+}

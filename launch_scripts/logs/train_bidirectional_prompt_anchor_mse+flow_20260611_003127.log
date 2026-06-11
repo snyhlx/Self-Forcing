@@ -1,0 +1,32 @@
+[2026-06-11 00:31:27] Training bidirectional prompt-anchor draft head
+[2026-06-11 00:31:27] Teacher setup: bidirectional_wan
+[2026-06-11 00:31:27] Manifest: /mnt/lanxiangh/data/ff_exec/bidirectional_wan_draft_head_dataset/tau_delta_0p0/manifest.json
+[2026-06-11 00:31:27] Dataset cache: /mnt/lanxiangh/data/cache/specgen index_workers=8 wait_seconds=3600
+[2026-06-11 00:31:27] Run dir:   /root/Self-Forcing/outputs/draft_head/checkpoints/corrected_flow_bidirectional_prompt_anchor_wan_targetinit_tempmix2_unrolled_h5120_l6_st1000_750_500_250_0_dense5_overfit0_bs1_g4PARALLEL_STRATEGY=fsdp_lr1e-5_fl1_0_dt0_05_td0_0_bd0
+[2026-06-11 00:31:27] Output:    /root/Self-Forcing/outputs/draft_head/checkpoints/corrected_flow_bidirectional_prompt_anchor_wan_targetinit_tempmix2_unrolled_h5120_l6_st1000_750_500_250_0_dense5_overfit0_bs1_g4PARALLEL_STRATEGY=fsdp_lr1e-5_fl1_0_dt0_05_td0_0_bd0/final.pt
+[2026-06-11 00:31:27] GPUs:      4PARALLEL_STRATEGY=fsdp visible=0
+[2026-06-11 00:31:27] Anchor:    online_target target=Wan2.1-T2V-14B seed=42
+[2026-06-11 00:31:27] Model:     wan hidden=5120 layers=6 heads=40 ffn_dim=13824 prompt_dim=4096 temporal_mixer_layers=2 temporal_mixer_ffn_dim=2048 gradient_checkpointing=1
+[2026-06-11 00:31:27] Parallel:  strategy=fsdp fsdp_min_num_params=100000000 fsdp_mixed_precision=none
+[2026-06-11 00:31:27] Attention: backend=math
+[2026-06-11 00:31:27] Init:      target_blocks=[0 8 16 24 32 39]
+[2026-06-11 00:31:27] Training:  mode=unrolled prediction_type=flow steps=[1000 750 500 250 0] dense_schedule_steps=5 random_sampling=uniform_schedule logit_mean=0.0 logit_std=1.0 unroll_noise=fixed weights=auto overfit_num=0 overfit_start=0 num_workers=0
+[2026-06-11 00:31:27] Loss:      clean=0.1 flow=1.0 detail=0.05 temporal_delta=0.0 boundary=0
+[startup rank0 2026-06-11 00:31:29] building/loading bidirectional dataset index
+[startup rank0 2026-06-11 00:31:29] dataset index ready in 0.0s examples=1003
+[startup rank0 2026-06-11 00:31:29] loading one sample to infer latent shape
+[startup rank0 2026-06-11 00:31:29] sample shape ready in 0.1s latent_channels=16 frames=27
+[startup rank0 2026-06-11 00:31:31] loading Wan text encoder
+[startup rank0 2026-06-11 00:32:25] Wan text encoder ready in 53.1s
+[startup rank0 2026-06-11 00:32:25] using stored full-video Wan chunk-0 anchors from dataset
+[startup rank0 2026-06-11 00:32:25] building bidirectional Wan draft head
+[startup rank0 2026-06-11 00:32:34] bidirectional Wan draft head ready in 9.8s
+[startup rank0 2026-06-11 00:32:34] initializing draft head from target blocks [0, 8, 16, 24, 32, 39]
+[startup rank0 2026-06-11 00:32:45] target block initialization ready in 10.9s report={'patch_embedding': 1, 'time_embedding': 1, 'time_projection': 1, 'head': 1, 'attention': 6, 'norm': 12, 'ffn': 6, 'skipped': 0}
+Initialized bidirectional Wan head from target blocks [0, 8, 16, 24, 32, 39]: {'patch_embedding': 1, 'time_embedding': 1, 'time_projection': 1, 'head': 1, 'attention': 6, 'norm': 12, 'ffn': 6, 'skipped': 0}
+[startup rank0 2026-06-11 00:32:45] wrapping model with none
+[startup rank0 2026-06-11 00:32:45] parallel wrapper ready in 0.0s
+[startup rank0 2026-06-11 00:32:45] creating AdamW optimizer
+[startup rank0 2026-06-11 00:32:45] optimizer ready in 0.0s
+Training bidirectional draft head prompts=1003 train=953 val=50 latent_channels=16 frames=27 hidden=5120 layers=6 heads=40 ffn_dim=13824 temporal_mixer_layers=2 temporal_mixer_ffn_dim=2048 world_size=1 parallel=none
+epoch 1:   0%|          | 0/953 [00:00<?, ?it/s]epoch 1:   0%|          | 0/953 [00:28<?, ?it/s, loss=12.7, rmse=1.25, sec=28.4]epoch 1:   0%|          | 1/953 [00:28<7:32:36, 28.53s/it, loss=12.7, rmse=1.25, sec=28.4]epoch 1:   0%|          | 1/953 [00:56<7:32:36, 28.53s/it, loss=13.5, rmse=1.27, sec=27.7]epoch 1:   0%|          | 2/953 [00:56<7:25:36, 28.11s/it, loss=13.5, rmse=1.27, sec=27.7]epoch 1:   0%|          | 2/953 [01:23<7:25:36, 28.11s/it, loss=8.61, rmse=1.19, sec=27.5]epoch 1:   0%|          | 3/953 [01:23<7:21:46, 27.90s/it, loss=8.61, rmse=1.19, sec=27.5]

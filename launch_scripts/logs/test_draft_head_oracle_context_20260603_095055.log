@@ -1,0 +1,26 @@
+[2026-06-03 09:50:55] Draft-head oracle-context quality diagnostic
+[2026-06-03 09:50:55] Checkpoint: /root/Self-Forcing/outputs/draft_head/checkpoints/20260603_090857_dh_wan_dflash_attention_clean_latent_flow_one_step_h5120_ctx4680_p1x1x1_st1000_750_500_250_0_bs1_g4_lr5e-5_fl0_25_ampbf16_gc0_cfg8c1279c4/latest.pt
+[2026-06-03 09:50:55] Output:     /root/Self-Forcing/outputs/draft_head/test_runs/wan_dflash_20260603_090857_latest_oracle_context_20260603_095055
+[2026-06-03 09:50:55] Blocks:     3
+[2026-06-03 09:50:55] Metric:     rmse
+Loading target: Wan2.1-T2V-14B /mnt/lanxiangh/models/realtime-video/checkpoints/krea-realtime-video-14b.safetensors
+KV inference with 3 frames per block
+Loading draft head: /root/Self-Forcing/outputs/draft_head/checkpoints/20260603_090857_dh_wan_dflash_attention_clean_latent_flow_one_step_h5120_ctx4680_p1x1x1_st1000_750_500_250_0_bs1_g4_lr5e-5_fl0_25_ampbf16_gc0_cfg8c1279c4/latest.pt
+prompts:   0%|          | 0/1 [00:00<?, ?it/s]
+target_only blocks:   0%|          | 0/3 [00:00<?, ?it/s][A
+target_only blocks:  33%|███▎      | 1/3 [00:03<00:07,  3.81s/it][A
+target_only blocks:  67%|██████▋   | 2/3 [00:06<00:03,  3.37s/it][A
+target_only blocks: 100%|██████████| 3/3 [00:09<00:00,  3.00s/it][Atarget_only blocks: 100%|██████████| 3/3 [00:09<00:00,  3.14s/it]
+prompts:   0%|          | 0/1 [00:11<?, ?it/s]
+Traceback (most recent call last):
+  File "/root/Self-Forcing/sdvg_inference.py", line 1255, in <module>
+    main()
+  File "/root/Self-Forcing/sdvg_inference.py", line 1199, in main
+    summary = run_mode(
+  File "/root/Self-Forcing/sdvg_inference.py", line 594, in run_mode
+    reset_pipeline_cache(target_pipeline, batch_size, dtype, device, total_frames=num_frames)
+  File "/root/Self-Forcing/sdvg_inference.py", line 210, in reset_pipeline_cache
+    pipeline.kv_cache1 = [
+  File "/root/Self-Forcing/sdvg_inference.py", line 213, in <listcomp>
+    "v": torch.zeros([batch_size, kv_cache_size, num_heads, head_dim], dtype=dtype, device=device),
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 320.00 MiB. GPU 0 has a total capacity of 139.81 GiB of which 287.88 MiB is free. Process 2164673 has 54.69 GiB memory in use. Including non-PyTorch memory, this process has 84.82 GiB memory in use. Of the allocated memory 83.25 GiB is allocated by PyTorch, and 921.85 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/docs/stable/notes/cuda.html#optimizing-memory-usage-with-pytorch-cuda-alloc-conf)

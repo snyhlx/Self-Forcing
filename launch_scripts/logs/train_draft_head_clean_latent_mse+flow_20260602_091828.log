@@ -1,0 +1,98 @@
+[2026-06-02 09:18:28] Training latent draft head with clean-latent + flow loss
+[2026-06-02 09:18:28] Manifest: /mnt/lanxiangh/data/ff_exec/draft_head_full_dataset/tau_delta_0p0/manifest.json
+[2026-06-02 09:18:28] Run dir:   /root/Self-Forcing/outputs/draft_head/checkpoints/20260602_091828_dh_kv_cache_attention_clean_latent_flow_one_step_h5120_ctx4680_p1x1x1_st1000_750_500_250_0_bs1_g4_lr5e-5_fl0_25_ampbf16_gc0_cfg7ecf3eb4
+[2026-06-02 09:18:28] Output:    /root/Self-Forcing/outputs/draft_head/checkpoints/20260602_091828_dh_kv_cache_attention_clean_latent_flow_one_step_h5120_ctx4680_p1x1x1_st1000_750_500_250_0_bs1_g4_lr5e-5_fl0_25_ampbf16_gc0_cfg7ecf3eb4/final.pt
+[2026-06-02 09:18:28] Config:    dh_kv_cache_attention_clean_latent_flow_one_step_h5120_l3_nh40_ctx4680_pool1x1x1_ffm4_ffn13824_st1000_750_500_250_0_sh5_0_nb9_bs1_gpu4_ep3_lr5e-5_wd0_0_val0_05_cl1_0_fl0_25_dmd0_0_de1_ampbf16_gc0_layersblocks_8_blocks_16_blocks_24_onlinekv_ks42_ktmWan2_1-T2V-14B
+[2026-06-02 09:18:28] Config hash: 7ecf3eb4
+[2026-06-02 09:18:28] Layers:   blocks.8 blocks.16 blocks.24
+[2026-06-02 09:18:28] Head:     kv_cache_attention input_source=scheduled_latents hidden=5120 layers=3 heads=40 ffn_dim=13824
+[2026-06-02 09:18:28] Loss:     type=clean_latent_flow clean_latent=1.0 flow=0.25 dmd=0.0 every=1
+[2026-06-02 09:18:28] Training: mode=one_step unroll_noise=fixed weights=auto
+[2026-06-02 09:18:28] Memory:   amp_dtype=bf16 gradient_checkpointing=0
+[2026-06-02 09:18:28] Schedule: [1000 750 500 250 0] timestep_shift=5.0
+[2026-06-02 09:18:28] Target init: disabled
+[2026-06-02 09:18:28] Draft init: disabled
+[2026-06-02 09:18:28] Online KV: target_model=Wan2.1-T2V-14B checkpoint=/mnt/lanxiangh/models/realtime-video/checkpoints/krea-realtime-video-14b.safetensors noise_seed=42
+[2026-06-02 09:18:28] GPUs:     4 visible=0,1,2,3
+[2026-06-02 09:18:28] Epochs:   3 batch_size=1 lr=5e-5
+[rank1]: Traceback (most recent call last):
+[rank1]:   File "/root/Self-Forcing/train_draft_head.py", line 1259, in <module>
+[rank1]:     main()
+[rank1]:   File "/root/Self-Forcing/train_draft_head.py", line 952, in main
+[rank1]:     online_kv_replay = OnlineTargetKVCacheReplay(
+[rank1]:   File "/root/Self-Forcing/train_draft_head.py", line 179, in __init__
+[rank1]:     ensure_wan_symlinks(model_root)
+[rank1]:   File "/root/Self-Forcing/sdvg_inference.py", line 135, in ensure_wan_symlinks
+[rank1]:     target.unlink()
+[rank1]:   File "/root/.local/share/uv/python/cpython-3.10-linux-x86_64-gnu/lib/python3.10/pathlib.py", line 1206, in unlink
+[rank1]:     self._accessor.unlink(self)
+[rank1]: FileNotFoundError: [Errno 2] No such file or directory: 'wan_models/Wan2.1-T2V-1.3B'
+[rank3]: Traceback (most recent call last):
+[rank3]:   File "/root/Self-Forcing/train_draft_head.py", line 1259, in <module>
+[rank3]:     main()
+[rank3]:   File "/root/Self-Forcing/train_draft_head.py", line 952, in main
+[rank3]:     online_kv_replay = OnlineTargetKVCacheReplay(
+[rank3]:   File "/root/Self-Forcing/train_draft_head.py", line 179, in __init__
+[rank3]:     ensure_wan_symlinks(model_root)
+[rank3]:   File "/root/Self-Forcing/sdvg_inference.py", line 135, in ensure_wan_symlinks
+[rank3]:     target.unlink()
+[rank3]:   File "/root/.local/share/uv/python/cpython-3.10-linux-x86_64-gnu/lib/python3.10/pathlib.py", line 1206, in unlink
+[rank3]:     self._accessor.unlink(self)
+[rank3]: FileNotFoundError: [Errno 2] No such file or directory: 'wan_models/Wan2.1-T2V-1.3B'
+W0602 09:18:57.724000 1890141 sf_venv/lib/python3.10/site-packages/torch/distributed/elastic/multiprocessing/api.py:1014] Sending process 1890239 closing signal SIGTERM
+W0602 09:18:57.728000 1890141 sf_venv/lib/python3.10/site-packages/torch/distributed/elastic/multiprocessing/api.py:1014] Sending process 1890241 closing signal SIGTERM
+W0602 09:18:57.729000 1890141 sf_venv/lib/python3.10/site-packages/torch/distributed/elastic/multiprocessing/api.py:1014] Sending process 1890242 closing signal SIGTERM
+E0602 09:19:01.164000 1890141 sf_venv/lib/python3.10/site-packages/torch/distributed/elastic/multiprocessing/api.py:988] failed (exitcode: 1) local_rank: 1 (pid: 1890240) of binary: /root/Self-Forcing/sf_venv/bin/python
+Traceback (most recent call last):
+  File "/root/.local/share/uv/python/cpython-3.10-linux-x86_64-gnu/lib/python3.10/runpy.py", line 196, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "/root/.local/share/uv/python/cpython-3.10-linux-x86_64-gnu/lib/python3.10/runpy.py", line 86, in _run_code
+    exec(code, run_globals)
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/distributed/run.py", line 1020, in <module>
+    main()
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 367, in wrapper
+    return f(*args, **kwargs)
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/distributed/run.py", line 1016, in main
+    run(args)
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/distributed/run.py", line 1007, in run
+    elastic_launch(
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/distributed/launcher/api.py", line 191, in __call__
+    return launch_agent(self._config, self._entrypoint, list(args))
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/distributed/launcher/api.py", line 371, in launch_agent
+    raise ChildFailedError(
+torch.distributed.elastic.multiprocessing.errors.ChildFailedError: 
+============================================================
+train_draft_head.py FAILED
+------------------------------------------------------------
+Failures:
+[1]:
+  time      : 2026-06-02_09:19:01
+  host      : lanxiang-prl-pod-2-67d469f5c6-f2kks
+  rank      : 0 (local_rank: 0)
+  exitcode  : -15 (pid: 1890239)  (SIGTERM)
+  error_file: <N/A>
+  traceback : Signal 15 (SIGTERM) received by PID 1890239
+[2]:
+  time      : 2026-06-02_09:19:01
+  host      : lanxiang-prl-pod-2-67d469f5c6-f2kks
+  rank      : 2 (local_rank: 2)
+  exitcode  : -15 (pid: 1890241)  (SIGTERM)
+  error_file: <N/A>
+  traceback : Signal 15 (SIGTERM) received by PID 1890241
+[3]:
+  time      : 2026-06-02_09:19:01
+  host      : lanxiang-prl-pod-2-67d469f5c6-f2kks
+  rank      : 3 (local_rank: 3)
+  exitcode  : 1 (pid: 1890242) 
+  error_file: <N/A>
+  traceback : To enable traceback see: https://pytorch.org/docs/stable/elastic/errors.html
+------------------------------------------------------------
+Root Cause (first observed failure):
+[0]:
+  time      : 2026-06-02_09:18:57
+  host      : lanxiang-prl-pod-2-67d469f5c6-f2kks
+  rank      : 1 (local_rank: 1)
+  exitcode  : 1 (pid: 1890240) 
+  error_file: <N/A>
+  traceback : To enable traceback see: https://pytorch.org/docs/stable/elastic/errors.html
+============================================================

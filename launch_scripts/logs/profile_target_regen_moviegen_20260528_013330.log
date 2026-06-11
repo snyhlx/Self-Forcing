@@ -1,0 +1,47 @@
+[2026-05-28 01:33:30] Dataset:   /root/Self-Forcing/prompts/MovieGenVideoBench.txt
+[2026-05-28 01:33:30] Prompts:   start=0 max=16
+[2026-05-28 01:33:30] Mode:      target_only vs target_regen
+[2026-05-28 01:33:30] Agreement: rmse tau_delta_sweep=[0.2 0.3 0.4 0.5 0.7 1.0]
+[2026-05-28 01:33:30] Save pairs: 0 (STORE_CONTEXT=0)
+[2026-05-28 01:33:30] Reuse block decodes for output: 1
+[2026-05-28 01:33:30] Blocks:    9
+[2026-05-28 01:33:30] Output:    /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_013330
+[2026-05-28 01:33:30] === Running tau_delta=0.2 -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_013330/tau_delta_0p2 ===
+Loading target: Wan2.1-T2V-14B /mnt/lanxiangh/models/realtime-video/checkpoints/krea-realtime-video-14b.safetensors
+KV inference with 3 frames per block
+Loading drafter: Wan2.1-T2V-1.3B /mnt/lanxiangh/models/Self-Forcing/checkpoints/self_forcing_dmd.pt
+KV inference with 3 frames per block
+prompts:   0%|          | 0/16 [00:00<?, ?it/s]
+target_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_only blocks:  11%|█         | 1/9 [00:02<00:17,  2.15s/it][A
+target_only blocks:  22%|██▏       | 2/9 [00:04<00:15,  2.20s/it][A
+target_only blocks:  33%|███▎      | 3/9 [00:06<00:14,  2.36s/it][A
+target_only blocks:  44%|████▍     | 4/9 [00:09<00:12,  2.55s/it][A
+target_only blocks:  56%|█████▌    | 5/9 [00:12<00:11,  2.76s/it][A
+target_only blocks:  67%|██████▋   | 6/9 [00:16<00:08,  2.99s/it][A
+target_only blocks:  78%|███████▊  | 7/9 [00:20<00:06,  3.23s/it][A
+target_only blocks:  89%|████████▉ | 8/9 [00:23<00:03,  3.39s/it][A
+target_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.50s/it][Atarget_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.06s/it]
+
+target_regen blocks:   0%|          | 0/9 [00:00<?, ?it/s][Atarget_regen blocks:   0%|          | 0/9 [00:02<?, ?it/s]
+prompts:   0%|          | 0/16 [00:33<?, ?it/s]
+Traceback (most recent call last):
+  File "/root/Self-Forcing/sdvg_inference.py", line 842, in <module>
+    main()
+  File "/root/Self-Forcing/sdvg_inference.py", line 796, in main
+    summary = run_mode(
+  File "/root/Self-Forcing/sdvg_inference.py", line 448, in run_mode
+    restore_pipeline_cache(target_pipeline, target_cache_before)
+  File "/root/Self-Forcing/sdvg_inference.py", line 87, in restore_pipeline_cache
+    pipeline.kv_cache1 = clone_cache_tree(cache["kv_cache1"])
+  File "/root/Self-Forcing/sdvg_inference.py", line 75, in clone_cache_tree
+    return [clone_cache_tree(item) for item in cache]
+  File "/root/Self-Forcing/sdvg_inference.py", line 75, in <listcomp>
+    return [clone_cache_tree(item) for item in cache]
+  File "/root/Self-Forcing/sdvg_inference.py", line 73, in clone_cache_tree
+    return {key: clone_cache_tree(value) for key, value in cache.items()}
+  File "/root/Self-Forcing/sdvg_inference.py", line 73, in <dictcomp>
+    return {key: clone_cache_tree(value) for key, value in cache.items()}
+  File "/root/Self-Forcing/sdvg_inference.py", line 71, in clone_cache_tree
+    return cache.clone()
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 412.00 MiB. GPU 0 has a total capacity of 139.81 GiB of which 303.44 MiB is free. Including non-PyTorch memory, this process has 139.51 GiB memory in use. Of the allocated memory 136.99 GiB is allocated by PyTorch, and 1.84 GiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/docs/stable/notes/cuda.html#optimizing-memory-usage-with-pytorch-cuda-alloc-conf)

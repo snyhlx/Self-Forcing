@@ -1,0 +1,75 @@
+[2026-06-10 11:15:39] Bidirectional prompt-anchor video diagnostic
+[2026-06-10 11:15:39] Checkpoint: /root/Self-Forcing/outputs/draft_head/checkpoints/flow_unroll10_20260610_051405_bidirectional_prompt_anchor_wan_targetinit_tempmix2_unrolled_h5120_l6_st1000_750_500_250_0_dense10_overfit0_bs1_g4_lr1e-5_fl1_0_dt0_0_td0_0_bd0_0/final.pt
+[2026-06-10 11:15:39] Output:     /root/Self-Forcing/outputs/draft_head/test_runs/flow_unroll10_head10_teacher10_prompt002_20260610_111539
+[2026-06-10 11:15:39] Blocks:     9
+[2026-06-10 11:15:39] Prompts:    /root/Self-Forcing/prompts/MovieGenVideoBench.txt start=2 max=1
+[2026-06-10 11:15:39] Manifest:   off dataset_index=default prompt_index=off split=all split_index=0
+[2026-06-10 11:15:39] Prediction: flow
+[2026-06-10 11:15:39] Head steps: 10
+[2026-06-10 11:15:39] Teacher steps: 10
+[2026-06-10 11:15:39] Refine:     target_timestep=0 save_raw=0 save_target=1
+video prompts:   0%|          | 0/1 [00:00<?, ?it/s]
+  0%|          | 0/10 [00:00<?, ?it/s][A
+ 10%|█         | 1/10 [00:12<01:51, 12.41s/it][A
+ 20%|██        | 2/10 [00:24<01:38, 12.35s/it][A
+ 30%|███       | 3/10 [00:37<01:26, 12.34s/it][A
+ 40%|████      | 4/10 [00:49<01:13, 12.33s/it][A
+ 50%|█████     | 5/10 [01:01<01:01, 12.33s/it][A
+ 60%|██████    | 6/10 [01:14<00:49, 12.34s/it][A
+ 70%|███████   | 7/10 [01:26<00:37, 12.34s/it][A
+ 80%|████████  | 8/10 [01:38<00:24, 12.34s/it][A
+ 90%|█████████ | 9/10 [01:51<00:12, 12.34s/it][A
+100%|██████████| 10/10 [02:03<00:00, 12.34s/it][A100%|██████████| 10/10 [02:03<00:00, 12.34s/it]
+
+draft head denoise:   0%|          | 0/10 [00:00<?, ?it/s][A
+draft head denoise:  10%|█         | 1/10 [00:00<00:05,  1.80it/s][A
+draft head denoise:  20%|██        | 2/10 [00:00<00:03,  2.08it/s][A
+draft head denoise:  30%|███       | 3/10 [00:01<00:03,  2.15it/s][A
+draft head denoise:  40%|████      | 4/10 [00:01<00:02,  2.22it/s][A
+draft head denoise:  50%|█████     | 5/10 [00:02<00:02,  2.22it/s][A
+draft head denoise:  60%|██████    | 6/10 [00:02<00:01,  2.26it/s][A
+draft head denoise:  70%|███████   | 7/10 [00:03<00:01,  2.26it/s][A
+draft head denoise:  80%|████████  | 8/10 [00:03<00:00,  2.27it/s][A
+draft head denoise:  90%|█████████ | 9/10 [00:04<00:00,  2.29it/s][A
+draft head denoise: 100%|██████████| 10/10 [00:04<00:00,  2.29it/s][A
+                                                                   [Avideo prompts: 100%|██████████| 1/1 [02:15<00:00, 135.32s/it]video prompts: 100%|██████████| 1/1 [02:15<00:00, 135.32s/it]
+{
+  "checkpoint_path": "/root/Self-Forcing/outputs/draft_head/checkpoints/flow_unroll10_20260610_051405_bidirectional_prompt_anchor_wan_targetinit_tempmix2_unrolled_h5120_l6_st1000_750_500_250_0_dense10_overfit0_bs1_g4_lr1e-5_fl1_0_dt0_0_td0_0_bd0_0/final.pt",
+  "num_prompts": 2,
+  "training_mode": "unrolled",
+  "prediction_type": "flow",
+  "teacher_sampling_steps": 10,
+  "denoising_step_list": [
+    1000,
+    889,
+    778,
+    667,
+    556,
+    444,
+    333,
+    222,
+    111,
+    0
+  ],
+  "unroll_noise_mode": "fixed",
+  "target_refine_timestep": 0,
+  "runs": [
+    {
+      "mode": "bidirectional_target_teacher",
+      "prompt_index": 2,
+      "prompt": "A movie trailer featuring the adventures of the 30 year old space man wearing a red wool knitted motorcycle helmet, blue sky, salt desert, cinematic style, shot on 35mm film, vivid colors.",
+      "video_path": "/root/Self-Forcing/outputs/draft_head/test_runs/flow_unroll10_head10_teacher10_prompt002_20260610_111539/prompt_0002_bidirectional_target_teacher.mp4",
+      "num_blocks": 9,
+      "target_refine_timestep": 0
+    },
+    {
+      "mode": "bidirectional_draft_head",
+      "prompt_index": 2,
+      "prompt": "A movie trailer featuring the adventures of the 30 year old space man wearing a red wool knitted motorcycle helmet, blue sky, salt desert, cinematic style, shot on 35mm film, vivid colors.",
+      "video_path": "/root/Self-Forcing/outputs/draft_head/test_runs/flow_unroll10_head10_teacher10_prompt002_20260610_111539/prompt_0002_bidirectional_draft_head.mp4",
+      "num_blocks": 9,
+      "target_refine_timestep": 0
+    }
+  ]
+}
+[2026-06-10 11:19:16] Done. Profile: /root/Self-Forcing/outputs/draft_head/test_runs/flow_unroll10_head10_teacher10_prompt002_20260610_111539/profile.json

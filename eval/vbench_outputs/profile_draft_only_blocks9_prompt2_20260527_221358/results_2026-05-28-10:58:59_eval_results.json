@@ -1,0 +1,58 @@
+{
+    "subject_consistency": [
+        0.9816364539930453,
+        [
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/profile_draft_only_blocks9_prompt2_20260527_221358/prompt_0002_draft_only.mp4",
+                "video_results": 0.9816364539930453
+            }
+        ]
+    ],
+    "background_consistency": [
+        0.9589937650240384,
+        [
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/profile_draft_only_blocks9_prompt2_20260527_221358/prompt_0002_draft_only.mp4",
+                "video_results": 0.9589937650240384,
+                "video_sim": 99.7353515625,
+                "cnt_per_video": 104
+            }
+        ]
+    ],
+    "motion_smoothness": [
+        0.9908181741490255,
+        [
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/profile_draft_only_blocks9_prompt2_20260527_221358/prompt_0002_draft_only.mp4",
+                "video_results": 0.9908181741490255
+            }
+        ]
+    ],
+    "dynamic_degree": [
+        0.0,
+        [
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/profile_draft_only_blocks9_prompt2_20260527_221358/prompt_0002_draft_only.mp4",
+                "video_results": false
+            }
+        ]
+    ],
+    "aesthetic_quality": [
+        0.6925428509712219,
+        [
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/profile_draft_only_blocks9_prompt2_20260527_221358/prompt_0002_draft_only.mp4",
+                "video_results": 0.6925428509712219
+            }
+        ]
+    ],
+    "imaging_quality": [
+        0.7403604678199405,
+        [
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/profile_draft_only_blocks9_prompt2_20260527_221358/prompt_0002_draft_only.mp4",
+                "video_results": 74.03604678199405
+            }
+        ]
+    ]
+}

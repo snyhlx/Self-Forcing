@@ -1,0 +1,507 @@
+[2026-06-10 04:14:02] Training bidirectional prompt-anchor draft head
+[2026-06-10 04:14:02] Teacher setup: bidirectional_wan
+[2026-06-10 04:14:02] Manifest: /mnt/lanxiangh/data/ff_exec/bidirectional_wan_draft_head_dataset/tau_delta_0p0/manifest.json
+[2026-06-10 04:14:02] Dataset cache: /mnt/lanxiangh/data/cache/specgen index_workers=8 wait_seconds=3600
+[2026-06-10 04:14:02] Run dir:   /root/Self-Forcing/outputs/draft_head/checkpoints/20260610_overfit1_idx0_unrolled5_flow1_clean1_detail0p1
+[2026-06-10 04:14:02] Output:    /root/Self-Forcing/outputs/draft_head/checkpoints/20260610_overfit1_idx0_unrolled5_flow1_clean1_detail0p1/final.pt
+[2026-06-10 04:14:02] GPUs:      4 visible=0,1,2,3
+[2026-06-10 04:14:02] Anchor:    online_target target=Wan2.1-T2V-14B seed=42
+[2026-06-10 04:14:02] Model:     wan hidden=5120 layers=6 heads=40 ffn_dim=13824 prompt_dim=4096 temporal_mixer_layers=2 temporal_mixer_ffn_dim=2048 gradient_checkpointing=1
+[2026-06-10 04:14:02] Parallel:  strategy=fsdp fsdp_min_num_params=100000000 fsdp_mixed_precision=none
+[2026-06-10 04:14:02] Init:      target_blocks=[0 8 16 24 32 39]
+[2026-06-10 04:14:02] Training:  mode=unrolled steps=[1000 750 500 250 0] dense_schedule_steps=off random_sampling=uniform_schedule logit_mean=0.0 logit_std=1.0 unroll_noise=fixed weights=auto overfit_num=1 overfit_start=0 num_workers=0
+[2026-06-10 04:14:02] Loss:      clean=1.0 flow=1.0 detail=0.1 temporal_delta=0.0 boundary=0.0
+[startup rank0 2026-06-10 04:14:08] building/loading bidirectional dataset index
+[startup rank0 2026-06-10 04:14:08] dataset index ready in 0.0s examples=1003
+[startup rank0 2026-06-10 04:14:08] loading one sample to infer latent shape
+[startup rank0 2026-06-10 04:14:08] sample shape ready in 0.1s latent_channels=16 frames=27
+[startup rank0 2026-06-10 04:14:08] using overfit subset indices=[0]
+[startup rank0 2026-06-10 04:14:11] loading Wan text encoder
+[startup rank0 2026-06-10 04:15:06] Wan text encoder ready in 55.6s
+[startup rank0 2026-06-10 04:15:06] using stored full-video Wan chunk-0 anchors from dataset
+[startup rank0 2026-06-10 04:15:06] building bidirectional Wan draft head
+[startup rank0 2026-06-10 04:15:17] bidirectional Wan draft head ready in 10.8s
+[startup rank0 2026-06-10 04:15:17] initializing draft head from target blocks [0, 8, 16, 24, 32, 39]
+[startup rank0 2026-06-10 04:15:34] target block initialization ready in 17.4s report={'patch_embedding': 1, 'time_embedding': 1, 'time_projection': 1, 'head': 1, 'attention': 6, 'norm': 12, 'ffn': 6, 'skipped': 0}
+Initialized bidirectional Wan head from target blocks [0, 8, 16, 24, 32, 39]: {'patch_embedding': 1, 'time_embedding': 1, 'time_projection': 1, 'head': 1, 'attention': 6, 'norm': 12, 'ffn': 6, 'skipped': 0}
+[startup rank0 2026-06-10 04:15:34] wrapping model with fsdp
+[startup rank0 2026-06-10 04:15:34] parallel wrapper ready in 0.1s
+[startup rank0 2026-06-10 04:15:34] creating AdamW optimizer
+[startup rank0 2026-06-10 04:15:34] optimizer ready in 0.0s
+Training bidirectional draft head prompts=1003 train=1 val=0 latent_channels=16 frames=27 hidden=5120 layers=6 heads=40 ffn_dim=13824 temporal_mixer_layers=2 temporal_mixer_ffn_dim=2048 world_size=4 parallel=fsdp
+epoch 1:   0%|          | 0/1 [00:00<?, ?it/s]/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/distributed/fsdp/fully_sharded_data_parallel.py:821: FutureWarning: FSDP.state_dict_type() and FSDP.set_state_dict_type() are being deprecated. Please use APIs, get_state_dict() and set_state_dict(), which can support different parallelisms, FSDP1, FSDP2, DDP. API doc: https://pytorch.org/docs/stable/distributed.checkpoint.html#torch.distributed.checkpoint.state_dict.get_state_dict .Tutorial: https://pytorch.org/tutorials/recipes/distributed_checkpoint_recipe.html .
+  prev_state_dict_settings = FullyShardedDataParallel.set_state_dict_type(
+epoch 1:   0%|          | 0/1 [00:15<?, ?it/s, loss=2.1, rmse=0.971, sec=15.6]step=1 epoch=1 batch=1 running_loss=2.104242 running_clean_latent_rmse=0.971359 loss=2.104242 clean_latent_mse=0.943539
+epoch 1: 100%|██████████| 1/1 [00:15<00:00, 15.66s/it, loss=2.1, rmse=0.971, sec=15.6]epoch 1: 100%|██████████| 1/1 [00:15<00:00, 15.66s/it, loss=2.1, rmse=0.971, sec=15.6]
+{
+  "epoch": 1,
+  "train_loss": 2.1042423248291016,
+  "train_clean_latent_mse": 0.9435392618179321,
+  "train_clean_latent_rmse": 0.9713594915467353
+}
+/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/distributed/fsdp/fully_sharded_data_parallel.py:821: FutureWarning: FSDP.state_dict_type() and FSDP.set_state_dict_type() are being deprecated. Please use APIs, get_state_dict() and set_state_dict(), which can support different parallelisms, FSDP1, FSDP2, DDP. API doc: https://pytorch.org/docs/stable/distributed.checkpoint.html#torch.distributed.checkpoint.state_dict.get_state_dict .Tutorial: https://pytorch.org/tutorials/recipes/distributed_checkpoint_recipe.html .
+  prev_state_dict_settings = FullyShardedDataParallel.set_state_dict_type(
+/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/distributed/fsdp/fully_sharded_data_parallel.py:821: FutureWarning: FSDP.state_dict_type() and FSDP.set_state_dict_type() are being deprecated. Please use APIs, get_state_dict() and set_state_dict(), which can support different parallelisms, FSDP1, FSDP2, DDP. API doc: https://pytorch.org/docs/stable/distributed.checkpoint.html#torch.distributed.checkpoint.state_dict.get_state_dict .Tutorial: https://pytorch.org/tutorials/recipes/distributed_checkpoint_recipe.html .
+  prev_state_dict_settings = FullyShardedDataParallel.set_state_dict_type(
+/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/distributed/fsdp/fully_sharded_data_parallel.py:821: FutureWarning: FSDP.state_dict_type() and FSDP.set_state_dict_type() are being deprecated. Please use APIs, get_state_dict() and set_state_dict(), which can support different parallelisms, FSDP1, FSDP2, DDP. API doc: https://pytorch.org/docs/stable/distributed.checkpoint.html#torch.distributed.checkpoint.state_dict.get_state_dict .Tutorial: https://pytorch.org/tutorials/recipes/distributed_checkpoint_recipe.html .
+  prev_state_dict_settings = FullyShardedDataParallel.set_state_dict_type(
+/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/distributed/fsdp/fully_sharded_data_parallel.py:828: FutureWarning: FSDP.state_dict_type() and FSDP.set_state_dict_type() are being deprecated. Please use APIs, get_state_dict() and set_state_dict(), which can support different parallelisms, FSDP1, FSDP2, DDP. API doc: https://pytorch.org/docs/stable/distributed.checkpoint.html#torch.distributed.checkpoint.state_dict.get_state_dict .Tutorial: https://pytorch.org/tutorials/recipes/distributed_checkpoint_recipe.html .
+  FullyShardedDataParallel.set_state_dict_type(
+/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/distributed/fsdp/fully_sharded_data_parallel.py:828: FutureWarning: FSDP.state_dict_type() and FSDP.set_state_dict_type() are being deprecated. Please use APIs, get_state_dict() and set_state_dict(), which can support different parallelisms, FSDP1, FSDP2, DDP. API doc: https://pytorch.org/docs/stable/distributed.checkpoint.html#torch.distributed.checkpoint.state_dict.get_state_dict .Tutorial: https://pytorch.org/tutorials/recipes/distributed_checkpoint_recipe.html .
+  FullyShardedDataParallel.set_state_dict_type(
+/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/distributed/fsdp/fully_sharded_data_parallel.py:828: FutureWarning: FSDP.state_dict_type() and FSDP.set_state_dict_type() are being deprecated. Please use APIs, get_state_dict() and set_state_dict(), which can support different parallelisms, FSDP1, FSDP2, DDP. API doc: https://pytorch.org/docs/stable/distributed.checkpoint.html#torch.distributed.checkpoint.state_dict.get_state_dict .Tutorial: https://pytorch.org/tutorials/recipes/distributed_checkpoint_recipe.html .
+  FullyShardedDataParallel.set_state_dict_type(
+/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/distributed/fsdp/fully_sharded_data_parallel.py:828: FutureWarning: FSDP.state_dict_type() and FSDP.set_state_dict_type() are being deprecated. Please use APIs, get_state_dict() and set_state_dict(), which can support different parallelisms, FSDP1, FSDP2, DDP. API doc: https://pytorch.org/docs/stable/distributed.checkpoint.html#torch.distributed.checkpoint.state_dict.get_state_dict .Tutorial: https://pytorch.org/tutorials/recipes/distributed_checkpoint_recipe.html .
+  FullyShardedDataParallel.set_state_dict_type(
+Wrote epoch checkpoint: /root/Self-Forcing/outputs/draft_head/checkpoints/20260610_overfit1_idx0_unrolled5_flow1_clean1_detail0p1/epoch_0001.pt
+epoch 2:   0%|          | 0/1 [00:00<?, ?it/s]epoch 2:   0%|          | 0/1 [00:10<?, ?it/s, loss=1.43, rmse=0.811, sec=10.6]step=2 epoch=2 batch=1 running_loss=1.430112 running_clean_latent_rmse=0.811479 loss=1.430112 clean_latent_mse=0.658498
+epoch 2: 100%|██████████| 1/1 [00:10<00:00, 10.59s/it, loss=1.43, rmse=0.811, sec=10.6]epoch 2: 100%|██████████| 1/1 [00:10<00:00, 10.60s/it, loss=1.43, rmse=0.811, sec=10.6]
+{
+  "epoch": 2,
+  "train_loss": 1.430112361907959,
+  "train_clean_latent_mse": 0.6584983468055725,
+  "train_clean_latent_rmse": 0.8114791105170684
+}
+Wrote epoch checkpoint: /root/Self-Forcing/outputs/draft_head/checkpoints/20260610_overfit1_idx0_unrolled5_flow1_clean1_detail0p1/epoch_0002.pt
+epoch 3:   0%|          | 0/1 [00:00<?, ?it/s]epoch 3:   0%|          | 0/1 [00:09<?, ?it/s, loss=0.922, rmse=0.658, sec=9.87]step=3 epoch=3 batch=1 running_loss=0.921929 running_clean_latent_rmse=0.657560 loss=0.921929 clean_latent_mse=0.432385
+epoch 3: 100%|██████████| 1/1 [00:09<00:00,  9.87s/it, loss=0.922, rmse=0.658, sec=9.87]epoch 3: 100%|██████████| 1/1 [00:09<00:00,  9.87s/it, loss=0.922, rmse=0.658, sec=9.87]
+{
+  "epoch": 3,
+  "train_loss": 0.9219287633895874,
+  "train_clean_latent_mse": 0.43238532543182373,
+  "train_clean_latent_rmse": 0.6575601306586522
+}
+Wrote epoch checkpoint: /root/Self-Forcing/outputs/draft_head/checkpoints/20260610_overfit1_idx0_unrolled5_flow1_clean1_detail0p1/epoch_0003.pt
+epoch 4:   0%|          | 0/1 [00:00<?, ?it/s]epoch 4:   0%|          | 0/1 [00:10<?, ?it/s, loss=0.908, rmse=0.649, sec=10.3]step=4 epoch=4 batch=1 running_loss=0.908145 running_clean_latent_rmse=0.648743 loss=0.908145 clean_latent_mse=0.420868
+epoch 4: 100%|██████████| 1/1 [00:10<00:00, 10.27s/it, loss=0.908, rmse=0.649, sec=10.3]epoch 4: 100%|██████████| 1/1 [00:10<00:00, 10.27s/it, loss=0.908, rmse=0.649, sec=10.3]
+{
+  "epoch": 4,
+  "train_loss": 0.9081454873085022,
+  "train_clean_latent_mse": 0.42086759209632874,
+  "train_clean_latent_rmse": 0.6487430863572488
+}
+Wrote epoch checkpoint: /root/Self-Forcing/outputs/draft_head/checkpoints/20260610_overfit1_idx0_unrolled5_flow1_clean1_detail0p1/epoch_0004.pt
+epoch 5:   0%|          | 0/1 [00:00<?, ?it/s]epoch 5:   0%|          | 0/1 [00:09<?, ?it/s, loss=1.78, rmse=0.9, sec=9.85]step=5 epoch=5 batch=1 running_loss=1.783300 running_clean_latent_rmse=0.900349 loss=1.783300 clean_latent_mse=0.810628
+epoch 5: 100%|██████████| 1/1 [00:09<00:00,  9.85s/it, loss=1.78, rmse=0.9, sec=9.85]epoch 5: 100%|██████████| 1/1 [00:09<00:00,  9.85s/it, loss=1.78, rmse=0.9, sec=9.85]
+{
+  "epoch": 5,
+  "train_loss": 1.7833001613616943,
+  "train_clean_latent_mse": 0.8106275796890259,
+  "train_clean_latent_rmse": 0.9003485878752884
+}
+Wrote epoch checkpoint: /root/Self-Forcing/outputs/draft_head/checkpoints/20260610_overfit1_idx0_unrolled5_flow1_clean1_detail0p1/epoch_0005.pt
+epoch 6:   0%|          | 0/1 [00:00<?, ?it/s]epoch 6:   0%|          | 0/1 [00:10<?, ?it/s, loss=1.34, rmse=0.808, sec=10.2]step=6 epoch=6 batch=1 running_loss=1.343804 running_clean_latent_rmse=0.808366 loss=1.343804 clean_latent_mse=0.653456
+epoch 6: 100%|██████████| 1/1 [00:10<00:00, 10.23s/it, loss=1.34, rmse=0.808, sec=10.2]epoch 6: 100%|██████████| 1/1 [00:10<00:00, 10.23s/it, loss=1.34, rmse=0.808, sec=10.2]
+{
+  "epoch": 6,
+  "train_loss": 1.3438043594360352,
+  "train_clean_latent_mse": 0.6534562110900879,
+  "train_clean_latent_rmse": 0.8083663841910349
+}
+Wrote epoch checkpoint: /root/Self-Forcing/outputs/draft_head/checkpoints/20260610_overfit1_idx0_unrolled5_flow1_clean1_detail0p1/epoch_0006.pt
+epoch 7:   0%|          | 0/1 [00:00<?, ?it/s]epoch 7:   0%|          | 0/1 [00:09<?, ?it/s, loss=0.974, rmse=0.69, sec=9.83]step=7 epoch=7 batch=1 running_loss=0.973556 running_clean_latent_rmse=0.689769 loss=0.973556 clean_latent_mse=0.475781
+epoch 7: 100%|██████████| 1/1 [00:09<00:00,  9.83s/it, loss=0.974, rmse=0.69, sec=9.83]epoch 7: 100%|██████████| 1/1 [00:09<00:00,  9.83s/it, loss=0.974, rmse=0.69, sec=9.83]
+{
+  "epoch": 7,
+  "train_loss": 0.973555862903595,
+  "train_clean_latent_mse": 0.4757813513278961,
+  "train_clean_latent_rmse": 0.6897690565166693
+}
+Wrote epoch checkpoint: /root/Self-Forcing/outputs/draft_head/checkpoints/20260610_overfit1_idx0_unrolled5_flow1_clean1_detail0p1/epoch_0007.pt
+epoch 8:   0%|          | 0/1 [00:00<?, ?it/s]epoch 8:   0%|          | 0/1 [00:10<?, ?it/s, loss=0.829, rmse=0.631, sec=10.3]step=8 epoch=8 batch=1 running_loss=0.828998 running_clean_latent_rmse=0.631440 loss=0.828998 clean_latent_mse=0.398716
+epoch 8: 100%|██████████| 1/1 [00:10<00:00, 10.26s/it, loss=0.829, rmse=0.631, sec=10.3]epoch 8: 100%|██████████| 1/1 [00:10<00:00, 10.26s/it, loss=0.829, rmse=0.631, sec=10.3]
+{
+  "epoch": 8,
+  "train_loss": 0.8289982080459595,
+  "train_clean_latent_mse": 0.3987160325050354,
+  "train_clean_latent_rmse": 0.6314396507228821
+}
+Wrote epoch checkpoint: /root/Self-Forcing/outputs/draft_head/checkpoints/20260610_overfit1_idx0_unrolled5_flow1_clean1_detail0p1/epoch_0008.pt
+epoch 9:   0%|          | 0/1 [00:00<?, ?it/s]epoch 9:   0%|          | 0/1 [00:09<?, ?it/s, loss=0.787, rmse=0.613, sec=9.88]step=9 epoch=9 batch=1 running_loss=0.787146 running_clean_latent_rmse=0.612547 loss=0.787146 clean_latent_mse=0.375214
+epoch 9: 100%|██████████| 1/1 [00:09<00:00,  9.89s/it, loss=0.787, rmse=0.613, sec=9.88]epoch 9: 100%|██████████| 1/1 [00:09<00:00,  9.89s/it, loss=0.787, rmse=0.613, sec=9.88]
+{
+  "epoch": 9,
+  "train_loss": 0.7871464490890503,
+  "train_clean_latent_mse": 0.37521424889564514,
+  "train_clean_latent_rmse": 0.6125473442074867
+}
+Wrote epoch checkpoint: /root/Self-Forcing/outputs/draft_head/checkpoints/20260610_overfit1_idx0_unrolled5_flow1_clean1_detail0p1/epoch_0009.pt
+epoch 10:   0%|          | 0/1 [00:00<?, ?it/s]epoch 10:   0%|          | 0/1 [00:10<?, ?it/s, loss=0.787, rmse=0.613, sec=10.3]step=10 epoch=10 batch=1 running_loss=0.787285 running_clean_latent_rmse=0.612507 loss=0.787285 clean_latent_mse=0.375165
+epoch 10: 100%|██████████| 1/1 [00:10<00:00, 10.29s/it, loss=0.787, rmse=0.613, sec=10.3]epoch 10: 100%|██████████| 1/1 [00:10<00:00, 10.29s/it, loss=0.787, rmse=0.613, sec=10.3]
+{
+  "epoch": 10,
+  "train_loss": 0.7872852087020874,
+  "train_clean_latent_mse": 0.37516501545906067,
+  "train_clean_latent_rmse": 0.6125071554349881
+}
+Wrote epoch checkpoint: /root/Self-Forcing/outputs/draft_head/checkpoints/20260610_overfit1_idx0_unrolled5_flow1_clean1_detail0p1/epoch_0010.pt
+epoch 11:   0%|          | 0/1 [00:00<?, ?it/s]epoch 11:   0%|          | 0/1 [00:09<?, ?it/s, loss=0.802, rmse=0.62, sec=9.86]step=11 epoch=11 batch=1 running_loss=0.802018 running_clean_latent_rmse=0.619603 loss=0.802018 clean_latent_mse=0.383908
+epoch 11: 100%|██████████| 1/1 [00:09<00:00,  9.86s/it, loss=0.802, rmse=0.62, sec=9.86]epoch 11: 100%|██████████| 1/1 [00:09<00:00,  9.86s/it, loss=0.802, rmse=0.62, sec=9.86]
+{
+  "epoch": 11,
+  "train_loss": 0.8020178079605103,
+  "train_clean_latent_mse": 0.38390791416168213,
+  "train_clean_latent_rmse": 0.6196030294968563
+}
+Wrote epoch checkpoint: /root/Self-Forcing/outputs/draft_head/checkpoints/20260610_overfit1_idx0_unrolled5_flow1_clean1_detail0p1/epoch_0011.pt
+epoch 12:   0%|          | 0/1 [00:00<?, ?it/s]epoch 12:   0%|          | 0/1 [00:10<?, ?it/s, loss=0.821, rmse=0.63, sec=10.2]step=12 epoch=12 batch=1 running_loss=0.820844 running_clean_latent_rmse=0.630150 loss=0.820844 clean_latent_mse=0.397089
+epoch 12: 100%|██████████| 1/1 [00:10<00:00, 10.21s/it, loss=0.821, rmse=0.63, sec=10.2]epoch 12: 100%|██████████| 1/1 [00:10<00:00, 10.21s/it, loss=0.821, rmse=0.63, sec=10.2]
+{
+  "epoch": 12,
+  "train_loss": 0.8208436965942383,
+  "train_clean_latent_mse": 0.3970892131328583,
+  "train_clean_latent_rmse": 0.6301501512598868
+}
+Wrote epoch checkpoint: /root/Self-Forcing/outputs/draft_head/checkpoints/20260610_overfit1_idx0_unrolled5_flow1_clean1_detail0p1/epoch_0012.pt
+epoch 13:   0%|          | 0/1 [00:00<?, ?it/s]epoch 13:   0%|          | 0/1 [00:09<?, ?it/s, loss=0.833, rmse=0.638, sec=9.84]step=13 epoch=13 batch=1 running_loss=0.833077 running_clean_latent_rmse=0.637721 loss=0.833077 clean_latent_mse=0.406688
+epoch 13: 100%|██████████| 1/1 [00:09<00:00,  9.85s/it, loss=0.833, rmse=0.638, sec=9.84]epoch 13: 100%|██████████| 1/1 [00:09<00:00,  9.85s/it, loss=0.833, rmse=0.638, sec=9.84]
+{
+  "epoch": 13,
+  "train_loss": 0.8330767750740051,
+  "train_clean_latent_mse": 0.40668803453445435,
+  "train_clean_latent_rmse": 0.6377209691820196
+}
+Wrote epoch checkpoint: /root/Self-Forcing/outputs/draft_head/checkpoints/20260610_overfit1_idx0_unrolled5_flow1_clean1_detail0p1/epoch_0013.pt
+epoch 14:   0%|          | 0/1 [00:00<?, ?it/s]epoch 14:   0%|          | 0/1 [00:10<?, ?it/s, loss=0.832, rmse=0.639, sec=10.2]step=14 epoch=14 batch=1 running_loss=0.832295 running_clean_latent_rmse=0.638831 loss=0.832295 clean_latent_mse=0.408105
+epoch 14: 100%|██████████| 1/1 [00:10<00:00, 10.25s/it, loss=0.832, rmse=0.639, sec=10.2]epoch 14: 100%|██████████| 1/1 [00:10<00:00, 10.25s/it, loss=0.832, rmse=0.639, sec=10.2]
+{
+  "epoch": 14,
+  "train_loss": 0.832294762134552,
+  "train_clean_latent_mse": 0.40810489654541016,
+  "train_clean_latent_rmse": 0.6388308825858454
+}
+Wrote epoch checkpoint: /root/Self-Forcing/outputs/draft_head/checkpoints/20260610_overfit1_idx0_unrolled5_flow1_clean1_detail0p1/epoch_0014.pt
+epoch 15:   0%|          | 0/1 [00:00<?, ?it/s]epoch 15:   0%|          | 0/1 [00:09<?, ?it/s, loss=0.819, rmse=0.634, sec=9.83]step=15 epoch=15 batch=1 running_loss=0.818838 running_clean_latent_rmse=0.634487 loss=0.818838 clean_latent_mse=0.402573
+epoch 15: 100%|██████████| 1/1 [00:09<00:00,  9.83s/it, loss=0.819, rmse=0.634, sec=9.83]epoch 15: 100%|██████████| 1/1 [00:09<00:00,  9.83s/it, loss=0.819, rmse=0.634, sec=9.83]
+{
+  "epoch": 15,
+  "train_loss": 0.8188375234603882,
+  "train_clean_latent_mse": 0.4025731682777405,
+  "train_clean_latent_rmse": 0.6344865390831712
+}
+Wrote epoch checkpoint: /root/Self-Forcing/outputs/draft_head/checkpoints/20260610_overfit1_idx0_unrolled5_flow1_clean1_detail0p1/epoch_0015.pt
+epoch 16:   0%|          | 0/1 [00:00<?, ?it/s]epoch 16:   0%|          | 0/1 [00:10<?, ?it/s, loss=0.797, rmse=0.627, sec=10.2]step=16 epoch=16 batch=1 running_loss=0.797214 running_clean_latent_rmse=0.626783 loss=0.797214 clean_latent_mse=0.392857
+epoch 16: 100%|██████████| 1/1 [00:10<00:00, 10.20s/it, loss=0.797, rmse=0.627, sec=10.2]epoch 16: 100%|██████████| 1/1 [00:10<00:00, 10.20s/it, loss=0.797, rmse=0.627, sec=10.2]
+{
+  "epoch": 16,
+  "train_loss": 0.7972142696380615,
+  "train_clean_latent_mse": 0.3928566575050354,
+  "train_clean_latent_rmse": 0.6267827833508475
+}
+Wrote epoch checkpoint: /root/Self-Forcing/outputs/draft_head/checkpoints/20260610_overfit1_idx0_unrolled5_flow1_clean1_detail0p1/epoch_0016.pt
+epoch 17:   0%|          | 0/1 [00:00<?, ?it/s]epoch 17:   0%|          | 0/1 [00:09<?, ?it/s, loss=0.774, rmse=0.618, sec=9.86]step=17 epoch=17 batch=1 running_loss=0.773987 running_clean_latent_rmse=0.617996 loss=0.773987 clean_latent_mse=0.381919
+epoch 17: 100%|██████████| 1/1 [00:09<00:00,  9.86s/it, loss=0.774, rmse=0.618, sec=9.86]epoch 17: 100%|██████████| 1/1 [00:09<00:00,  9.86s/it, loss=0.774, rmse=0.618, sec=9.86]
+{
+  "epoch": 17,
+  "train_loss": 0.773987352848053,
+  "train_clean_latent_mse": 0.381919264793396,
+  "train_clean_latent_rmse": 0.617996168914821
+}
+Wrote epoch checkpoint: /root/Self-Forcing/outputs/draft_head/checkpoints/20260610_overfit1_idx0_unrolled5_flow1_clean1_detail0p1/epoch_0017.pt
+epoch 18:   0%|          | 0/1 [00:00<?, ?it/s]epoch 18:   0%|          | 0/1 [00:10<?, ?it/s, loss=0.754, rmse=0.61, sec=10.2]step=18 epoch=18 batch=1 running_loss=0.754427 running_clean_latent_rmse=0.610316 loss=0.754427 clean_latent_mse=0.372485
+epoch 18: 100%|██████████| 1/1 [00:10<00:00, 10.21s/it, loss=0.754, rmse=0.61, sec=10.2]epoch 18: 100%|██████████| 1/1 [00:10<00:00, 10.21s/it, loss=0.754, rmse=0.61, sec=10.2]
+{
+  "epoch": 18,
+  "train_loss": 0.7544265985488892,
+  "train_clean_latent_mse": 0.3724853992462158,
+  "train_clean_latent_rmse": 0.6103158192659075
+}
+Wrote epoch checkpoint: /root/Self-Forcing/outputs/draft_head/checkpoints/20260610_overfit1_idx0_unrolled5_flow1_clean1_detail0p1/epoch_0018.pt
+epoch 19:   0%|          | 0/1 [00:00<?, ?it/s]epoch 19:   0%|          | 0/1 [00:09<?, ?it/s, loss=0.742, rmse=0.605, sec=9.86]step=19 epoch=19 batch=1 running_loss=0.741689 running_clean_latent_rmse=0.604900 loss=0.741689 clean_latent_mse=0.365904
+epoch 19: 100%|██████████| 1/1 [00:09<00:00,  9.87s/it, loss=0.742, rmse=0.605, sec=9.86]epoch 19: 100%|██████████| 1/1 [00:09<00:00,  9.87s/it, loss=0.742, rmse=0.605, sec=9.86]
+{
+  "epoch": 19,
+  "train_loss": 0.7416886687278748,
+  "train_clean_latent_mse": 0.36590442061424255,
+  "train_clean_latent_rmse": 0.6049003394066187
+}
+Wrote epoch checkpoint: /root/Self-Forcing/outputs/draft_head/checkpoints/20260610_overfit1_idx0_unrolled5_flow1_clean1_detail0p1/epoch_0019.pt
+epoch 20:   0%|          | 0/1 [00:00<?, ?it/s]epoch 20:   0%|          | 0/1 [00:10<?, ?it/s, loss=0.737, rmse=0.602, sec=10.3]step=20 epoch=20 batch=1 running_loss=0.736508 running_clean_latent_rmse=0.602302 loss=0.736508 clean_latent_mse=0.362767
+epoch 20: 100%|██████████| 1/1 [00:10<00:00, 10.27s/it, loss=0.737, rmse=0.602, sec=10.3]epoch 20: 100%|██████████| 1/1 [00:10<00:00, 10.27s/it, loss=0.737, rmse=0.602, sec=10.3]
+{
+  "epoch": 20,
+  "train_loss": 0.7365080714225769,
+  "train_clean_latent_mse": 0.36276718974113464,
+  "train_clean_latent_rmse": 0.6023015770701042
+}
+Wrote epoch checkpoint: /root/Self-Forcing/outputs/draft_head/checkpoints/20260610_overfit1_idx0_unrolled5_flow1_clean1_detail0p1/epoch_0020.pt
+epoch 21:   0%|          | 0/1 [00:00<?, ?it/s]epoch 21:   0%|          | 0/1 [00:09<?, ?it/s, loss=0.738, rmse=0.602, sec=9.83]step=21 epoch=21 batch=1 running_loss=0.737625 running_clean_latent_rmse=0.602119 loss=0.737625 clean_latent_mse=0.362547
+epoch 21: 100%|██████████| 1/1 [00:09<00:00,  9.84s/it, loss=0.738, rmse=0.602, sec=9.83]epoch 21: 100%|██████████| 1/1 [00:09<00:00,  9.84s/it, loss=0.738, rmse=0.602, sec=9.83]
+{
+  "epoch": 21,
+  "train_loss": 0.7376246452331543,
+  "train_clean_latent_mse": 0.36254701018333435,
+  "train_clean_latent_rmse": 0.6021187675063238
+}
+Wrote epoch checkpoint: /root/Self-Forcing/outputs/draft_head/checkpoints/20260610_overfit1_idx0_unrolled5_flow1_clean1_detail0p1/epoch_0021.pt
+epoch 22:   0%|          | 0/1 [00:00<?, ?it/s]epoch 22:   0%|          | 0/1 [00:10<?, ?it/s, loss=0.743, rmse=0.604, sec=10.2]step=22 epoch=22 batch=1 running_loss=0.742735 running_clean_latent_rmse=0.603521 loss=0.742735 clean_latent_mse=0.364238
+epoch 22: 100%|██████████| 1/1 [00:10<00:00, 10.19s/it, loss=0.743, rmse=0.604, sec=10.2]epoch 22: 100%|██████████| 1/1 [00:10<00:00, 10.19s/it, loss=0.743, rmse=0.604, sec=10.2]
+{
+  "epoch": 22,
+  "train_loss": 0.742734968662262,
+  "train_clean_latent_mse": 0.3642379343509674,
+  "train_clean_latent_rmse": 0.6035212791202704
+}
+Wrote epoch checkpoint: /root/Self-Forcing/outputs/draft_head/checkpoints/20260610_overfit1_idx0_unrolled5_flow1_clean1_detail0p1/epoch_0022.pt
+epoch 23:   0%|          | 0/1 [00:00<?, ?it/s]epoch 23:   0%|          | 0/1 [00:09<?, ?it/s, loss=0.749, rmse=0.605, sec=9.83]step=23 epoch=23 batch=1 running_loss=0.748692 running_clean_latent_rmse=0.605400 loss=0.748692 clean_latent_mse=0.366509
+epoch 23: 100%|██████████| 1/1 [00:09<00:00,  9.83s/it, loss=0.749, rmse=0.605, sec=9.83]epoch 23: 100%|██████████| 1/1 [00:09<00:00,  9.83s/it, loss=0.749, rmse=0.605, sec=9.83]
+{
+  "epoch": 23,
+  "train_loss": 0.7486916780471802,
+  "train_clean_latent_mse": 0.3665086030960083,
+  "train_clean_latent_rmse": 0.6053995400526897
+}
+Wrote epoch checkpoint: /root/Self-Forcing/outputs/draft_head/checkpoints/20260610_overfit1_idx0_unrolled5_flow1_clean1_detail0p1/epoch_0023.pt
+epoch 24:   0%|          | 0/1 [00:00<?, ?it/s]epoch 24:   0%|          | 0/1 [00:10<?, ?it/s, loss=0.753, rmse=0.607, sec=10.2]step=24 epoch=24 batch=1 running_loss=0.752743 running_clean_latent_rmse=0.606623 loss=0.752743 clean_latent_mse=0.367992
+epoch 24: 100%|██████████| 1/1 [00:10<00:00, 10.20s/it, loss=0.753, rmse=0.607, sec=10.2]epoch 24: 100%|██████████| 1/1 [00:10<00:00, 10.20s/it, loss=0.753, rmse=0.607, sec=10.2]
+{
+  "epoch": 24,
+  "train_loss": 0.7527428269386292,
+  "train_clean_latent_mse": 0.36799153685569763,
+  "train_clean_latent_rmse": 0.6066230599438976
+}
+Wrote epoch checkpoint: /root/Self-Forcing/outputs/draft_head/checkpoints/20260610_overfit1_idx0_unrolled5_flow1_clean1_detail0p1/epoch_0024.pt
+epoch 25:   0%|          | 0/1 [00:00<?, ?it/s]epoch 25:   0%|          | 0/1 [00:09<?, ?it/s, loss=0.753, rmse=0.607, sec=9.86]step=25 epoch=25 batch=1 running_loss=0.753332 running_clean_latent_rmse=0.606722 loss=0.753332 clean_latent_mse=0.368112
+epoch 25: 100%|██████████| 1/1 [00:09<00:00,  9.87s/it, loss=0.753, rmse=0.607, sec=9.86]epoch 25: 100%|██████████| 1/1 [00:09<00:00,  9.87s/it, loss=0.753, rmse=0.607, sec=9.86]
+{
+  "epoch": 25,
+  "train_loss": 0.7533324360847473,
+  "train_clean_latent_mse": 0.36811187863349915,
+  "train_clean_latent_rmse": 0.6067222417494674
+}
+Wrote epoch checkpoint: /root/Self-Forcing/outputs/draft_head/checkpoints/20260610_overfit1_idx0_unrolled5_flow1_clean1_detail0p1/epoch_0025.pt
+epoch 26:   0%|          | 0/1 [00:00<?, ?it/s]epoch 26:   0%|          | 0/1 [00:10<?, ?it/s, loss=0.75, rmse=0.606, sec=10.3]step=26 epoch=26 batch=1 running_loss=0.750171 running_clean_latent_rmse=0.605626 loss=0.750171 clean_latent_mse=0.366783
+epoch 26: 100%|██████████| 1/1 [00:10<00:00, 10.26s/it, loss=0.75, rmse=0.606, sec=10.3]epoch 26: 100%|██████████| 1/1 [00:10<00:00, 10.26s/it, loss=0.75, rmse=0.606, sec=10.3]
+{
+  "epoch": 26,
+  "train_loss": 0.750171422958374,
+  "train_clean_latent_mse": 0.3667828142642975,
+  "train_clean_latent_rmse": 0.6056259689480773
+}
+Wrote epoch checkpoint: /root/Self-Forcing/outputs/draft_head/checkpoints/20260610_overfit1_idx0_unrolled5_flow1_clean1_detail0p1/epoch_0026.pt
+epoch 27:   0%|          | 0/1 [00:00<?, ?it/s]epoch 27:   0%|          | 0/1 [00:10<?, ?it/s, loss=0.744, rmse=0.604, sec=10.1]step=27 epoch=27 batch=1 running_loss=0.744291 running_clean_latent_rmse=0.603619 loss=0.744291 clean_latent_mse=0.364356
+epoch 27: 100%|██████████| 1/1 [00:10<00:00, 10.11s/it, loss=0.744, rmse=0.604, sec=10.1]epoch 27: 100%|██████████| 1/1 [00:10<00:00, 10.11s/it, loss=0.744, rmse=0.604, sec=10.1]
+{
+  "epoch": 27,
+  "train_loss": 0.7442913055419922,
+  "train_clean_latent_mse": 0.3643556237220764,
+  "train_clean_latent_rmse": 0.603618773500358
+}
+Wrote epoch checkpoint: /root/Self-Forcing/outputs/draft_head/checkpoints/20260610_overfit1_idx0_unrolled5_flow1_clean1_detail0p1/epoch_0027.pt
+epoch 28:   0%|          | 0/1 [00:00<?, ?it/s]epoch 28:   0%|          | 0/1 [00:09<?, ?it/s, loss=0.738, rmse=0.601, sec=10]step=28 epoch=28 batch=1 running_loss=0.737508 running_clean_latent_rmse=0.601370 loss=0.737508 clean_latent_mse=0.361646
+epoch 28: 100%|██████████| 1/1 [00:09<00:00, 10.00s/it, loss=0.738, rmse=0.601, sec=10]epoch 28: 100%|██████████| 1/1 [00:09<00:00, 10.00s/it, loss=0.738, rmse=0.601, sec=10]
+{
+  "epoch": 28,
+  "train_loss": 0.7375078201293945,
+  "train_clean_latent_mse": 0.36164620518684387,
+  "train_clean_latent_rmse": 0.6013702729490741
+}
+Wrote epoch checkpoint: /root/Self-Forcing/outputs/draft_head/checkpoints/20260610_overfit1_idx0_unrolled5_flow1_clean1_detail0p1/epoch_0028.pt
+epoch 29:   0%|          | 0/1 [00:00<?, ?it/s]epoch 29:   0%|          | 0/1 [00:10<?, ?it/s, loss=0.731, rmse=0.599, sec=10.1]step=29 epoch=29 batch=1 running_loss=0.731351 running_clean_latent_rmse=0.599329 loss=0.731351 clean_latent_mse=0.359195
+epoch 29: 100%|██████████| 1/1 [00:10<00:00, 10.06s/it, loss=0.731, rmse=0.599, sec=10.1]epoch 29: 100%|██████████| 1/1 [00:10<00:00, 10.06s/it, loss=0.731, rmse=0.599, sec=10.1]
+{
+  "epoch": 29,
+  "train_loss": 0.731351375579834,
+  "train_clean_latent_mse": 0.35919493436813354,
+  "train_clean_latent_rmse": 0.5993287364778478
+}
+Wrote epoch checkpoint: /root/Self-Forcing/outputs/draft_head/checkpoints/20260610_overfit1_idx0_unrolled5_flow1_clean1_detail0p1/epoch_0029.pt
+epoch 30:   0%|          | 0/1 [00:00<?, ?it/s]epoch 30:   0%|          | 0/1 [00:10<?, ?it/s, loss=0.727, rmse=0.598, sec=10]step=30 epoch=30 batch=1 running_loss=0.726645 running_clean_latent_rmse=0.597834 loss=0.726645 clean_latent_mse=0.357406
+epoch 30: 100%|██████████| 1/1 [00:10<00:00, 10.02s/it, loss=0.727, rmse=0.598, sec=10]epoch 30: 100%|██████████| 1/1 [00:10<00:00, 10.02s/it, loss=0.727, rmse=0.598, sec=10]
+{
+  "epoch": 30,
+  "train_loss": 0.72664475440979,
+  "train_clean_latent_mse": 0.35740575194358826,
+  "train_clean_latent_rmse": 0.5978342177757879
+}
+Wrote epoch checkpoint: /root/Self-Forcing/outputs/draft_head/checkpoints/20260610_overfit1_idx0_unrolled5_flow1_clean1_detail0p1/epoch_0030.pt
+epoch 31:   0%|          | 0/1 [00:00<?, ?it/s]epoch 31:   0%|          | 0/1 [00:10<?, ?it/s, loss=0.724, rmse=0.597, sec=10.1]step=31 epoch=31 batch=1 running_loss=0.723671 running_clean_latent_rmse=0.596965 loss=0.723671 clean_latent_mse=0.356367
+epoch 31: 100%|██████████| 1/1 [00:10<00:00, 10.07s/it, loss=0.724, rmse=0.597, sec=10.1]epoch 31: 100%|██████████| 1/1 [00:10<00:00, 10.07s/it, loss=0.724, rmse=0.597, sec=10.1]
+{
+  "epoch": 31,
+  "train_loss": 0.7236713767051697,
+  "train_clean_latent_mse": 0.3563670516014099,
+  "train_clean_latent_rmse": 0.596964866304048
+}
+Wrote epoch checkpoint: /root/Self-Forcing/outputs/draft_head/checkpoints/20260610_overfit1_idx0_unrolled5_flow1_clean1_detail0p1/epoch_0031.pt
+epoch 32:   0%|          | 0/1 [00:00<?, ?it/s]epoch 32:   0%|          | 0/1 [00:10<?, ?it/s, loss=0.722, rmse=0.597, sec=10]step=32 epoch=32 batch=1 running_loss=0.722362 running_clean_latent_rmse=0.596718 loss=0.722362 clean_latent_mse=0.356073
+epoch 32: 100%|██████████| 1/1 [00:10<00:00, 10.01s/it, loss=0.722, rmse=0.597, sec=10]epoch 32: 100%|██████████| 1/1 [00:10<00:00, 10.01s/it, loss=0.722, rmse=0.597, sec=10]
+{
+  "epoch": 32,
+  "train_loss": 0.7223621606826782,
+  "train_clean_latent_mse": 0.35607290267944336,
+  "train_clean_latent_rmse": 0.5967184450638704
+}
+Wrote epoch checkpoint: /root/Self-Forcing/outputs/draft_head/checkpoints/20260610_overfit1_idx0_unrolled5_flow1_clean1_detail0p1/epoch_0032.pt
+epoch 33:   0%|          | 0/1 [00:00<?, ?it/s]epoch 33:   0%|          | 0/1 [00:10<?, ?it/s, loss=0.722, rmse=0.597, sec=10.1]step=33 epoch=33 batch=1 running_loss=0.722402 running_clean_latent_rmse=0.596975 loss=0.722402 clean_latent_mse=0.356379
+epoch 33: 100%|██████████| 1/1 [00:10<00:00, 10.06s/it, loss=0.722, rmse=0.597, sec=10.1]epoch 33: 100%|██████████| 1/1 [00:10<00:00, 10.06s/it, loss=0.722, rmse=0.597, sec=10.1]
+{
+  "epoch": 33,
+  "train_loss": 0.7224021553993225,
+  "train_clean_latent_mse": 0.3563793897628784,
+  "train_clean_latent_rmse": 0.5969752002913341
+}
+Wrote epoch checkpoint: /root/Self-Forcing/outputs/draft_head/checkpoints/20260610_overfit1_idx0_unrolled5_flow1_clean1_detail0p1/epoch_0033.pt
+epoch 34:   0%|          | 0/1 [00:00<?, ?it/s]epoch 34:   0%|          | 0/1 [00:10<?, ?it/s, loss=0.723, rmse=0.598, sec=10]step=34 epoch=34 batch=1 running_loss=0.723269 running_clean_latent_rmse=0.597520 loss=0.723269 clean_latent_mse=0.357030
+epoch 34: 100%|██████████| 1/1 [00:10<00:00, 10.01s/it, loss=0.723, rmse=0.598, sec=10]epoch 34: 100%|██████████| 1/1 [00:10<00:00, 10.01s/it, loss=0.723, rmse=0.598, sec=10]
+{
+  "epoch": 34,
+  "train_loss": 0.7232686877250671,
+  "train_clean_latent_mse": 0.3570299446582794,
+  "train_clean_latent_rmse": 0.5975198278369341
+}
+Wrote epoch checkpoint: /root/Self-Forcing/outputs/draft_head/checkpoints/20260610_overfit1_idx0_unrolled5_flow1_clean1_detail0p1/epoch_0034.pt
+epoch 35:   0%|          | 0/1 [00:00<?, ?it/s]epoch 35:   0%|          | 0/1 [00:10<?, ?it/s, loss=0.724, rmse=0.598, sec=10.1]step=35 epoch=35 batch=1 running_loss=0.724292 running_clean_latent_rmse=0.598066 loss=0.724292 clean_latent_mse=0.357683
+epoch 35: 100%|██████████| 1/1 [00:10<00:00, 10.08s/it, loss=0.724, rmse=0.598, sec=10.1]epoch 35: 100%|██████████| 1/1 [00:10<00:00, 10.08s/it, loss=0.724, rmse=0.598, sec=10.1]
+{
+  "epoch": 35,
+  "train_loss": 0.7242922186851501,
+  "train_clean_latent_mse": 0.3576832413673401,
+  "train_clean_latent_rmse": 0.598066251653895
+}
+Wrote epoch checkpoint: /root/Self-Forcing/outputs/draft_head/checkpoints/20260610_overfit1_idx0_unrolled5_flow1_clean1_detail0p1/epoch_0035.pt
+epoch 36:   0%|          | 0/1 [00:00<?, ?it/s]epoch 36:   0%|          | 0/1 [00:09<?, ?it/s, loss=0.725, rmse=0.598, sec=9.98]step=36 epoch=36 batch=1 running_loss=0.724771 running_clean_latent_rmse=0.598295 loss=0.724771 clean_latent_mse=0.357957
+epoch 36: 100%|██████████| 1/1 [00:09<00:00,  9.98s/it, loss=0.725, rmse=0.598, sec=9.98]epoch 36: 100%|██████████| 1/1 [00:09<00:00,  9.98s/it, loss=0.725, rmse=0.598, sec=9.98]
+{
+  "epoch": 36,
+  "train_loss": 0.7247713208198547,
+  "train_clean_latent_mse": 0.3579566776752472,
+  "train_clean_latent_rmse": 0.5982948083305146
+}
+Wrote epoch checkpoint: /root/Self-Forcing/outputs/draft_head/checkpoints/20260610_overfit1_idx0_unrolled5_flow1_clean1_detail0p1/epoch_0036.pt
+epoch 37:   0%|          | 0/1 [00:00<?, ?it/s]epoch 37:   0%|          | 0/1 [00:10<?, ?it/s, loss=0.724, rmse=0.598, sec=10.1]step=37 epoch=37 batch=1 running_loss=0.724052 running_clean_latent_rmse=0.597945 loss=0.724052 clean_latent_mse=0.357539
+epoch 37: 100%|██████████| 1/1 [00:10<00:00, 10.08s/it, loss=0.724, rmse=0.598, sec=10.1]epoch 37: 100%|██████████| 1/1 [00:10<00:00, 10.08s/it, loss=0.724, rmse=0.598, sec=10.1]
+{
+  "epoch": 37,
+  "train_loss": 0.7240520715713501,
+  "train_clean_latent_mse": 0.35753852128982544,
+  "train_clean_latent_rmse": 0.5979452494081924
+}
+Wrote epoch checkpoint: /root/Self-Forcing/outputs/draft_head/checkpoints/20260610_overfit1_idx0_unrolled5_flow1_clean1_detail0p1/epoch_0037.pt
+epoch 38:   0%|          | 0/1 [00:00<?, ?it/s]epoch 38:   0%|          | 0/1 [00:10<?, ?it/s, loss=0.722, rmse=0.597, sec=10]step=38 epoch=38 batch=1 running_loss=0.722090 running_clean_latent_rmse=0.597054 loss=0.722090 clean_latent_mse=0.356473
+epoch 38: 100%|██████████| 1/1 [00:10<00:00, 10.03s/it, loss=0.722, rmse=0.597, sec=10]epoch 38: 100%|██████████| 1/1 [00:10<00:00, 10.03s/it, loss=0.722, rmse=0.597, sec=10]
+{
+  "epoch": 38,
+  "train_loss": 0.7220903038978577,
+  "train_clean_latent_mse": 0.35647323727607727,
+  "train_clean_latent_rmse": 0.5970537976397748
+}
+Wrote epoch checkpoint: /root/Self-Forcing/outputs/draft_head/checkpoints/20260610_overfit1_idx0_unrolled5_flow1_clean1_detail0p1/epoch_0038.pt
+epoch 39:   0%|          | 0/1 [00:00<?, ?it/s]epoch 39:   0%|          | 0/1 [00:10<?, ?it/s, loss=0.719, rmse=0.596, sec=10]step=39 epoch=39 batch=1 running_loss=0.719175 running_clean_latent_rmse=0.595695 loss=0.719175 clean_latent_mse=0.354852
+epoch 39: 100%|██████████| 1/1 [00:10<00:00, 10.05s/it, loss=0.719, rmse=0.596, sec=10]epoch 39: 100%|██████████| 1/1 [00:10<00:00, 10.05s/it, loss=0.719, rmse=0.596, sec=10]
+{
+  "epoch": 39,
+  "train_loss": 0.7191749215126038,
+  "train_clean_latent_mse": 0.3548523485660553,
+  "train_clean_latent_rmse": 0.5956948451733113
+}
+Wrote epoch checkpoint: /root/Self-Forcing/outputs/draft_head/checkpoints/20260610_overfit1_idx0_unrolled5_flow1_clean1_detail0p1/epoch_0039.pt
+epoch 40:   0%|          | 0/1 [00:00<?, ?it/s]epoch 40:   0%|          | 0/1 [00:10<?, ?it/s, loss=0.716, rmse=0.594, sec=10]step=40 epoch=40 batch=1 running_loss=0.715954 running_clean_latent_rmse=0.594155 loss=0.715954 clean_latent_mse=0.353020
+epoch 40: 100%|██████████| 1/1 [00:10<00:00, 10.03s/it, loss=0.716, rmse=0.594, sec=10]epoch 40: 100%|██████████| 1/1 [00:10<00:00, 10.03s/it, loss=0.716, rmse=0.594, sec=10]
+{
+  "epoch": 40,
+  "train_loss": 0.715954065322876,
+  "train_clean_latent_mse": 0.35301971435546875,
+  "train_clean_latent_rmse": 0.5941546215889166
+}
+Wrote epoch checkpoint: /root/Self-Forcing/outputs/draft_head/checkpoints/20260610_overfit1_idx0_unrolled5_flow1_clean1_detail0p1/epoch_0040.pt
+epoch 41:   0%|          | 0/1 [00:00<?, ?it/s]epoch 41:   0%|          | 0/1 [00:10<?, ?it/s, loss=0.713, rmse=0.593, sec=10.1]step=41 epoch=41 batch=1 running_loss=0.712988 running_clean_latent_rmse=0.592633 loss=0.712988 clean_latent_mse=0.351214
+epoch 41: 100%|██████████| 1/1 [00:10<00:00, 10.05s/it, loss=0.713, rmse=0.593, sec=10.1]epoch 41: 100%|██████████| 1/1 [00:10<00:00, 10.05s/it, loss=0.713, rmse=0.593, sec=10.1]
+{
+  "epoch": 41,
+  "train_loss": 0.7129875421524048,
+  "train_clean_latent_mse": 0.35121437907218933,
+  "train_clean_latent_rmse": 0.5926334272315301
+}
+Wrote epoch checkpoint: /root/Self-Forcing/outputs/draft_head/checkpoints/20260610_overfit1_idx0_unrolled5_flow1_clean1_detail0p1/epoch_0041.pt
+epoch 42:   0%|          | 0/1 [00:00<?, ?it/s]epoch 42:   0%|          | 0/1 [00:10<?, ?it/s, loss=0.711, rmse=0.591, sec=10]step=42 epoch=42 batch=1 running_loss=0.710673 running_clean_latent_rmse=0.591344 loss=0.710673 clean_latent_mse=0.349688
+epoch 42: 100%|██████████| 1/1 [00:10<00:00, 10.03s/it, loss=0.711, rmse=0.591, sec=10]epoch 42: 100%|██████████| 1/1 [00:10<00:00, 10.03s/it, loss=0.711, rmse=0.591, sec=10]
+{
+  "epoch": 42,
+  "train_loss": 0.7106726765632629,
+  "train_clean_latent_mse": 0.3496882915496826,
+  "train_clean_latent_rmse": 0.5913444779057995
+}
+Wrote epoch checkpoint: /root/Self-Forcing/outputs/draft_head/checkpoints/20260610_overfit1_idx0_unrolled5_flow1_clean1_detail0p1/epoch_0042.pt
+epoch 43:   0%|          | 0/1 [00:00<?, ?it/s]epoch 43:   0%|          | 0/1 [00:12<?, ?it/s, loss=0.709, rmse=0.59, sec=12.4]step=43 epoch=43 batch=1 running_loss=0.709071 running_clean_latent_rmse=0.590323 loss=0.709071 clean_latent_mse=0.348481
+epoch 43: 100%|██████████| 1/1 [00:12<00:00, 12.43s/it, loss=0.709, rmse=0.59, sec=12.4]epoch 43: 100%|██████████| 1/1 [00:12<00:00, 12.43s/it, loss=0.709, rmse=0.59, sec=12.4]
+{
+  "epoch": 43,
+  "train_loss": 0.709071159362793,
+  "train_clean_latent_mse": 0.34848105907440186,
+  "train_clean_latent_rmse": 0.5903228430904583
+}
+Wrote epoch checkpoint: /root/Self-Forcing/outputs/draft_head/checkpoints/20260610_overfit1_idx0_unrolled5_flow1_clean1_detail0p1/epoch_0043.pt
+epoch 44:   0%|          | 0/1 [00:00<?, ?it/s]epoch 44:   0%|          | 0/1 [00:09<?, ?it/s, loss=0.708, rmse=0.59, sec=9.85]step=44 epoch=44 batch=1 running_loss=0.708025 running_clean_latent_rmse=0.589524 loss=0.708025 clean_latent_mse=0.347539
+epoch 44: 100%|██████████| 1/1 [00:09<00:00,  9.86s/it, loss=0.708, rmse=0.59, sec=9.85]epoch 44: 100%|██████████| 1/1 [00:09<00:00,  9.86s/it, loss=0.708, rmse=0.59, sec=9.85]
+{
+  "epoch": 44,
+  "train_loss": 0.7080246806144714,
+  "train_clean_latent_mse": 0.3475385010242462,
+  "train_clean_latent_rmse": 0.5895239613656481
+}
+Wrote epoch checkpoint: /root/Self-Forcing/outputs/draft_head/checkpoints/20260610_overfit1_idx0_unrolled5_flow1_clean1_detail0p1/epoch_0044.pt
+epoch 45:   0%|          | 0/1 [00:00<?, ?it/s]epoch 45:   0%|          | 0/1 [00:10<?, ?it/s, loss=0.707, rmse=0.589, sec=10.2]step=45 epoch=45 batch=1 running_loss=0.707279 running_clean_latent_rmse=0.588866 loss=0.707279 clean_latent_mse=0.346763
+epoch 45: 100%|██████████| 1/1 [00:10<00:00, 10.23s/it, loss=0.707, rmse=0.589, sec=10.2]epoch 45: 100%|██████████| 1/1 [00:10<00:00, 10.23s/it, loss=0.707, rmse=0.589, sec=10.2]
+{
+  "epoch": 45,
+  "train_loss": 0.7072787880897522,
+  "train_clean_latent_mse": 0.34676337242126465,
+  "train_clean_latent_rmse": 0.5888661753074842
+}
+Wrote epoch checkpoint: /root/Self-Forcing/outputs/draft_head/checkpoints/20260610_overfit1_idx0_unrolled5_flow1_clean1_detail0p1/epoch_0045.pt
+epoch 46:   0%|          | 0/1 [00:00<?, ?it/s]epoch 46:   0%|          | 0/1 [00:10<?, ?it/s, loss=0.707, rmse=0.588, sec=10]step=46 epoch=46 batch=1 running_loss=0.706576 running_clean_latent_rmse=0.588248 loss=0.706576 clean_latent_mse=0.346036
+epoch 46: 100%|██████████| 1/1 [00:10<00:00, 10.02s/it, loss=0.707, rmse=0.588, sec=10]epoch 46: 100%|██████████| 1/1 [00:10<00:00, 10.02s/it, loss=0.707, rmse=0.588, sec=10]
+{
+  "epoch": 46,
+  "train_loss": 0.7065761089324951,
+  "train_clean_latent_mse": 0.3460356891155243,
+  "train_clean_latent_rmse": 0.5882479826701698
+}
+Wrote epoch checkpoint: /root/Self-Forcing/outputs/draft_head/checkpoints/20260610_overfit1_idx0_unrolled5_flow1_clean1_detail0p1/epoch_0046.pt
+epoch 47:   0%|          | 0/1 [00:00<?, ?it/s]epoch 47:   0%|          | 0/1 [00:10<?, ?it/s, loss=0.706, rmse=0.588, sec=10.1]step=47 epoch=47 batch=1 running_loss=0.705668 running_clean_latent_rmse=0.587621 loss=0.705668 clean_latent_mse=0.345298
+epoch 47: 100%|██████████| 1/1 [00:10<00:00, 10.06s/it, loss=0.706, rmse=0.588, sec=10.1]epoch 47: 100%|██████████| 1/1 [00:10<00:00, 10.06s/it, loss=0.706, rmse=0.588, sec=10.1]
+{
+  "epoch": 47,
+  "train_loss": 0.7056683897972107,
+  "train_clean_latent_mse": 0.3452981114387512,
+  "train_clean_latent_rmse": 0.5876207207363873
+}
+Wrote epoch checkpoint: /root/Self-Forcing/outputs/draft_head/checkpoints/20260610_overfit1_idx0_unrolled5_flow1_clean1_detail0p1/epoch_0047.pt
+epoch 48:   0%|          | 0/1 [00:00<?, ?it/s]epoch 48:   0%|          | 0/1 [00:10<?, ?it/s, loss=0.704, rmse=0.587, sec=10]step=48 epoch=48 batch=1 running_loss=0.704404 running_clean_latent_rmse=0.586939 loss=0.704404 clean_latent_mse=0.344497
+epoch 48: 100%|██████████| 1/1 [00:10<00:00, 10.03s/it, loss=0.704, rmse=0.587, sec=10]epoch 48: 100%|██████████| 1/1 [00:10<00:00, 10.03s/it, loss=0.704, rmse=0.587, sec=10]
+{
+  "epoch": 48,
+  "train_loss": 0.7044035196304321,
+  "train_clean_latent_mse": 0.34449708461761475,
+  "train_clean_latent_rmse": 0.5869387400892999
+}
+Wrote epoch checkpoint: /root/Self-Forcing/outputs/draft_head/checkpoints/20260610_overfit1_idx0_unrolled5_flow1_clean1_detail0p1/epoch_0048.pt
+epoch 49:   0%|          | 0/1 [00:00<?, ?it/s]epoch 49:   0%|          | 0/1 [00:10<?, ?it/s, loss=0.703, rmse=0.586, sec=10.1]step=49 epoch=49 batch=1 running_loss=0.702698 running_clean_latent_rmse=0.586183 loss=0.702698 clean_latent_mse=0.343611
+epoch 49: 100%|██████████| 1/1 [00:10<00:00, 10.06s/it, loss=0.703, rmse=0.586, sec=10.1]epoch 49: 100%|██████████| 1/1 [00:10<00:00, 10.06s/it, loss=0.703, rmse=0.586, sec=10.1]
+{
+  "epoch": 49,
+  "train_loss": 0.7026979923248291,
+  "train_clean_latent_mse": 0.343610942363739,
+  "train_clean_latent_rmse": 0.5861833692316245
+}
+Wrote epoch checkpoint: /root/Self-Forcing/outputs/draft_head/checkpoints/20260610_overfit1_idx0_unrolled5_flow1_clean1_detail0p1/epoch_0049.pt
+epoch 50:   0%|          | 0/1 [00:00<?, ?it/s]epoch 50:   0%|          | 0/1 [00:10<?, ?it/s, loss=0.701, rmse=0.585, sec=10]step=50 epoch=50 batch=1 running_loss=0.700666 running_clean_latent_rmse=0.585370 loss=0.700666 clean_latent_mse=0.342658
+epoch 50: 100%|██████████| 1/1 [00:10<00:00, 10.01s/it, loss=0.701, rmse=0.585, sec=10]epoch 50: 100%|██████████| 1/1 [00:10<00:00, 10.01s/it, loss=0.701, rmse=0.585, sec=10]
+{
+  "epoch": 50,
+  "train_loss": 0.7006658911705017,
+  "train_clean_latent_mse": 0.34265846014022827,
+  "train_clean_latent_rmse": 0.5853703615150226
+}
+Wrote epoch checkpoint: /root/Self-Forcing/outputs/draft_head/checkpoints/20260610_overfit1_idx0_unrolled5_flow1_clean1_detail0p1/epoch_0050.pt
+epoch 51:   0%|          | 0/1 [00:00<?, ?it/s]epoch 51:   0%|          | 0/1 [00:14<?, ?it/s, loss=0.698, rmse=0.585, sec=14.7]step=51 epoch=51 batch=1 running_loss=0.698448 running_clean_latent_rmse=0.584549 loss=0.698448 clean_latent_mse=0.341697
+epoch 51: 100%|██████████| 1/1 [00:14<00:00, 14.74s/it, loss=0.698, rmse=0.585, sec=14.7]epoch 51: 100%|██████████| 1/1 [00:14<00:00, 14.74s/it, loss=0.698, rmse=0.585, sec=14.7]
+{
+  "epoch": 51,
+  "train_loss": 0.6984483599662781,
+  "train_clean_latent_mse": 0.341697096824646,
+  "train_clean_latent_rmse": 0.5845486265698056
+}
+Wrote epoch checkpoint: /root/Self-Forcing/outputs/draft_head/checkpoints/20260610_overfit1_idx0_unrolled5_flow1_clean1_detail0p1/epoch_0051.pt
+epoch 52:   0%|          | 0/1 [00:00<?, ?it/s]

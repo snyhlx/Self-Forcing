@@ -1,0 +1,13 @@
+[2026-05-30 12:21:06] Training latent draft head
+[2026-05-30 12:21:06] Manifest: /mnt/lanxiangh/data/ff_exec/draft_head_full_dataset/tau_delta_0p0/manifest.json
+[2026-05-30 12:21:06] Output:   /root/Self-Forcing/outputs/sdvg/draft_head/moviegen_draft_head_attention_block_noise_h512_l4_heads8_ctx512_pool1x4x4_ffn4_blocks9.pt
+[2026-05-30 12:21:06] Layers:   infer from manifest records
+[2026-05-30 12:21:06] Head:     attention input_source=block_noise hidden=512 layers=4 heads=8
+[2026-05-30 12:21:06] GPUs:     1 visible=0
+[2026-05-30 12:21:06] Epochs:   3 batch_size=128 lr=1e-4
+Training draft head records=8024 train=7623 val=401 layers=['blocks.16', 'blocks.24', 'blocks.8'] latent_channels=16 feature_dim=15360 head_type=attention input_source=block_noise world_size=1
+epoch 1:   0%|          | 0/60 [00:00<?, ?it/s]epoch 1:   0%|          | 0/60 [00:30<?, ?it/s, avg=1.86, loss=1.86, rmse=1.37, sec=9.48]step=1 epoch=1 batch=1 loss=1.863900 running_mse=1.863900 running_rmse=1.365247 step_seconds=9.478237
+epoch 1:   2%|▏         | 1/60 [00:30<29:45, 30.26s/it, avg=1.86, loss=1.86, rmse=1.37, sec=9.48]epoch 1:   2%|▏         | 1/60 [01:00<29:45, 30.26s/it, avg=1.84, loss=1.81, rmse=1.36, sec=8.35]step=2 epoch=1 batch=2 loss=1.814001 running_mse=1.838950 running_rmse=1.356079 step_seconds=8.347988
+epoch 1:   3%|▎         | 2/60 [01:00<28:59, 29.99s/it, avg=1.84, loss=1.81, rmse=1.36, sec=8.35]epoch 1:   3%|▎         | 2/60 [01:32<28:59, 29.99s/it, avg=1.84, loss=1.85, rmse=1.36, sec=10.3]step=3 epoch=1 batch=3 loss=1.854906 running_mse=1.844269 running_rmse=1.358039 step_seconds=10.274695
+epoch 1:   5%|▌         | 3/60 [01:32<29:30, 31.06s/it, avg=1.84, loss=1.85, rmse=1.36, sec=10.3]epoch 1:   5%|▌         | 3/60 [02:02<29:30, 31.06s/it, avg=1.84, loss=1.84, rmse=1.36, sec=9.66]step=4 epoch=1 batch=4 loss=1.842677 running_mse=1.843871 running_rmse=1.357892 step_seconds=9.661523
+epoch 1:   7%|▋         | 4/60 [02:02<28:43, 30.78s/it, avg=1.84, loss=1.84, rmse=1.36, sec=9.66]

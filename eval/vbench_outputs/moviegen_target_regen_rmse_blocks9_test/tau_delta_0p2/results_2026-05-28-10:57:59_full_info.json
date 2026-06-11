@@ -1,0 +1,16 @@
+[
+    {
+        "prompt_en": "prompt_0000_target_only",
+        "dimension": [
+            "subject_consistency",
+            "background_consistency",
+            "motion_smoothness",
+            "dynamic_degree",
+            "aesthetic_quality",
+            "imaging_quality"
+        ],
+        "video_list": [
+            "/root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_test/tau_delta_0p2/prompt_0000_target_only.mp4"
+        ]
+    }
+]

@@ -1,0 +1,33 @@
+[2026-06-07 04:40:34] Bidirectional prompt-anchor video diagnostic
+[2026-06-07 04:40:34] Checkpoint: /root/Self-Forcing/outputs/draft_head/checkpoints/20260606_142446_bidirectional_prompt_anchor_wan_targetinit_unrolled_h5120_l6_st1000_750_500_250_0_bs1_g4_lr5e-4_fl0_25_td0_0_bd0_0/final.pt
+[2026-06-07 04:40:34] Output:     /root/Self-Forcing/outputs/draft_head/test_runs/bidirectional_final_prompt002_refine250_20260607_044034
+[2026-06-07 04:40:34] Blocks:     9
+[2026-06-07 04:40:34] Prompts:    /root/Self-Forcing/prompts/MovieGenVideoBench.txt start=2 max=1
+[2026-06-07 04:40:34] Refine:     target_timestep=250 save_raw=1
+KV inference with 3 frames per block
+video prompts:   0%|          | 0/1 [00:00<?, ?it/s]video prompts: 100%|██████████| 1/1 [00:24<00:00, 24.31s/it]video prompts: 100%|██████████| 1/1 [00:24<00:00, 24.31s/it]
+{
+  "checkpoint_path": "/root/Self-Forcing/outputs/draft_head/checkpoints/20260606_142446_bidirectional_prompt_anchor_wan_targetinit_unrolled_h5120_l6_st1000_750_500_250_0_bs1_g4_lr5e-4_fl0_25_td0_0_bd0_0/final.pt",
+  "num_prompts": 1,
+  "training_mode": "unrolled",
+  "denoising_step_list": [
+    1000,
+    750,
+    500,
+    250,
+    0
+  ],
+  "unroll_noise_mode": "fixed",
+  "target_refine_timestep": 250,
+  "runs": [
+    {
+      "mode": "bidirectional_target_refine_t250",
+      "prompt_index": 2,
+      "prompt": "A movie trailer featuring the adventures of the 30 year old space man wearing a red wool knitted motorcycle helmet, blue sky, salt desert, cinematic style, shot on 35mm film, vivid colors.",
+      "video_path": "/root/Self-Forcing/outputs/draft_head/test_runs/bidirectional_final_prompt002_refine250_20260607_044034/prompt_0002_bidirectional_target_refine_t250.mp4",
+      "num_blocks": 9,
+      "target_refine_timestep": 250
+    }
+  ]
+}
+[2026-06-07 04:42:28] Done. Profile: /root/Self-Forcing/outputs/draft_head/test_runs/bidirectional_final_prompt002_refine250_20260607_044034/profile.json

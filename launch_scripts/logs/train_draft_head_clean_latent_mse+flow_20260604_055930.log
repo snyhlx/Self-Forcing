@@ -1,0 +1,16 @@
+[2026-06-04 05:59:30] Training latent draft head with clean-latent + flow loss
+[2026-06-04 05:59:30] Manifest: /mnt/lanxiangh/data/ff_exec/draft_head_full_dataset/tau_delta_0p0/manifest.json
+[2026-06-04 05:59:30] Run dir:   /root/Self-Forcing/outputs/draft_head/checkpoints/20260604_055930_wan_dflash_perblock_meanctx_targetinit_dh_wan_dflash_attention_clean_latent_flow_unrolled_h5120_ctx4680_p1x1x1_st1000_750_500_250_0_bs1_g4_lr5e-5_fl0_25_ampbf16_gc0_fw1_cfgbc706d3e
+[2026-06-04 05:59:30] Output:    /root/Self-Forcing/outputs/draft_head/checkpoints/20260604_055930_wan_dflash_perblock_meanctx_targetinit_dh_wan_dflash_attention_clean_latent_flow_unrolled_h5120_ctx4680_p1x1x1_st1000_750_500_250_0_bs1_g4_lr5e-5_fl0_25_ampbf16_gc0_fw1_cfgbc706d3e/final.pt
+[2026-06-04 05:59:30] Config:    dh_wan_dflash_attention_clean_latent_flow_unrolled_h5120_l3_nh40_ctx4680_pool1x1x1_ffm4_ffn13824_st1000_750_500_250_0_sh5_0_nb9_bs1_gpu4_ep3_lr5e-5_wd0_0_val0_05_cl1_0_fl0_25_dmd0_0_de1_ampbf16_gc0_fw1_layersblocks_8_blocks_16_blocks_24_unoisefixed_uwauto_tinit8_16_24
+[2026-06-04 05:59:30] Config hash: bc706d3e
+[2026-06-04 05:59:30] Layers:   blocks.8 blocks.16 blocks.24
+[2026-06-04 05:59:30] Head:     wan_dflash_attention input_source=scheduled_latents hidden=5120 layers=3 heads=40 ffn_dim=13824
+[2026-06-04 05:59:30] Loss:     type=clean_latent_flow clean_latent=1.0 flow=0.25 dmd=0.0 every=1
+[2026-06-04 05:59:30] Training: mode=unrolled unroll_noise=fixed weights=auto
+[2026-06-04 05:59:30] Memory:   amp_dtype=bf16 gradient_checkpointing=0 freeze_copied_wan_epochs=1
+[2026-06-04 05:59:30] Schedule: [1000 750 500 250 0] timestep_shift=5.0
+[2026-06-04 05:59:30] Target init: 8 16 24
+[2026-06-04 05:59:30] Draft init: disabled
+[2026-06-04 05:59:30] GPUs:     4 visible=0,1,2,3
+[2026-06-04 05:59:30] Epochs:   3 batch_size=1 lr=5e-5

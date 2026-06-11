@@ -1,0 +1,84 @@
+[2026-06-09 11:21:59] Bidirectional prompt-anchor video diagnostic
+[2026-06-09 11:21:59] Checkpoint: /root/Self-Forcing/outputs/draft_head/checkpoints/20260609_092217_bidirectional_prompt_anchor_wan_targetinit_tempmix2_unrolled_h5120_l6_st1000_750_500_250_0_bs1_g4_lr1e-5_fl1_0_dt0_0_td0_0_bd0_0/final.pt
+[2026-06-09 11:21:59] Output:     /root/Self-Forcing/outputs/draft_head/test_runs/bidirectional_prompt_anchor_20260609_112159
+[2026-06-09 11:21:59] Blocks:     9
+[2026-06-09 11:21:59] Prompts:    /root/Self-Forcing/prompts/MovieGenVideoBench.txt start=2 max=1
+[2026-06-09 11:21:59] Refine:     target_timestep=0 save_raw=0
+video prompts:   0%|          | 0/1 [00:00<?, ?it/s]
+  0%|          | 0/50 [00:00<?, ?it/s][A
+  2%|▏         | 1/50 [00:12<10:06, 12.39s/it][A
+  4%|▍         | 2/50 [00:24<09:51, 12.32s/it][A
+  6%|▌         | 3/50 [00:36<09:39, 12.32s/it][A
+  8%|▊         | 4/50 [00:49<09:26, 12.32s/it][A
+ 10%|█         | 5/50 [01:01<09:14, 12.32s/it][A
+ 12%|█▏        | 6/50 [01:13<09:02, 12.32s/it][A
+ 14%|█▍        | 7/50 [01:26<08:50, 12.33s/it][A
+ 16%|█▌        | 8/50 [01:38<08:38, 12.34s/it][A
+ 18%|█▊        | 9/50 [01:50<08:25, 12.34s/it][A
+ 20%|██        | 10/50 [02:03<08:13, 12.34s/it][A
+ 22%|██▏       | 11/50 [02:15<08:01, 12.34s/it][A
+ 24%|██▍       | 12/50 [02:28<07:49, 12.34s/it][A
+ 26%|██▌       | 13/50 [02:40<07:36, 12.35s/it][A
+ 28%|██▊       | 14/50 [02:52<07:24, 12.35s/it][A
+ 30%|███       | 15/50 [03:05<07:12, 12.35s/it][A
+ 32%|███▏      | 16/50 [03:17<06:59, 12.35s/it][A
+ 34%|███▍      | 17/50 [03:29<06:47, 12.35s/it][A
+ 36%|███▌      | 18/50 [03:42<06:35, 12.35s/it][A
+ 38%|███▊      | 19/50 [03:54<06:22, 12.35s/it][A
+ 40%|████      | 20/50 [04:06<06:10, 12.35s/it][A
+ 42%|████▏     | 21/50 [04:19<05:58, 12.36s/it][A
+ 44%|████▍     | 22/50 [04:31<05:46, 12.36s/it][A
+ 46%|████▌     | 23/50 [04:43<05:33, 12.36s/it][A
+ 48%|████▊     | 24/50 [04:56<05:21, 12.36s/it][A
+ 50%|█████     | 25/50 [05:08<05:09, 12.36s/it][A
+ 52%|█████▏    | 26/50 [05:21<04:56, 12.36s/it][A
+ 54%|█████▍    | 27/50 [05:33<04:44, 12.36s/it][A
+ 56%|█████▌    | 28/50 [05:45<04:31, 12.36s/it][A
+ 58%|█████▊    | 29/50 [05:58<04:19, 12.36s/it][A
+ 60%|██████    | 30/50 [06:10<04:07, 12.36s/it][A
+ 62%|██████▏   | 31/50 [06:22<03:54, 12.36s/it][A
+ 64%|██████▍   | 32/50 [06:35<03:42, 12.35s/it][A
+ 66%|██████▌   | 33/50 [06:47<03:30, 12.35s/it][A
+ 68%|██████▊   | 34/50 [06:59<03:17, 12.35s/it][A
+ 70%|███████   | 35/50 [07:12<03:05, 12.36s/it][A
+ 72%|███████▏  | 36/50 [07:24<02:52, 12.36s/it][A
+ 74%|███████▍  | 37/50 [07:36<02:40, 12.36s/it][A
+ 76%|███████▌  | 38/50 [07:49<02:28, 12.36s/it][A
+ 78%|███████▊  | 39/50 [08:01<02:15, 12.36s/it][A
+ 80%|████████  | 40/50 [08:14<02:03, 12.35s/it][A
+ 82%|████████▏ | 41/50 [08:26<01:51, 12.35s/it][A
+ 84%|████████▍ | 42/50 [08:38<01:38, 12.35s/it][A
+ 86%|████████▌ | 43/50 [08:51<01:26, 12.35s/it][A
+ 88%|████████▊ | 44/50 [09:03<01:14, 12.35s/it][A
+ 90%|█████████ | 45/50 [09:15<01:01, 12.35s/it][A
+ 92%|█████████▏| 46/50 [09:28<00:49, 12.35s/it][A
+ 94%|█████████▍| 47/50 [09:40<00:37, 12.35s/it][A
+ 96%|█████████▌| 48/50 [09:52<00:24, 12.35s/it][A
+ 98%|█████████▊| 49/50 [10:05<00:12, 12.35s/it][A
+100%|██████████| 50/50 [10:17<00:00, 12.34s/it][A100%|██████████| 50/50 [10:17<00:00, 12.35s/it]
+video prompts: 100%|██████████| 1/1 [10:25<00:00, 625.86s/it]video prompts: 100%|██████████| 1/1 [10:25<00:00, 625.86s/it]
+{
+  "checkpoint_path": "/root/Self-Forcing/outputs/draft_head/checkpoints/20260609_092217_bidirectional_prompt_anchor_wan_targetinit_tempmix2_unrolled_h5120_l6_st1000_750_500_250_0_bs1_g4_lr1e-5_fl1_0_dt0_0_td0_0_bd0_0/final.pt",
+  "num_prompts": 1,
+  "training_mode": "unrolled",
+  "denoising_step_list": [
+    1000,
+    750,
+    500,
+    250,
+    0
+  ],
+  "unroll_noise_mode": "fixed",
+  "target_refine_timestep": 0,
+  "runs": [
+    {
+      "mode": "bidirectional_draft_head",
+      "prompt_index": 2,
+      "prompt": "A movie trailer featuring the adventures of the 30 year old space man wearing a red wool knitted motorcycle helmet, blue sky, salt desert, cinematic style, shot on 35mm film, vivid colors.",
+      "video_path": "/root/Self-Forcing/outputs/draft_head/test_runs/bidirectional_prompt_anchor_20260609_112159/prompt_0002_bidirectional_draft_head.mp4",
+      "num_blocks": 9,
+      "target_refine_timestep": 0
+    }
+  ]
+}
+[2026-06-09 11:33:47] Done. Profile: /root/Self-Forcing/outputs/draft_head/test_runs/bidirectional_prompt_anchor_20260609_112159/profile.json

@@ -1,0 +1,101 @@
+[2026-06-06 12:25:02] Training bidirectional prompt-anchor draft head
+[2026-06-06 12:25:02] Manifest: /mnt/lanxiangh/data/ff_exec/draft_head_full_dataset_6layer_uniform/tau_delta_0p0/manifest.json
+[2026-06-06 12:25:02] Run dir:   /root/Self-Forcing/outputs/draft_head/checkpoints/20260606_122502_bidirectional_prompt_anchor_unrolled_h512_l8_st1000_750_500_250_0_bs1_g4_lr5e-4_fl0_25_td0_0_bd0_0
+[2026-06-06 12:25:02] Output:    /root/Self-Forcing/outputs/draft_head/checkpoints/20260606_122502_bidirectional_prompt_anchor_unrolled_h512_l8_st1000_750_500_250_0_bs1_g4_lr5e-4_fl0_25_td0_0_bd0_0/final.pt
+[2026-06-06 12:25:02] GPUs:      4 visible=0,1,2,3
+[2026-06-06 12:25:02] Anchor:    online_target target=Wan2.1-T2V-14B seed=42
+[2026-06-06 12:25:02] Model:     hidden=512 layers=8 prompt_dim=4096
+[2026-06-06 12:25:02] Training:  mode=unrolled steps=[1000 750 500 250 0] unroll_noise=fixed weights=auto
+[2026-06-06 12:25:02] Loss:      clean=1.0 flow=0.25 temporal_delta=0.0 boundary=0.0
+KV inference with 3 frames per block
+KV inference with 3 frames per block
+KV inference with 3 frames per block
+KV inference with 3 frames per block
+Training bidirectional draft head prompts=1003 train=953 val=50 latent_channels=16 frames=27 world_size=4
+epoch 1:   0%|          | 0/239 [00:00<?, ?it/s]epoch 1:   0%|          | 0/239 [00:03<?, ?it/s]
+[rank0]: Traceback (most recent call last):
+[rank0]:   File "/root/Self-Forcing/train_bidirectional_draft_head.py", line 819, in <module>
+[rank0]:     main()
+[rank0]:   File "/root/Self-Forcing/train_bidirectional_draft_head.py", line 704, in main
+[rank0]:     loss, metrics = compute_bidirectional_losses(
+[rank0]:   File "/root/Self-Forcing/train_bidirectional_draft_head.py", line 485, in compute_bidirectional_losses
+[rank0]:     prediction = model(anchor_latents=anchor, future_noise=current, prompt_embeds=prompt_embeds)
+[rank0]:   File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
+[rank0]:     return self._call_impl(*args, **kwargs)
+[rank0]:   File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
+[rank0]:     return forward_call(*args, **kwargs)
+[rank0]:   File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/parallel/distributed.py", line 1832, in forward
+[rank0]:     else self._run_ddp_forward(*inputs, **kwargs)
+[rank0]:   File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/parallel/distributed.py", line 1657, in _run_ddp_forward
+[rank0]:     return self.module(*inputs, **kwargs)  # type: ignore[index]
+[rank0]:   File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
+[rank0]:     return self._call_impl(*args, **kwargs)
+[rank0]:   File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
+[rank0]:     return forward_call(*args, **kwargs)
+[rank0]:   File "/root/Self-Forcing/train_bidirectional_draft_head.py", line 379, in forward
+[rank0]:     x = block(x, prompt)
+[rank0]:   File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
+[rank0]:     return self._call_impl(*args, **kwargs)
+[rank0]:   File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
+[rank0]:     return forward_call(*args, **kwargs)
+[rank0]:   File "/root/Self-Forcing/train_bidirectional_draft_head.py", line 297, in forward
+[rank0]:     h = h * (1 + scale1[:, :, None, None, None]) + shift1[:, :, None, None, None]
+[rank0]: torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 330.00 MiB. GPU 0 has a total capacity of 139.81 GiB of which 155.44 MiB is free. Including non-PyTorch memory, this process has 139.65 GiB memory in use. Of the allocated memory 137.46 GiB is allocated by PyTorch, and 682.52 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/docs/stable/notes/cuda.html#optimizing-memory-usage-with-pytorch-cuda-alloc-conf)
+[rank0]:[W606 12:59:43.128828093 ProcessGroupNCCL.cpp:1647] Warning: WARNING: destroy_process_group() was not called before program exit, which can leak resources. For more info, please see https://pytorch.org/docs/stable/distributed.html#shutdown (function operator())
+W0606 12:59:47.813000 2843669 sf_venv/lib/python3.10/site-packages/torch/distributed/elastic/multiprocessing/api.py:1014] Sending process 2843775 closing signal SIGTERM
+W0606 12:59:47.816000 2843669 sf_venv/lib/python3.10/site-packages/torch/distributed/elastic/multiprocessing/api.py:1014] Sending process 2843776 closing signal SIGTERM
+W0606 12:59:47.817000 2843669 sf_venv/lib/python3.10/site-packages/torch/distributed/elastic/multiprocessing/api.py:1014] Sending process 2843777 closing signal SIGTERM
+E0606 12:59:52.157000 2843669 sf_venv/lib/python3.10/site-packages/torch/distributed/elastic/multiprocessing/api.py:988] failed (exitcode: 1) local_rank: 0 (pid: 2843774) of binary: /root/Self-Forcing/sf_venv/bin/python
+Traceback (most recent call last):
+  File "/root/.local/share/uv/python/cpython-3.10-linux-x86_64-gnu/lib/python3.10/runpy.py", line 196, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "/root/.local/share/uv/python/cpython-3.10-linux-x86_64-gnu/lib/python3.10/runpy.py", line 86, in _run_code
+    exec(code, run_globals)
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/distributed/run.py", line 1020, in <module>
+    main()
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 367, in wrapper
+    return f(*args, **kwargs)
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/distributed/run.py", line 1016, in main
+    run(args)
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/distributed/run.py", line 1007, in run
+    elastic_launch(
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/distributed/launcher/api.py", line 191, in __call__
+    return launch_agent(self._config, self._entrypoint, list(args))
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/distributed/launcher/api.py", line 371, in launch_agent
+    raise ChildFailedError(
+torch.distributed.elastic.multiprocessing.errors.ChildFailedError: 
+============================================================
+train_bidirectional_draft_head.py FAILED
+------------------------------------------------------------
+Failures:
+[1]:
+  time      : 2026-06-06_12:59:52
+  host      : lanxiang-prl-pod-2-67d469f5c6-f2kks
+  rank      : 1 (local_rank: 1)
+  exitcode  : -15 (pid: 2843775)  (SIGTERM)
+  error_file: <N/A>
+  traceback : Signal 15 (SIGTERM) received by PID 2843775
+[2]:
+  time      : 2026-06-06_12:59:52
+  host      : lanxiang-prl-pod-2-67d469f5c6-f2kks
+  rank      : 2 (local_rank: 2)
+  exitcode  : -15 (pid: 2843776)  (SIGTERM)
+  error_file: <N/A>
+  traceback : Signal 15 (SIGTERM) received by PID 2843776
+[3]:
+  time      : 2026-06-06_12:59:52
+  host      : lanxiang-prl-pod-2-67d469f5c6-f2kks
+  rank      : 3 (local_rank: 3)
+  exitcode  : -15 (pid: 2843777)  (SIGTERM)
+  error_file: <N/A>
+  traceback : Signal 15 (SIGTERM) received by PID 2843777
+------------------------------------------------------------
+Root Cause (first observed failure):
+[0]:
+  time      : 2026-06-06_12:59:47
+  host      : lanxiang-prl-pod-2-67d469f5c6-f2kks
+  rank      : 0 (local_rank: 0)
+  exitcode  : 1 (pid: 2843774) 
+  error_file: <N/A>
+  traceback : To enable traceback see: https://pytorch.org/docs/stable/elastic/errors.html
+============================================================

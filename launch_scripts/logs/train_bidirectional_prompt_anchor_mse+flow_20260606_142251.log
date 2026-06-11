@@ -1,0 +1,13 @@
+[2026-06-06 14:22:51] Training bidirectional prompt-anchor draft head
+[2026-06-06 14:22:51] Manifest: /mnt/lanxiangh/data/ff_exec/draft_head_full_dataset_6layer_uniform/tau_delta_0p0/manifest.json
+[2026-06-06 14:22:51] Dataset cache: /mnt/lanxiangh/data/cache/specgen
+[2026-06-06 14:22:51] Run dir:   /root/Self-Forcing/outputs/draft_head/checkpoints/20260606_142251_bidirectional_prompt_anchor_wan_targetinit_unrolled_h5120_l6_st1000_750_500_250_0_bs1_g4_lr5e-4_fl0_25_td0_0_bd0_0
+[2026-06-06 14:22:51] Output:    /root/Self-Forcing/outputs/draft_head/checkpoints/20260606_142251_bidirectional_prompt_anchor_wan_targetinit_unrolled_h5120_l6_st1000_750_500_250_0_bs1_g4_lr5e-4_fl0_25_td0_0_bd0_0/final.pt
+[2026-06-06 14:22:51] GPUs:      4 visible=0,1,2,3
+[2026-06-06 14:22:51] Anchor:    online_target target=Wan2.1-T2V-14B seed=42
+[2026-06-06 14:22:51] Model:     wan hidden=5120 layers=6 heads=40 ffn_dim=13824 prompt_dim=4096 gradient_checkpointing=1
+[2026-06-06 14:22:51] Parallel:  strategy=fsdp fsdp_min_num_params=100000000 fsdp_mixed_precision=none
+[2026-06-06 14:22:51] Init:      target_blocks=[0 8 16 24 32 39]
+[2026-06-06 14:22:51] Training:  mode=unrolled steps=[1000 750 500 250 0] unroll_noise=fixed weights=auto
+[2026-06-06 14:22:51] Loss:      clean=1.0 flow=0.25 temporal_delta=0.0 boundary=0.0
+building bidirectional dataset index:   0%|          | 0/64 [00:00<?, ?shard/s]building bidirectional dataset index:   0%|          | 0/64 [00:23<?, ?shard/s, prompts=16, records=128]building bidirectional dataset index:   2%|▏         | 1/64 [00:23<24:19, 23.17s/shard, prompts=16, records=128]building bidirectional dataset index:   2%|▏         | 1/64 [00:53<24:19, 23.17s/shard, prompts=32, records=256]building bidirectional dataset index:   3%|▎         | 2/64 [00:53<28:09, 27.25s/shard, prompts=32, records=256]building bidirectional dataset index:   3%|▎         | 2/64 [01:24<28:09, 27.25s/shard, prompts=48, records=384]building bidirectional dataset index:   5%|▍         | 3/64 [01:24<29:24, 28.93s/shard, prompts=48, records=384]

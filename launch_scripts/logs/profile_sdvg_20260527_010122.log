@@ -1,0 +1,44 @@
+[2026-05-27 01:01:22] Profiling target_only vs SDVG
+[2026-05-27 01:01:22] Prompt: /root/Self-Forcing/prompts/MovieGenVideoBench.txt index=2
+[2026-05-27 01:01:22] Router: image_reward tau=-0.5
+[2026-05-27 01:01:22] Reward: ImageReward-v1.0 on cuda:0
+[2026-05-27 01:01:22] Reward weights: /mnt/lanxiangh/models/ImageReward
+[2026-05-27 01:01:22] Blocks: 9
+[2026-05-27 01:01:22] Output: /root/Self-Forcing/outputs/sdvg/profile_image_reward_blocks9_prompt2_tau-0.5_20260527_010122
+W0527 01:02:43.364000 306722 sf_venv/lib/python3.10/site-packages/torch/utils/_pytree.py:630] <enum 'KernelPreference'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
+W0527 01:02:43.381000 306722 sf_venv/lib/python3.10/site-packages/torch/utils/_pytree.py:630] <enum 'ScaleCalculationMode'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
+Loading target: Wan2.1-T2V-14B /mnt/lanxiangh/models/realtime-video/checkpoints/krea-realtime-video-14b.safetensors
+KV inference with 3 frames per block
+Loading drafter: Wan2.1-T2V-1.3B /mnt/lanxiangh/models/Self-Forcing/checkpoints/self_forcing_dmd.pt
+KV inference with 3 frames per block
+load checkpoint from /mnt/lanxiangh/models/ImageReward/ImageReward.pt
+checkpoint loaded
+prompts:   0%|          | 0/1 [00:00<?, ?it/s]
+target_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_only blocks:  11%|█         | 1/9 [00:02<00:16,  2.04s/it][A
+target_only blocks:  22%|██▏       | 2/9 [00:04<00:15,  2.15s/it][A
+target_only blocks:  33%|███▎      | 3/9 [00:06<00:13,  2.33s/it][A
+target_only blocks:  44%|████▍     | 4/9 [00:09<00:12,  2.53s/it][A
+target_only blocks:  56%|█████▌    | 5/9 [00:12<00:10,  2.75s/it][A
+target_only blocks:  67%|██████▋   | 6/9 [00:16<00:08,  2.98s/it][A
+target_only blocks:  78%|███████▊  | 7/9 [00:19<00:06,  3.23s/it][A
+target_only blocks:  89%|████████▉ | 8/9 [00:23<00:03,  3.39s/it][A
+target_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.49s/it][Atarget_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.05s/it]
+
+sdvg blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+sdvg blocks:  11%|█         | 1/9 [00:01<00:15,  1.97s/it][A
+sdvg blocks:  22%|██▏       | 2/9 [00:03<00:11,  1.61s/it][A
+sdvg blocks:  33%|███▎      | 3/9 [00:04<00:08,  1.47s/it][A
+sdvg blocks:  44%|████▍     | 4/9 [00:06<00:07,  1.45s/it][A
+sdvg blocks:  56%|█████▌    | 5/9 [00:07<00:05,  1.47s/it][A
+sdvg blocks:  67%|██████▋   | 6/9 [00:09<00:04,  1.54s/it][A
+sdvg blocks:  78%|███████▊  | 7/9 [00:11<00:03,  1.62s/it][A
+sdvg blocks:  89%|████████▉ | 8/9 [00:12<00:01,  1.67s/it][A
+sdvg blocks: 100%|██████████| 9/9 [00:14<00:00,  1.70s/it][Asdvg blocks: 100%|██████████| 9/9 [00:14<00:00,  1.62s/it]
+prompts: 100%|██████████| 1/1 [00:48<00:00, 48.37s/it]prompts: 100%|██████████| 1/1 [00:48<00:00, 48.37s/it]
+Average SDVG speedup vs target: 1.778x
+Wrote profile: /root/Self-Forcing/outputs/sdvg/profile_image_reward_blocks9_prompt2_tau-0.5_20260527_010122/profile.json
+target_only: 29.70s -> /root/Self-Forcing/outputs/sdvg/profile_image_reward_blocks9_prompt2_tau-0.5_20260527_010122/prompt_0002_target_only.mp4
+sdvg: 16.71s -> /root/Self-Forcing/outputs/sdvg/profile_image_reward_blocks9_prompt2_tau-0.5_20260527_010122/prompt_0002_sdvg.mp4
+[2026-05-27 01:03:44] Profile JSON: /root/Self-Forcing/outputs/sdvg/profile_image_reward_blocks9_prompt2_tau-0.5_20260527_010122/profile.json
+[2026-05-27 01:03:44] Videos: /root/Self-Forcing/outputs/sdvg/profile_image_reward_blocks9_prompt2_tau-0.5_20260527_010122/target_only.mp4 and /root/Self-Forcing/outputs/sdvg/profile_image_reward_blocks9_prompt2_tau-0.5_20260527_010122/sdvg.mp4

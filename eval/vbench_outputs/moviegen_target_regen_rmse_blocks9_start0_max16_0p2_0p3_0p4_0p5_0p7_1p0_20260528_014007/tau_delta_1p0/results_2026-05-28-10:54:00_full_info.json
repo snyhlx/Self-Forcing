@@ -1,0 +1,450 @@
+[
+    {
+        "prompt_en": "The camera rotates around a large stack of vintage televisions all showing different programs \u2014 1950s sci-fi movies, horror movies, news, static, a 1970s sitcom, etc, set inside a large New York museum gallery.",
+        "dimension": [
+            "subject_consistency",
+            "background_consistency",
+            "motion_smoothness",
+            "dynamic_degree",
+            "aesthetic_quality",
+            "imaging_quality"
+        ],
+        "video_list": [
+            "/root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_1p0/prompt_0015_target_regen.mp4"
+        ]
+    },
+    {
+        "prompt_en": "A stylish woman walks down a Tokyo street filled with warm glowing neon and animated city signage. She wears a black leather jacket, a long red dress, and black boots, and carries a black purse. She wears sunglasses and red lipstick. She walks confidently and casually. The street is damp and reflective, creating a mirror effect of the colorful lights. Many pedestrians walk about.",
+        "dimension": [
+            "subject_consistency",
+            "background_consistency",
+            "motion_smoothness",
+            "dynamic_degree",
+            "aesthetic_quality",
+            "imaging_quality"
+        ],
+        "video_list": [
+            "/root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_1p0/prompt_0000_target_only.mp4"
+        ]
+    },
+    {
+        "prompt_en": "A petri dish with a bamboo forest growing within it that has tiny red pandas running around.",
+        "dimension": [
+            "subject_consistency",
+            "background_consistency",
+            "motion_smoothness",
+            "dynamic_degree",
+            "aesthetic_quality",
+            "imaging_quality"
+        ],
+        "video_list": [
+            "/root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_1p0/prompt_0014_target_regen.mp4"
+        ]
+    },
+    {
+        "prompt_en": "Extreme close up of a 24 year old woman\u2019s eye blinking, standing in Marrakech during magic hour, cinematic film shot in 70mm, depth of field, vivid colors, cinematic",
+        "dimension": [
+            "subject_consistency",
+            "background_consistency",
+            "motion_smoothness",
+            "dynamic_degree",
+            "aesthetic_quality",
+            "imaging_quality"
+        ],
+        "video_list": [
+            "/root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_1p0/prompt_0011_target_only.mp4"
+        ]
+    },
+    {
+        "prompt_en": "This close-up shot of a Victoria crowned pigeon showcases its striking blue plumage and red chest. Its crest is made of delicate, lacy feathers, while its eye is a striking red color. The bird\u2019s head is tilted slightly to the side, giving the impression of it looking regal and majestic. The background is blurred, drawing attention to the bird\u2019s striking appearance.",
+        "dimension": [
+            "subject_consistency",
+            "background_consistency",
+            "motion_smoothness",
+            "dynamic_degree",
+            "aesthetic_quality",
+            "imaging_quality"
+        ],
+        "video_list": [
+            "/root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_1p0/prompt_0006_target_regen.mp4"
+        ]
+    },
+    {
+        "prompt_en": "A gorgeously rendered papercraft world of a coral reef, rife with colorful fish and sea creatures.",
+        "dimension": [
+            "subject_consistency",
+            "background_consistency",
+            "motion_smoothness",
+            "dynamic_degree",
+            "aesthetic_quality",
+            "imaging_quality"
+        ],
+        "video_list": [
+            "/root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_1p0/prompt_0005_target_regen.mp4"
+        ]
+    },
+    {
+        "prompt_en": "A young man at his 20s is sitting on a piece of cloud in the sky, reading a book.",
+        "dimension": [
+            "subject_consistency",
+            "background_consistency",
+            "motion_smoothness",
+            "dynamic_degree",
+            "aesthetic_quality",
+            "imaging_quality"
+        ],
+        "video_list": [
+            "/root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_1p0/prompt_0008_target_only.mp4"
+        ]
+    },
+    {
+        "prompt_en": "Animated scene features a close-up of a short fluffy monster kneeling beside a melting red candle. The art style is 3D and realistic, with a focus on lighting and texture. The mood of the painting is one of wonder and curiosity, as the monster gazes at the flame with wide eyes and open mouth. Its pose and expression convey a sense of innocence and playfulness, as if it is exploring the world around it for the first time. The use of warm colors and dramatic lighting further enhances the cozy atmosphere of the image.",
+        "dimension": [
+            "subject_consistency",
+            "background_consistency",
+            "motion_smoothness",
+            "dynamic_degree",
+            "aesthetic_quality",
+            "imaging_quality"
+        ],
+        "video_list": [
+            "/root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_1p0/prompt_0004_target_only.mp4"
+        ]
+    },
+    {
+        "prompt_en": "Drone view of waves crashing against the rugged cliffs along Big Sur\u2019s garay point beach. The crashing blue waters create white-tipped waves, while the golden light of the setting sun illuminates the rocky shore. A small island with a lighthouse sits in the distance, and green shrubbery covers the cliff\u2019s edge. The steep drop from the road down to the beach is a dramatic feat, with the cliff\u2019s edges jutting out over the sea. This is a view that captures the raw beauty of the coast and the rugged landscape of the Pacific Coast Highway.",
+        "dimension": [
+            "subject_consistency",
+            "background_consistency",
+            "motion_smoothness",
+            "dynamic_degree",
+            "aesthetic_quality",
+            "imaging_quality"
+        ],
+        "video_list": [
+            "/root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_1p0/prompt_0003_target_only.mp4"
+        ]
+    },
+    {
+        "prompt_en": "A close up view of a glass sphere that has a zen garden within it. There is a small dwarf in the sphere who is raking the zen garden and creating patterns in the sand.",
+        "dimension": [
+            "subject_consistency",
+            "background_consistency",
+            "motion_smoothness",
+            "dynamic_degree",
+            "aesthetic_quality",
+            "imaging_quality"
+        ],
+        "video_list": [
+            "/root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_1p0/prompt_0010_target_regen.mp4"
+        ]
+    },
+    {
+        "prompt_en": "The camera rotates around a large stack of vintage televisions all showing different programs \u2014 1950s sci-fi movies, horror movies, news, static, a 1970s sitcom, etc, set inside a large New York museum gallery.",
+        "dimension": [
+            "subject_consistency",
+            "background_consistency",
+            "motion_smoothness",
+            "dynamic_degree",
+            "aesthetic_quality",
+            "imaging_quality"
+        ],
+        "video_list": [
+            "/root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_1p0/prompt_0015_target_only.mp4"
+        ]
+    },
+    {
+        "prompt_en": "This close-up shot of a Victoria crowned pigeon showcases its striking blue plumage and red chest. Its crest is made of delicate, lacy feathers, while its eye is a striking red color. The bird\u2019s head is tilted slightly to the side, giving the impression of it looking regal and majestic. The background is blurred, drawing attention to the bird\u2019s striking appearance.",
+        "dimension": [
+            "subject_consistency",
+            "background_consistency",
+            "motion_smoothness",
+            "dynamic_degree",
+            "aesthetic_quality",
+            "imaging_quality"
+        ],
+        "video_list": [
+            "/root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_1p0/prompt_0006_target_only.mp4"
+        ]
+    },
+    {
+        "prompt_en": "A beautiful homemade video showing the people of Lagos, Nigeria in the year 2056. Shot with a mobile phone camera.",
+        "dimension": [
+            "subject_consistency",
+            "background_consistency",
+            "motion_smoothness",
+            "dynamic_degree",
+            "aesthetic_quality",
+            "imaging_quality"
+        ],
+        "video_list": [
+            "/root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_1p0/prompt_0013_target_regen.mp4"
+        ]
+    },
+    {
+        "prompt_en": "Several giant wooly mammoths approach treading through a snowy meadow, their long wooly fur lightly blows in the wind as they walk, snow covered trees and dramatic snow capped mountains in the distance, mid afternoon light with wispy clouds and a sun high in the distance creates a warm glow, the low camera view is stunning capturing the large furry mammal with beautiful photography, depth of field.",
+        "dimension": [
+            "subject_consistency",
+            "background_consistency",
+            "motion_smoothness",
+            "dynamic_degree",
+            "aesthetic_quality",
+            "imaging_quality"
+        ],
+        "video_list": [
+            "/root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_1p0/prompt_0001_target_regen.mp4"
+        ]
+    },
+    {
+        "prompt_en": "A cartoon kangaroo disco dances.",
+        "dimension": [
+            "subject_consistency",
+            "background_consistency",
+            "motion_smoothness",
+            "dynamic_degree",
+            "aesthetic_quality",
+            "imaging_quality"
+        ],
+        "video_list": [
+            "/root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_1p0/prompt_0012_target_only.mp4"
+        ]
+    },
+    {
+        "prompt_en": "A movie trailer featuring the adventures of the 30 year old space man wearing a red wool knitted motorcycle helmet, blue sky, salt desert, cinematic style, shot on 35mm film, vivid colors.",
+        "dimension": [
+            "subject_consistency",
+            "background_consistency",
+            "motion_smoothness",
+            "dynamic_degree",
+            "aesthetic_quality",
+            "imaging_quality"
+        ],
+        "video_list": [
+            "/root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_1p0/prompt_0002_target_regen.mp4"
+        ]
+    },
+    {
+        "prompt_en": "A gorgeously rendered papercraft world of a coral reef, rife with colorful fish and sea creatures.",
+        "dimension": [
+            "subject_consistency",
+            "background_consistency",
+            "motion_smoothness",
+            "dynamic_degree",
+            "aesthetic_quality",
+            "imaging_quality"
+        ],
+        "video_list": [
+            "/root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_1p0/prompt_0005_target_only.mp4"
+        ]
+    },
+    {
+        "prompt_en": "A beautiful homemade video showing the people of Lagos, Nigeria in the year 2056. Shot with a mobile phone camera.",
+        "dimension": [
+            "subject_consistency",
+            "background_consistency",
+            "motion_smoothness",
+            "dynamic_degree",
+            "aesthetic_quality",
+            "imaging_quality"
+        ],
+        "video_list": [
+            "/root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_1p0/prompt_0013_target_only.mp4"
+        ]
+    },
+    {
+        "prompt_en": "Historical footage of California during the gold rush.",
+        "dimension": [
+            "subject_consistency",
+            "background_consistency",
+            "motion_smoothness",
+            "dynamic_degree",
+            "aesthetic_quality",
+            "imaging_quality"
+        ],
+        "video_list": [
+            "/root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_1p0/prompt_0009_target_regen.mp4"
+        ]
+    },
+    {
+        "prompt_en": "A young man at his 20s is sitting on a piece of cloud in the sky, reading a book.",
+        "dimension": [
+            "subject_consistency",
+            "background_consistency",
+            "motion_smoothness",
+            "dynamic_degree",
+            "aesthetic_quality",
+            "imaging_quality"
+        ],
+        "video_list": [
+            "/root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_1p0/prompt_0008_target_regen.mp4"
+        ]
+    },
+    {
+        "prompt_en": "A movie trailer featuring the adventures of the 30 year old space man wearing a red wool knitted motorcycle helmet, blue sky, salt desert, cinematic style, shot on 35mm film, vivid colors.",
+        "dimension": [
+            "subject_consistency",
+            "background_consistency",
+            "motion_smoothness",
+            "dynamic_degree",
+            "aesthetic_quality",
+            "imaging_quality"
+        ],
+        "video_list": [
+            "/root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_1p0/prompt_0002_target_only.mp4"
+        ]
+    },
+    {
+        "prompt_en": "Several giant wooly mammoths approach treading through a snowy meadow, their long wooly fur lightly blows in the wind as they walk, snow covered trees and dramatic snow capped mountains in the distance, mid afternoon light with wispy clouds and a sun high in the distance creates a warm glow, the low camera view is stunning capturing the large furry mammal with beautiful photography, depth of field.",
+        "dimension": [
+            "subject_consistency",
+            "background_consistency",
+            "motion_smoothness",
+            "dynamic_degree",
+            "aesthetic_quality",
+            "imaging_quality"
+        ],
+        "video_list": [
+            "/root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_1p0/prompt_0001_target_only.mp4"
+        ]
+    },
+    {
+        "prompt_en": "Animated scene features a close-up of a short fluffy monster kneeling beside a melting red candle. The art style is 3D and realistic, with a focus on lighting and texture. The mood of the painting is one of wonder and curiosity, as the monster gazes at the flame with wide eyes and open mouth. Its pose and expression convey a sense of innocence and playfulness, as if it is exploring the world around it for the first time. The use of warm colors and dramatic lighting further enhances the cozy atmosphere of the image.",
+        "dimension": [
+            "subject_consistency",
+            "background_consistency",
+            "motion_smoothness",
+            "dynamic_degree",
+            "aesthetic_quality",
+            "imaging_quality"
+        ],
+        "video_list": [
+            "/root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_1p0/prompt_0004_target_regen.mp4"
+        ]
+    },
+    {
+        "prompt_en": "Photorealistic closeup video of two pirate ships battling each other as they sail inside a cup of coffee.",
+        "dimension": [
+            "subject_consistency",
+            "background_consistency",
+            "motion_smoothness",
+            "dynamic_degree",
+            "aesthetic_quality",
+            "imaging_quality"
+        ],
+        "video_list": [
+            "/root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_1p0/prompt_0007_target_regen.mp4"
+        ]
+    },
+    {
+        "prompt_en": "Drone view of waves crashing against the rugged cliffs along Big Sur\u2019s garay point beach. The crashing blue waters create white-tipped waves, while the golden light of the setting sun illuminates the rocky shore. A small island with a lighthouse sits in the distance, and green shrubbery covers the cliff\u2019s edge. The steep drop from the road down to the beach is a dramatic feat, with the cliff\u2019s edges jutting out over the sea. This is a view that captures the raw beauty of the coast and the rugged landscape of the Pacific Coast Highway.",
+        "dimension": [
+            "subject_consistency",
+            "background_consistency",
+            "motion_smoothness",
+            "dynamic_degree",
+            "aesthetic_quality",
+            "imaging_quality"
+        ],
+        "video_list": [
+            "/root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_1p0/prompt_0003_target_regen.mp4"
+        ]
+    },
+    {
+        "prompt_en": "A cartoon kangaroo disco dances.",
+        "dimension": [
+            "subject_consistency",
+            "background_consistency",
+            "motion_smoothness",
+            "dynamic_degree",
+            "aesthetic_quality",
+            "imaging_quality"
+        ],
+        "video_list": [
+            "/root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_1p0/prompt_0012_target_regen.mp4"
+        ]
+    },
+    {
+        "prompt_en": "A stylish woman walks down a Tokyo street filled with warm glowing neon and animated city signage. She wears a black leather jacket, a long red dress, and black boots, and carries a black purse. She wears sunglasses and red lipstick. She walks confidently and casually. The street is damp and reflective, creating a mirror effect of the colorful lights. Many pedestrians walk about.",
+        "dimension": [
+            "subject_consistency",
+            "background_consistency",
+            "motion_smoothness",
+            "dynamic_degree",
+            "aesthetic_quality",
+            "imaging_quality"
+        ],
+        "video_list": [
+            "/root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_1p0/prompt_0000_target_regen.mp4"
+        ]
+    },
+    {
+        "prompt_en": "Extreme close up of a 24 year old woman\u2019s eye blinking, standing in Marrakech during magic hour, cinematic film shot in 70mm, depth of field, vivid colors, cinematic",
+        "dimension": [
+            "subject_consistency",
+            "background_consistency",
+            "motion_smoothness",
+            "dynamic_degree",
+            "aesthetic_quality",
+            "imaging_quality"
+        ],
+        "video_list": [
+            "/root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_1p0/prompt_0011_target_regen.mp4"
+        ]
+    },
+    {
+        "prompt_en": "Historical footage of California during the gold rush.",
+        "dimension": [
+            "subject_consistency",
+            "background_consistency",
+            "motion_smoothness",
+            "dynamic_degree",
+            "aesthetic_quality",
+            "imaging_quality"
+        ],
+        "video_list": [
+            "/root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_1p0/prompt_0009_target_only.mp4"
+        ]
+    },
+    {
+        "prompt_en": "A petri dish with a bamboo forest growing within it that has tiny red pandas running around.",
+        "dimension": [
+            "subject_consistency",
+            "background_consistency",
+            "motion_smoothness",
+            "dynamic_degree",
+            "aesthetic_quality",
+            "imaging_quality"
+        ],
+        "video_list": [
+            "/root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_1p0/prompt_0014_target_only.mp4"
+        ]
+    },
+    {
+        "prompt_en": "Photorealistic closeup video of two pirate ships battling each other as they sail inside a cup of coffee.",
+        "dimension": [
+            "subject_consistency",
+            "background_consistency",
+            "motion_smoothness",
+            "dynamic_degree",
+            "aesthetic_quality",
+            "imaging_quality"
+        ],
+        "video_list": [
+            "/root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_1p0/prompt_0007_target_only.mp4"
+        ]
+    },
+    {
+        "prompt_en": "A close up view of a glass sphere that has a zen garden within it. There is a small dwarf in the sphere who is raking the zen garden and creating patterns in the sand.",
+        "dimension": [
+            "subject_consistency",
+            "background_consistency",
+            "motion_smoothness",
+            "dynamic_degree",
+            "aesthetic_quality",
+            "imaging_quality"
+        ],
+        "video_list": [
+            "/root/Self-Forcing/outputs/sdvg/moviegen_target_regen_rmse_blocks9_start0_max16_0p2_0p3_0p4_0p5_0p7_1p0_20260528_014007/tau_delta_1p0/prompt_0010_target_only.mp4"
+        ]
+    }
+]

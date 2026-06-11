@@ -1,0 +1,37 @@
+[2026-05-26 11:21:50] Mode:      compare
+[2026-05-26 11:21:50] Router:    heuristic tau=0.02
+[2026-05-26 11:21:50] Blocks:    3
+[2026-05-26 11:21:50] Drafter:   /mnt/lanxiangh/models/Self-Forcing/checkpoints/self_forcing_dmd.pt
+[2026-05-26 11:21:50] Target:    /mnt/lanxiangh/models/realtime-video/checkpoints/krea-realtime-video-14b.safetensors
+[2026-05-26 11:21:50] Output:    /root/Self-Forcing/outputs/sdvg/smoke_20260526_112150
+Loading target: Wan2.1-T2V-14B /mnt/lanxiangh/models/realtime-video/checkpoints/krea-realtime-video-14b.safetensors
+Traceback (most recent call last):
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/diffusers/configuration_utils.py", line 379, in load_config
+    config_file = hf_hub_download(
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/huggingface_hub/utils/_validators.py", line 84, in _inner_fn
+    validate_repo_id(arg_value)
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/huggingface_hub/utils/_validators.py", line 132, in validate_repo_id
+    raise HFValidationError(
+huggingface_hub.errors.HFValidationError: Repo id must be in the form 'repo_name' or 'namespace/repo_name': 'wan_models/Wan2.1-T2V-14B/'. Use `repo_type` argument if needed.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/root/Self-Forcing/sdvg_inference.py", line 419, in <module>
+    main()
+  File "/root/Self-Forcing/sdvg_inference.py", line 359, in main
+    target_pipeline = build_pipeline(
+  File "/root/Self-Forcing/sdvg_inference.py", line 85, in build_pipeline
+    generator = WanDiffusionWrapper(
+  File "/root/Self-Forcing/utils/wan_wrapper.py", line 127, in __init__
+    self.model = CausalWanModel.from_pretrained(
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/huggingface_hub/utils/_validators.py", line 88, in _inner_fn
+    return fn(*args, **kwargs)
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/diffusers/models/modeling_utils.py", line 640, in from_pretrained
+    config, unused_kwargs, commit_hash = cls.load_config(
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/huggingface_hub/utils/_validators.py", line 88, in _inner_fn
+    return fn(*args, **kwargs)
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/diffusers/configuration_utils.py", line 415, in load_config
+    raise EnvironmentError(
+OSError: We couldn't connect to 'https://huggingface.co' to load this model, couldn't find it in the cached files and it looks like wan_models/Wan2.1-T2V-14B/ is not the path to a directory containing a config.json file.
+Checkout your internet connection or see how to run the library in offline mode at 'https://huggingface.co/docs/diffusers/installation#offline-mode'.

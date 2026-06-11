@@ -1,0 +1,35 @@
+[2026-06-04 03:33:56] Draft-head oracle-context diagnostic
+[2026-06-04 03:33:56] Checkpoint: /root/Self-Forcing/outputs/draft_head/checkpoints/20260604_012844_wan_dflash_targetinit_clflow_dmd0p01_ep3_dh_wan_dflash_attention_clean_latent_flow_one_step_h5120_ctx4680_p1x1x1_st1000_750_500_250_0_bs1_g4_lr5e-5_fl0_25_ampbf16_gc0_cfg107ecd4a/latest.pt
+[2026-06-04 03:33:56] Output:     /root/Self-Forcing/outputs/draft_head/test_runs/wan_dflash_20260604_012844_dmd0p01_prompt002_production_20260604_033355
+[2026-06-04 03:33:56] Blocks:     9
+[2026-06-04 03:33:56] Metric:     rmse
+Loading target: Wan2.1-T2V-14B /mnt/lanxiangh/models/realtime-video/checkpoints/krea-realtime-video-14b.safetensors
+KV inference with 3 frames per block
+Loading draft head: /root/Self-Forcing/outputs/draft_head/checkpoints/20260604_012844_wan_dflash_targetinit_clflow_dmd0p01_ep3_dh_wan_dflash_attention_clean_latent_flow_one_step_h5120_ctx4680_p1x1x1_st1000_750_500_250_0_bs1_g4_lr5e-5_fl0_25_ampbf16_gc0_cfg107ecd4a/latest.pt
+prompts:   0%|          | 0/1 [00:00<?, ?it/s]
+target_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_only blocks:  11%|█         | 1/9 [00:02<00:17,  2.25s/it][A
+target_only blocks:  22%|██▏       | 2/9 [00:04<00:15,  2.24s/it][A
+target_only blocks:  33%|███▎      | 3/9 [00:07<00:14,  2.37s/it][A
+target_only blocks:  44%|████▍     | 4/9 [00:09<00:12,  2.55s/it][A
+target_only blocks:  56%|█████▌    | 5/9 [00:12<00:11,  2.76s/it][A
+target_only blocks:  67%|██████▋   | 6/9 [00:16<00:08,  2.98s/it][A
+target_only blocks:  78%|███████▊  | 7/9 [00:20<00:06,  3.23s/it][A
+target_only blocks:  89%|████████▉ | 8/9 [00:23<00:03,  3.39s/it][A
+target_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.50s/it][Atarget_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.06s/it]
+
+draft_head blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+draft_head blocks:  11%|█         | 1/9 [00:01<00:15,  1.95s/it][A
+draft_head blocks:  22%|██▏       | 2/9 [00:02<00:08,  1.16s/it][A
+draft_head blocks:  33%|███▎      | 3/9 [00:03<00:05,  1.12it/s][A
+draft_head blocks:  44%|████▍     | 4/9 [00:03<00:03,  1.28it/s][A
+draft_head blocks:  56%|█████▌    | 5/9 [00:04<00:02,  1.34it/s][A
+draft_head blocks:  67%|██████▋   | 6/9 [00:05<00:02,  1.36it/s][A
+draft_head blocks:  78%|███████▊  | 7/9 [00:05<00:01,  1.34it/s][A
+draft_head blocks:  89%|████████▉ | 8/9 [00:06<00:00,  1.33it/s][A
+draft_head blocks: 100%|██████████| 9/9 [00:07<00:00,  1.32it/s][Adraft_head blocks: 100%|██████████| 9/9 [00:07<00:00,  1.21it/s]
+prompts: 100%|██████████| 1/1 [00:42<00:00, 42.02s/it]prompts: 100%|██████████| 1/1 [00:42<00:00, 42.02s/it]
+Wrote profile: /root/Self-Forcing/outputs/draft_head/test_runs/wan_dflash_20260604_012844_dmd0p01_prompt002_production_20260604_033355/profile.json
+target_only: 29.89s -> /root/Self-Forcing/outputs/draft_head/test_runs/wan_dflash_20260604_012844_dmd0p01_prompt002_production_20260604_033355/prompt_0002_target_only.mp4
+draft_head: 9.60s -> /root/Self-Forcing/outputs/draft_head/test_runs/wan_dflash_20260604_012844_dmd0p01_prompt002_production_20260604_033355/prompt_0002_draft_head.mp4
+[2026-06-04 03:36:56] Done. Profile: /root/Self-Forcing/outputs/draft_head/test_runs/wan_dflash_20260604_012844_dmd0p01_prompt002_production_20260604_033355/profile.json

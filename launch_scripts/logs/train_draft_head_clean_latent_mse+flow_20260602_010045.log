@@ -1,0 +1,226 @@
+[2026-06-02 01:00:46] Training latent draft head with clean-latent + flow loss
+[2026-06-02 01:00:46] Manifest: /mnt/lanxiangh/data/ff_exec/draft_head_full_dataset/tau_delta_0p0/manifest.json
+[2026-06-02 01:00:46] Run dir:   /root/Self-Forcing/outputs/draft_head/checkpoints/20260602_010045_moviegen_draft_head_attention_clean_latent_flow_unrolled_h5120_l3_heads40_ctx4680_pool1x1x1_ffn13824_steps1000_750_500_250_0_blocks9_targetinit8_16_24
+[2026-06-02 01:00:46] Output:    /root/Self-Forcing/outputs/draft_head/checkpoints/20260602_010045_moviegen_draft_head_attention_clean_latent_flow_unrolled_h5120_l3_heads40_ctx4680_pool1x1x1_ffn13824_steps1000_750_500_250_0_blocks9_targetinit8_16_24/final.pt
+[2026-06-02 01:00:46] Layers:   infer from manifest records
+[2026-06-02 01:00:46] Head:     attention input_source=scheduled_latents hidden=5120 layers=3 heads=40 ffn_dim=13824
+[2026-06-02 01:00:46] Loss:     type=clean_latent_flow clean_latent=1.0 flow=0.25 dmd=0.0 every=1
+[2026-06-02 01:00:46] Training: mode=unrolled unroll_noise=fixed weights=auto
+[2026-06-02 01:00:46] Schedule: [1000 750 500 250 0] timestep_shift=5.0
+[2026-06-02 01:00:46] Target init: 8 16 24
+[2026-06-02 01:00:46] GPUs:     4 visible=0,1,2,3
+[2026-06-02 01:00:46] Epochs:   3 batch_size=1 lr=5e-5
+KV inference with 3 frames per block
+Training draft head records=8024 train=7623 val=401 layers=['blocks.16', 'blocks.24', 'blocks.8'] latent_channels=16 feature_dim=15360 head_type=attention input_source=scheduled_latents training_mode=unrolled denoising_steps=[1000, 750, 500, 250, 0] loss_type=clean_latent_flow dmd_weight=0.0 world_size=4
+Target initialization report: {'attention': 3, 'ffn': 3, 'skipped': 0}
+epoch 1:   0%|          | 0/1906 [00:00<?, ?it/s]epoch 1:   0%|          | 0/1906 [00:15<?, ?it/s, avg=1.81, loss=1.81, rmse=1.2, sec=15.4]step=1 epoch=1 batch=1 running_loss=1.811241 running_clean_latent_mse=1.432184 running_clean_latent_rmse=1.196739 step_seconds=15.358682 loss=1.811241 clean_latent_mse=1.432184 unrolled_clean_latent_mse=1.370422 clean_latent_loss=1.389808 flow_loss=0.421433 unrolled_flow_mse=1.562167
+epoch 1:   0%|          | 1/1906 [00:15<8:15:25, 15.60s/it, avg=1.81, loss=1.81, rmse=1.2, sec=15.4][rank2]: Traceback (most recent call last):
+[rank2]:   File "/root/Self-Forcing/train_draft_head.py", line 1007, in <module>
+[rank2]:     "gradient_checkpointing": args.gradient_checkpointing,
+[rank2]:   File "/root/Self-Forcing/train_draft_head.py", line 779, in main
+[rank2]:     run_dir = output_path.parent
+[rank2]:   File "/root/Self-Forcing/train_draft_head.py", line 377, in compute_unrolled_draft_head_losses
+[rank2]:     )
+[rank2]:   File "/root/Self-Forcing/sdvg_draft_head.py", line 706, in predict_draft_head_batch
+[rank2]:     dtype = parameter.dtype
+[rank2]:   File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
+[rank2]:     return self._call_impl(*args, **kwargs)
+[rank2]:   File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
+[rank2]:     return forward_call(*args, **kwargs)
+[rank2]:   File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/parallel/distributed.py", line 1832, in forward
+[rank2]:     else self._run_ddp_forward(*inputs, **kwargs)
+[rank2]:   File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/parallel/distributed.py", line 1657, in _run_ddp_forward
+[rank2]:     return self.module(*inputs, **kwargs)  # type: ignore[index]
+[rank2]:   File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
+[rank2]:     return self._call_impl(*args, **kwargs)
+[rank2]:   File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
+[rank2]:     return forward_call(*args, **kwargs)
+[rank2]:   File "/root/Self-Forcing/sdvg_draft_head.py", line 539, in forward
+[rank2]:     tokens.dtype,
+[rank2]:   File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
+[rank2]:     return self._call_impl(*args, **kwargs)
+[rank2]:   File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
+[rank2]:     return forward_call(*args, **kwargs)
+[rank2]:   File "/root/Self-Forcing/sdvg_draft_head.py", line 402, in forward
+[rank2]:     x = x + y
+[rank2]:   File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
+[rank2]:     return self._call_impl(*args, **kwargs)
+[rank2]:   File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
+[rank2]:     return forward_call(*args, **kwargs)
+[rank2]:   File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/modules/activation.py", line 1494, in forward
+[rank2]:     attn_output, attn_output_weights = F.multi_head_attention_forward(
+[rank2]:   File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/functional.py", line 6718, in multi_head_attention_forward
+[rank2]:     attn_output = scaled_dot_product_attention(
+[rank2]: torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 366.00 MiB. GPU 2 has a total capacity of 139.81 GiB of which 195.44 MiB is free. Including non-PyTorch memory, this process has 139.61 GiB memory in use. Of the allocated memory 133.02 GiB is allocated by PyTorch, and 4.99 GiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/docs/stable/notes/cuda.html#optimizing-memory-usage-with-pytorch-cuda-alloc-conf)
+[rank3]: Traceback (most recent call last):
+[rank3]:   File "/root/Self-Forcing/train_draft_head.py", line 1007, in <module>
+[rank3]:     "gradient_checkpointing": args.gradient_checkpointing,
+[rank3]:   File "/root/Self-Forcing/train_draft_head.py", line 779, in main
+[rank3]:     run_dir = output_path.parent
+[rank3]:   File "/root/Self-Forcing/train_draft_head.py", line 377, in compute_unrolled_draft_head_losses
+[rank3]:     )
+[rank3]:   File "/root/Self-Forcing/sdvg_draft_head.py", line 706, in predict_draft_head_batch
+[rank3]:     dtype = parameter.dtype
+[rank3]:   File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
+[rank3]:     return self._call_impl(*args, **kwargs)
+[rank3]:   File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
+[rank3]:     return forward_call(*args, **kwargs)
+[rank3]:   File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/parallel/distributed.py", line 1832, in forward
+[rank3]:     else self._run_ddp_forward(*inputs, **kwargs)
+[rank3]:   File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/parallel/distributed.py", line 1657, in _run_ddp_forward
+[rank3]:     return self.module(*inputs, **kwargs)  # type: ignore[index]
+[rank3]:   File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
+[rank3]:     return self._call_impl(*args, **kwargs)
+[rank3]:   File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
+[rank3]:     return forward_call(*args, **kwargs)
+[rank3]:   File "/root/Self-Forcing/sdvg_draft_head.py", line 539, in forward
+[rank3]:     tokens.dtype,
+[rank3]:   File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
+[rank3]:     return self._call_impl(*args, **kwargs)
+[rank3]:   File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
+[rank3]:     return forward_call(*args, **kwargs)
+[rank3]:   File "/root/Self-Forcing/sdvg_draft_head.py", line 402, in forward
+[rank3]:     x = x + y
+[rank3]:   File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
+[rank3]:     return self._call_impl(*args, **kwargs)
+[rank3]:   File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
+[rank3]:     return forward_call(*args, **kwargs)
+[rank3]:   File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/modules/activation.py", line 1494, in forward
+[rank3]:     attn_output, attn_output_weights = F.multi_head_attention_forward(
+[rank3]:   File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/functional.py", line 6718, in multi_head_attention_forward
+[rank3]:     attn_output = scaled_dot_product_attention(
+[rank3]: torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 366.00 MiB. GPU 3 has a total capacity of 139.81 GiB of which 195.44 MiB is free. Including non-PyTorch memory, this process has 139.61 GiB memory in use. Of the allocated memory 133.02 GiB is allocated by PyTorch, and 4.99 GiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/docs/stable/notes/cuda.html#optimizing-memory-usage-with-pytorch-cuda-alloc-conf)
+[rank1]: Traceback (most recent call last):
+[rank1]:   File "/root/Self-Forcing/train_draft_head.py", line 1007, in <module>
+[rank1]:     "gradient_checkpointing": args.gradient_checkpointing,
+[rank1]:   File "/root/Self-Forcing/train_draft_head.py", line 779, in main
+[rank1]:     run_dir = output_path.parent
+[rank1]:   File "/root/Self-Forcing/train_draft_head.py", line 377, in compute_unrolled_draft_head_losses
+[rank1]:     )
+[rank1]:   File "/root/Self-Forcing/sdvg_draft_head.py", line 706, in predict_draft_head_batch
+[rank1]:     dtype = parameter.dtype
+[rank1]:   File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
+[rank1]:     return self._call_impl(*args, **kwargs)
+[rank1]:   File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
+[rank1]:     return forward_call(*args, **kwargs)
+[rank1]:   File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/parallel/distributed.py", line 1832, in forward
+[rank1]:     else self._run_ddp_forward(*inputs, **kwargs)
+[rank1]:   File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/parallel/distributed.py", line 1657, in _run_ddp_forward
+[rank1]:     return self.module(*inputs, **kwargs)  # type: ignore[index]
+[rank1]:   File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
+[rank1]:     return self._call_impl(*args, **kwargs)
+[rank1]:   File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
+[rank1]:     return forward_call(*args, **kwargs)
+[rank1]:   File "/root/Self-Forcing/sdvg_draft_head.py", line 539, in forward
+[rank1]:     tokens.dtype,
+[rank1]:   File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
+[rank1]:     return self._call_impl(*args, **kwargs)
+[rank1]:   File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
+[rank1]:     return forward_call(*args, **kwargs)
+[rank1]:   File "/root/Self-Forcing/sdvg_draft_head.py", line 402, in forward
+[rank1]:     x = x + y
+[rank1]:   File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
+[rank1]:     return self._call_impl(*args, **kwargs)
+[rank1]:   File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
+[rank1]:     return forward_call(*args, **kwargs)
+[rank1]:   File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/modules/activation.py", line 1494, in forward
+[rank1]:     attn_output, attn_output_weights = F.multi_head_attention_forward(
+[rank1]:   File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/functional.py", line 6718, in multi_head_attention_forward
+[rank1]:     attn_output = scaled_dot_product_attention(
+[rank1]: torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 366.00 MiB. GPU 1 has a total capacity of 139.81 GiB of which 195.44 MiB is free. Including non-PyTorch memory, this process has 139.61 GiB memory in use. Of the allocated memory 133.02 GiB is allocated by PyTorch, and 4.99 GiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/docs/stable/notes/cuda.html#optimizing-memory-usage-with-pytorch-cuda-alloc-conf)
+                                                                                                    [rank0]: Traceback (most recent call last):
+[rank0]:   File "/root/Self-Forcing/train_draft_head.py", line 1007, in <module>
+[rank0]:     "gradient_checkpointing": args.gradient_checkpointing,
+[rank0]:   File "/root/Self-Forcing/train_draft_head.py", line 779, in main
+[rank0]:     run_dir = output_path.parent
+[rank0]:   File "/root/Self-Forcing/train_draft_head.py", line 377, in compute_unrolled_draft_head_losses
+[rank0]:     )
+[rank0]:   File "/root/Self-Forcing/sdvg_draft_head.py", line 706, in predict_draft_head_batch
+[rank0]:     dtype = parameter.dtype
+[rank0]:   File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
+[rank0]:     return self._call_impl(*args, **kwargs)
+[rank0]:   File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
+[rank0]:     return forward_call(*args, **kwargs)
+[rank0]:   File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/parallel/distributed.py", line 1832, in forward
+[rank0]:     else self._run_ddp_forward(*inputs, **kwargs)
+[rank0]:   File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/parallel/distributed.py", line 1657, in _run_ddp_forward
+[rank0]:     return self.module(*inputs, **kwargs)  # type: ignore[index]
+[rank0]:   File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
+[rank0]:     return self._call_impl(*args, **kwargs)
+[rank0]:   File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
+[rank0]:     return forward_call(*args, **kwargs)
+[rank0]:   File "/root/Self-Forcing/sdvg_draft_head.py", line 539, in forward
+[rank0]:     tokens.dtype,
+[rank0]:   File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
+[rank0]:     return self._call_impl(*args, **kwargs)
+[rank0]:   File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
+[rank0]:     return forward_call(*args, **kwargs)
+[rank0]:   File "/root/Self-Forcing/sdvg_draft_head.py", line 402, in forward
+[rank0]:     x = x + y
+[rank0]:   File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
+[rank0]:     return self._call_impl(*args, **kwargs)
+[rank0]:   File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
+[rank0]:     return forward_call(*args, **kwargs)
+[rank0]:   File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/modules/activation.py", line 1494, in forward
+[rank0]:     attn_output, attn_output_weights = F.multi_head_attention_forward(
+[rank0]:   File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/functional.py", line 6731, in multi_head_attention_forward
+[rank0]:     attn_output = linear(attn_output, out_proj_weight, out_proj_bias)
+[rank0]: torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 366.00 MiB. GPU 0 has a total capacity of 139.81 GiB of which 265.44 MiB is free. Including non-PyTorch memory, this process has 139.54 GiB memory in use. Of the allocated memory 133.37 GiB is allocated by PyTorch, and 4.58 GiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/docs/stable/notes/cuda.html#optimizing-memory-usage-with-pytorch-cuda-alloc-conf)
+[rank0]:[W602 01:02:49.558283678 ProcessGroupNCCL.cpp:1647] Warning: WARNING: destroy_process_group() was not called before program exit, which can leak resources. For more info, please see https://pytorch.org/docs/stable/distributed.html#shutdown (function operator())
+W0602 01:02:51.102000 1757301 sf_venv/lib/python3.10/site-packages/torch/distributed/elastic/multiprocessing/api.py:1014] Sending process 1757375 closing signal SIGTERM
+W0602 01:02:51.103000 1757301 sf_venv/lib/python3.10/site-packages/torch/distributed/elastic/multiprocessing/api.py:1014] Sending process 1757376 closing signal SIGTERM
+W0602 01:02:51.103000 1757301 sf_venv/lib/python3.10/site-packages/torch/distributed/elastic/multiprocessing/api.py:1014] Sending process 1757378 closing signal SIGTERM
+E0602 01:02:52.520000 1757301 sf_venv/lib/python3.10/site-packages/torch/distributed/elastic/multiprocessing/api.py:988] failed (exitcode: 1) local_rank: 2 (pid: 1757377) of binary: /root/Self-Forcing/sf_venv/bin/python
+Traceback (most recent call last):
+  File "/root/.local/share/uv/python/cpython-3.10-linux-x86_64-gnu/lib/python3.10/runpy.py", line 196, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "/root/.local/share/uv/python/cpython-3.10-linux-x86_64-gnu/lib/python3.10/runpy.py", line 86, in _run_code
+    exec(code, run_globals)
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/distributed/run.py", line 1020, in <module>
+    main()
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 367, in wrapper
+    return f(*args, **kwargs)
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/distributed/run.py", line 1016, in main
+    run(args)
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/distributed/run.py", line 1007, in run
+    elastic_launch(
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/distributed/launcher/api.py", line 191, in __call__
+    return launch_agent(self._config, self._entrypoint, list(args))
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/distributed/launcher/api.py", line 371, in launch_agent
+    raise ChildFailedError(
+torch.distributed.elastic.multiprocessing.errors.ChildFailedError: 
+============================================================
+train_draft_head.py FAILED
+------------------------------------------------------------
+Failures:
+[1]:
+  time      : 2026-06-02_01:02:52
+  host      : lanxiang-prl-pod-2-67d469f5c6-f2kks
+  rank      : 0 (local_rank: 0)
+  exitcode  : 1 (pid: 1757375) 
+  error_file: <N/A>
+  traceback : To enable traceback see: https://pytorch.org/docs/stable/elastic/errors.html
+[2]:
+  time      : 2026-06-02_01:02:52
+  host      : lanxiang-prl-pod-2-67d469f5c6-f2kks
+  rank      : 1 (local_rank: 1)
+  exitcode  : 1 (pid: 1757376) 
+  error_file: <N/A>
+  traceback : To enable traceback see: https://pytorch.org/docs/stable/elastic/errors.html
+[3]:
+  time      : 2026-06-02_01:02:52
+  host      : lanxiang-prl-pod-2-67d469f5c6-f2kks
+  rank      : 3 (local_rank: 3)
+  exitcode  : 1 (pid: 1757378) 
+  error_file: <N/A>
+  traceback : To enable traceback see: https://pytorch.org/docs/stable/elastic/errors.html
+------------------------------------------------------------
+Root Cause (first observed failure):
+[0]:
+  time      : 2026-06-02_01:02:51
+  host      : lanxiang-prl-pod-2-67d469f5c6-f2kks
+  rank      : 2 (local_rank: 2)
+  exitcode  : 1 (pid: 1757377) 
+  error_file: <N/A>
+  traceback : To enable traceback see: https://pytorch.org/docs/stable/elastic/errors.html
+============================================================

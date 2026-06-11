@@ -1,0 +1,222 @@
+[2026-05-30 11:04:34] Training latent draft head
+[2026-05-30 11:04:34] Manifest: /mnt/lanxiangh/data/ff_exec/draft_head_full_dataset/tau_delta_0p0/manifest.json
+[2026-05-30 11:04:34] Output:   /root/Self-Forcing/outputs/sdvg/draft_head/moviegen_draft_head_attention_draft_latents_h512_l4_heads8_ctx512_pool1x4x4_ffn4_blocks9.pt
+[2026-05-30 11:04:34] Layers:   infer from manifest records
+[2026-05-30 11:04:34] Head:     attention input_source=draft_latents hidden=512 layers=4 heads=8
+[2026-05-30 11:04:34] GPUs:     4 visible=0,1,2,3
+[2026-05-30 11:04:34] Epochs:   3 batch_size=128 lr=1e-4
+Training draft head records=8024 train=7623 val=401 layers=['blocks.16', 'blocks.24', 'blocks.8'] latent_channels=16 feature_dim=15360 head_type=attention input_source=draft_latents world_size=4
+epoch 1:   0%|          | 0/15 [00:00<?, ?it/s]/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/autograd/graph.py:882: UserWarning: Grad strides do not match bucket view strides. This may indicate grad was not created according to the gradient layout contract, or that the param's strides changed since DDP was constructed.  This is not an error, but may impair performance.
+grad.sizes() = [16, 512, 1, 1, 1], strides() = [512, 1, 512, 512, 512]
+bucket_view.sizes() = [16, 512, 1, 1, 1], strides() = [512, 1, 1, 1, 1] (Triggered internally at /pytorch/torch/csrc/distributed/c10d/reducer.cpp:334.)
+  return Variable._execution_engine.run_backward(  # Calls into the C++ engine to run the backward pass
+/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/autograd/graph.py:882: UserWarning: Grad strides do not match bucket view strides. This may indicate grad was not created according to the gradient layout contract, or that the param's strides changed since DDP was constructed.  This is not an error, but may impair performance.
+grad.sizes() = [16, 512, 1, 1, 1], strides() = [512, 1, 512, 512, 512]
+bucket_view.sizes() = [16, 512, 1, 1, 1], strides() = [512, 1, 1, 1, 1] (Triggered internally at /pytorch/torch/csrc/distributed/c10d/reducer.cpp:334.)
+  return Variable._execution_engine.run_backward(  # Calls into the C++ engine to run the backward pass
+/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/autograd/graph.py:882: UserWarning: Grad strides do not match bucket view strides. This may indicate grad was not created according to the gradient layout contract, or that the param's strides changed since DDP was constructed.  This is not an error, but may impair performance.
+grad.sizes() = [16, 512, 1, 1, 1], strides() = [512, 1, 512, 512, 512]
+bucket_view.sizes() = [16, 512, 1, 1, 1], strides() = [512, 1, 1, 1, 1] (Triggered internally at /pytorch/torch/csrc/distributed/c10d/reducer.cpp:334.)
+  return Variable._execution_engine.run_backward(  # Calls into the C++ engine to run the backward pass
+/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/autograd/graph.py:882: UserWarning: Grad strides do not match bucket view strides. This may indicate grad was not created according to the gradient layout contract, or that the param's strides changed since DDP was constructed.  This is not an error, but may impair performance.
+grad.sizes() = [16, 512, 1, 1, 1], strides() = [512, 1, 512, 512, 512]
+bucket_view.sizes() = [16, 512, 1, 1, 1], strides() = [512, 1, 1, 1, 1] (Triggered internally at /pytorch/torch/csrc/distributed/c10d/reducer.cpp:334.)
+  return Variable._execution_engine.run_backward(  # Calls into the C++ engine to run the backward pass
+epoch 1:   0%|          | 0/15 [01:41<?, ?it/s, avg=0.182, loss=0.182, rmse=0.427, sec=13.4]step=1 epoch=1 batch=1 loss=0.182192 running_mse=0.182192 running_rmse=0.426840 step_seconds=13.449232
+epoch 1:   7%|▋         | 1/15 [01:41<23:44, 101.78s/it, avg=0.182, loss=0.182, rmse=0.427, sec=13.4]epoch 1:   7%|▋         | 1/15 [03:25<23:44, 101.78s/it, avg=0.186, loss=0.19, rmse=0.432, sec=12.9] step=2 epoch=1 batch=2 loss=0.190365 running_mse=0.186279 running_rmse=0.431600 step_seconds=12.922705
+epoch 1:  13%|█▎        | 2/15 [03:25<22:14, 102.68s/it, avg=0.186, loss=0.19, rmse=0.432, sec=12.9]epoch 1:  13%|█▎        | 2/15 [05:16<22:14, 102.68s/it, avg=0.198, loss=0.223, rmse=0.445, sec=13.6]step=3 epoch=1 batch=3 loss=0.222700 running_mse=0.198419 running_rmse=0.445443 step_seconds=13.590495
+epoch 1:  20%|██        | 3/15 [05:16<21:21, 106.81s/it, avg=0.198, loss=0.223, rmse=0.445, sec=13.6]epoch 1:  20%|██        | 3/15 [07:19<21:21, 106.81s/it, avg=0.193, loss=0.176, rmse=0.439, sec=12.7]step=4 epoch=1 batch=4 loss=0.176368 running_mse=0.192906 running_rmse=0.439211 step_seconds=12.650186
+epoch 1:  27%|██▋       | 4/15 [07:19<20:44, 113.15s/it, avg=0.193, loss=0.176, rmse=0.439, sec=12.7]epoch 1:  27%|██▋       | 4/15 [09:32<20:44, 113.15s/it, avg=0.193, loss=0.195, rmse=0.44, sec=13.8] step=5 epoch=1 batch=5 loss=0.195151 running_mse=0.193355 running_rmse=0.439722 step_seconds=13.791597
+epoch 1:  33%|███▎      | 5/15 [09:32<20:03, 120.38s/it, avg=0.193, loss=0.195, rmse=0.44, sec=13.8]epoch 1:  33%|███▎      | 5/15 [11:33<20:03, 120.38s/it, avg=0.196, loss=0.207, rmse=0.442, sec=13.7]step=6 epoch=1 batch=6 loss=0.206734 running_mse=0.195585 running_rmse=0.442250 step_seconds=13.662443
+epoch 1:  40%|████      | 6/15 [11:33<18:03, 120.35s/it, avg=0.196, loss=0.207, rmse=0.442, sec=13.7]epoch 1:  40%|████      | 6/15 [13:27<18:03, 120.35s/it, avg=0.195, loss=0.19, rmse=0.441, sec=13.3] step=7 epoch=1 batch=7 loss=0.190233 running_mse=0.194820 running_rmse=0.441385 step_seconds=13.257186
+epoch 1:  47%|████▋     | 7/15 [13:27<15:48, 118.50s/it, avg=0.195, loss=0.19, rmse=0.441, sec=13.3]epoch 1:  47%|████▋     | 7/15 [15:24<15:48, 118.50s/it, avg=0.189, loss=0.15, rmse=0.435, sec=12.4]step=8 epoch=1 batch=8 loss=0.150415 running_mse=0.189270 running_rmse=0.435051 step_seconds=12.421868
+epoch 1:  53%|█████▎    | 8/15 [15:24<13:44, 117.77s/it, avg=0.189, loss=0.15, rmse=0.435, sec=12.4]epoch 1:  53%|█████▎    | 8/15 [17:17<13:44, 117.77s/it, avg=0.187, loss=0.169, rmse=0.432, sec=12.3]step=9 epoch=1 batch=9 loss=0.168777 running_mse=0.186993 running_rmse=0.432427 step_seconds=12.251239
+epoch 1:  60%|██████    | 9/15 [17:17<11:38, 116.34s/it, avg=0.187, loss=0.169, rmse=0.432, sec=12.3]epoch 1:  60%|██████    | 9/15 [19:28<11:38, 116.34s/it, avg=0.192, loss=0.236, rmse=0.438, sec=13.8]step=10 epoch=1 batch=10 loss=0.235703 running_mse=0.191864 running_rmse=0.438023 step_seconds=13.789169
+epoch 1:  67%|██████▋   | 10/15 [19:28<10:04, 120.92s/it, avg=0.192, loss=0.236, rmse=0.438, sec=13.8]epoch 1:  67%|██████▋   | 10/15 [21:20<10:04, 120.92s/it, avg=0.193, loss=0.204, rmse=0.439, sec=12.4]step=11 epoch=1 batch=11 loss=0.204395 running_mse=0.193003 running_rmse=0.439321 step_seconds=12.426037
+epoch 1:  73%|███████▎  | 11/15 [21:20<07:53, 118.33s/it, avg=0.193, loss=0.204, rmse=0.439, sec=12.4]epoch 1:  73%|███████▎  | 11/15 [23:19<07:53, 118.33s/it, avg=0.191, loss=0.167, rmse=0.437, sec=14.1]step=12 epoch=1 batch=12 loss=0.167042 running_mse=0.190840 running_rmse=0.436852 step_seconds=14.064881
+epoch 1:  80%|████████  | 12/15 [23:19<05:55, 118.48s/it, avg=0.191, loss=0.167, rmse=0.437, sec=14.1]epoch 1:  80%|████████  | 12/15 [25:10<05:55, 118.48s/it, avg=0.192, loss=0.204, rmse=0.438, sec=13.1]step=13 epoch=1 batch=13 loss=0.204184 running_mse=0.191866 running_rmse=0.438025 step_seconds=13.078580
+epoch 1:  87%|████████▋ | 13/15 [25:10<03:52, 116.06s/it, avg=0.192, loss=0.204, rmse=0.438, sec=13.1]epoch 1:  87%|████████▋ | 13/15 [27:08<03:52, 116.06s/it, avg=0.191, loss=0.185, rmse=0.437, sec=14.2]step=14 epoch=1 batch=14 loss=0.184727 running_mse=0.191356 running_rmse=0.437443 step_seconds=14.208112
+epoch 1:  93%|█████████▎| 14/15 [27:08<01:56, 116.75s/it, avg=0.191, loss=0.185, rmse=0.437, sec=14.2]epoch 1:  93%|█████████▎| 14/15 [28:50<01:56, 116.75s/it, avg=0.189, loss=0.156, rmse=0.435, sec=25]  step=15 epoch=1 batch=15 loss=0.155890 running_mse=0.188992 running_rmse=0.434732 step_seconds=25.006122
+epoch 1: 100%|██████████| 15/15 [28:50<00:00, 112.14s/it, avg=0.189, loss=0.156, rmse=0.435, sec=25]                                                                                                    [rank1]:[E530 11:43:44.437911527 ProcessGroupNCCL.cpp:757] [Rank 1] Watchdog caught collective operation timeout: WorkNCCL(SeqNum=77, OpType=ALLREDUCE, NumelIn=1, NumelOut=1, Timeout(ms)=600000) ran for 600033 milliseconds before timing out.
+[rank1]:[E530 11:43:44.439075288 ProcessGroupNCCL.cpp:2395] [PG ID 0 PG GUID 0(default_pg) Rank 1]  failure detected by watchdog at work sequence id: 77 PG status: last enqueued work: 77, last completed work: 76
+[rank1]:[E530 11:43:44.439875073 ProcessGroupNCCL.cpp:801] Stack trace of the failed collective: 
+#0 barrier from /root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/distributed/distributed_c10d.py:5230
+#1 wrapper from /root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/distributed/c10d_logger.py:83
+#2 main from /root/Self-Forcing/train_draft_head.py:355
+#3 <module> from /root/Self-Forcing/train_draft_head.py:389
+
+[rank1]:[E530 11:43:44.439991196 ProcessGroupNCCL.cpp:2732] [PG ID 0 PG GUID 0(default_pg) Rank 1] First PG on this rank to signal dumping.
+[rank3]:[E530 11:43:44.457210064 ProcessGroupNCCL.cpp:757] [Rank 3] Watchdog caught collective operation timeout: WorkNCCL(SeqNum=77, OpType=ALLREDUCE, NumelIn=1, NumelOut=1, Timeout(ms)=600000) ran for 600053 milliseconds before timing out.
+[rank3]:[E530 11:43:44.457573379 ProcessGroupNCCL.cpp:2395] [PG ID 0 PG GUID 0(default_pg) Rank 3]  failure detected by watchdog at work sequence id: 77 PG status: last enqueued work: 77, last completed work: 76
+[rank3]:[E530 11:43:44.458256675 ProcessGroupNCCL.cpp:801] Stack trace of the failed collective: 
+#0 barrier from /root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/distributed/distributed_c10d.py:5230
+#1 wrapper from /root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/distributed/c10d_logger.py:83
+#2 main from /root/Self-Forcing/train_draft_head.py:355
+#3 <module> from /root/Self-Forcing/train_draft_head.py:389
+
+[rank3]:[E530 11:43:44.458377846 ProcessGroupNCCL.cpp:2732] [PG ID 0 PG GUID 0(default_pg) Rank 3] First PG on this rank to signal dumping.
+[rank2]:[E530 11:43:44.501705482 ProcessGroupNCCL.cpp:757] [Rank 2] Watchdog caught collective operation timeout: WorkNCCL(SeqNum=77, OpType=ALLREDUCE, NumelIn=1, NumelOut=1, Timeout(ms)=600000) ran for 600097 milliseconds before timing out.
+[rank1]:[E530 11:43:44.501839166 ProcessGroupNCCL.cpp:1987] [PG ID 0 PG GUID 0(default_pg) Rank 1] Received a dump signal due to a collective timeout from this local rank and we will try our best to dump the debug info. Last enqueued NCCL work: 77, last completed NCCL work: 76.This is most likely caused by incorrect usages of collectives, e.g., wrong sizes used across ranks, the order of collectives is not same for all ranks or the scheduled collective, for some reason, didn't run. Additionally, this can be caused by GIL deadlock or other reasons such as network errors or bugs in the communications library (e.g. NCCL), etc. 
+[rank0]:[E530 11:43:44.502025469 ProcessGroupNCCL.cpp:1922] [PG ID 0 PG GUID 0(default_pg) Rank 0] Observed flight recorder dump signal from another rank via TCPStore.
+[rank0]:[E530 11:43:44.502192257 ProcessGroupNCCL.cpp:1987] [PG ID 0 PG GUID 0(default_pg) Rank 0] Received a dump signal due to a collective timeout from  rank 3 and we will try our best to dump the debug info. Last enqueued NCCL work: 76, last completed NCCL work: 76.This is most likely caused by incorrect usages of collectives, e.g., wrong sizes used across ranks, the order of collectives is not same for all ranks or the scheduled collective, for some reason, didn't run. Additionally, this can be caused by GIL deadlock or other reasons such as network errors or bugs in the communications library (e.g. NCCL), etc. 
+[rank1]:[E530 11:43:44.502214186 ProcessGroupNCCL.cpp:1700] [PG ID 0 PG GUID 0(default_pg) Rank 1] ProcessGroupNCCL preparing to dump debug info. Include stack trace: 1, only active collectives: 0
+[rank2]:[E530 11:43:44.502215844 ProcessGroupNCCL.cpp:2395] [PG ID 0 PG GUID 0(default_pg) Rank 2]  failure detected by watchdog at work sequence id: 77 PG status: last enqueued work: 77, last completed work: 76
+[rank0]:[E530 11:43:44.502752369 ProcessGroupNCCL.cpp:1700] [PG ID 0 PG GUID 0(default_pg) Rank 0] ProcessGroupNCCL preparing to dump debug info. Include stack trace: 1, only active collectives: 0
+[rank2]:[E530 11:43:44.502940956 ProcessGroupNCCL.cpp:801] Stack trace of the failed collective: 
+#0 barrier from /root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/distributed/distributed_c10d.py:5230
+#1 wrapper from /root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/distributed/c10d_logger.py:83
+#2 main from /root/Self-Forcing/train_draft_head.py:355
+#3 <module> from /root/Self-Forcing/train_draft_head.py:389
+
+[rank2]:[E530 11:43:44.503078587 ProcessGroupNCCL.cpp:2732] [PG ID 0 PG GUID 0(default_pg) Rank 2] First PG on this rank to signal dumping.
+[rank3]:[E530 11:43:44.029487114 ProcessGroupNCCL.cpp:1987] [PG ID 0 PG GUID 0(default_pg) Rank 3] Received a dump signal due to a collective timeout from this local rank and we will try our best to dump the debug info. Last enqueued NCCL work: 77, last completed NCCL work: 76.This is most likely caused by incorrect usages of collectives, e.g., wrong sizes used across ranks, the order of collectives is not same for all ranks or the scheduled collective, for some reason, didn't run. Additionally, this can be caused by GIL deadlock or other reasons such as network errors or bugs in the communications library (e.g. NCCL), etc. 
+[rank3]:[E530 11:43:44.029842458 ProcessGroupNCCL.cpp:1700] [PG ID 0 PG GUID 0(default_pg) Rank 3] ProcessGroupNCCL preparing to dump debug info. Include stack trace: 1, only active collectives: 0
+[rank2]:[E530 11:43:44.053955207 ProcessGroupNCCL.cpp:1987] [PG ID 0 PG GUID 0(default_pg) Rank 2] Received a dump signal due to a collective timeout from this local rank and we will try our best to dump the debug info. Last enqueued NCCL work: 77, last completed NCCL work: 76.This is most likely caused by incorrect usages of collectives, e.g., wrong sizes used across ranks, the order of collectives is not same for all ranks or the scheduled collective, for some reason, didn't run. Additionally, this can be caused by GIL deadlock or other reasons such as network errors or bugs in the communications library (e.g. NCCL), etc. 
+[rank2]:[E530 11:43:44.054343923 ProcessGroupNCCL.cpp:1700] [PG ID 0 PG GUID 0(default_pg) Rank 2] ProcessGroupNCCL preparing to dump debug info. Include stack trace: 1, only active collectives: 0
+[rank1]:[E530 11:44:44.657884172 ProcessGroupNCCL.cpp:818] [Rank 1] Some NCCL operations have failed or timed out. Due to the asynchronous nature of CUDA kernels, subsequent GPU operations might run on corrupted/incomplete data.
+[rank1]:[E530 11:44:44.657920249 ProcessGroupNCCL.cpp:832] [Rank 1] To avoid data inconsistency, we are taking the entire process down.
+[rank1]:[E530 11:44:44.660068096 ProcessGroupNCCL.cpp:2197] [PG ID 0 PG GUID 0(default_pg) Rank 1] Process group watchdog thread terminated with exception: [Rank 1] Watchdog caught collective operation timeout: WorkNCCL(SeqNum=77, OpType=ALLREDUCE, NumelIn=1, NumelOut=1, Timeout(ms)=600000) ran for 600033 milliseconds before timing out.
+Exception raised from checkTimeout at /pytorch/torch/csrc/distributed/c10d/ProcessGroupNCCL.cpp:760 (most recent call first):
+frame #0: c10::Error::Error(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x9d (0x723bb1b6afad in /root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/lib/libc10.so)
+frame #1: c10d::ProcessGroupNCCL::WorkNCCL::checkTimeout(std::optional<std::chrono::duration<long, std::ratio<1l, 1000l> > >) + 0x2b1 (0x723afd434611 in /root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+frame #2: c10d::ProcessGroupNCCL::Watchdog::runLoop() + 0x14f1 (0x723afd4403b1 in /root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+frame #3: c10d::ProcessGroupNCCL::Watchdog::run() + 0x157 (0x723afd441847 in /root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+frame #4: <unknown function> + 0xecdb4 (0x723b8206edb4 in /lib/x86_64-linux-gnu/libstdc++.so.6)
+frame #5: <unknown function> + 0x9caa4 (0x723bb2832aa4 in /lib/x86_64-linux-gnu/libc.so.6)
+frame #6: __clone + 0x44 (0x723bb28bfa34 in /lib/x86_64-linux-gnu/libc.so.6)
+
+terminate called after throwing an instance of 'c10::DistBackendError'
+  what():  [PG ID 0 PG GUID 0(default_pg) Rank 1] Process group watchdog thread terminated with exception: [Rank 1] Watchdog caught collective operation timeout: WorkNCCL(SeqNum=77, OpType=ALLREDUCE, NumelIn=1, NumelOut=1, Timeout(ms)=600000) ran for 600033 milliseconds before timing out.
+Exception raised from checkTimeout at /pytorch/torch/csrc/distributed/c10d/ProcessGroupNCCL.cpp:760 (most recent call first):
+frame #0: c10::Error::Error(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x9d (0x723bb1b6afad in /root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/lib/libc10.so)
+frame #1: c10d::ProcessGroupNCCL::WorkNCCL::checkTimeout(std::optional<std::chrono::duration<long, std::ratio<1l, 1000l> > >) + 0x2b1 (0x723afd434611 in /root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+frame #2: c10d::ProcessGroupNCCL::Watchdog::runLoop() + 0x14f1 (0x723afd4403b1 in /root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+frame #3: c10d::ProcessGroupNCCL::Watchdog::run() + 0x157 (0x723afd441847 in /root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+frame #4: <unknown function> + 0xecdb4 (0x723b8206edb4 in /lib/x86_64-linux-gnu/libstdc++.so.6)
+frame #5: <unknown function> + 0x9caa4 (0x723bb2832aa4 in /lib/x86_64-linux-gnu/libc.so.6)
+frame #6: __clone + 0x44 (0x723bb28bfa34 in /lib/x86_64-linux-gnu/libc.so.6)
+
+Exception raised from run at /pytorch/torch/csrc/distributed/c10d/ProcessGroupNCCL.cpp:2203 (most recent call first):
+frame #0: c10::Error::Error(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x9d (0x723bb1b6afad in /root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/lib/libc10.so)
+frame #1: <unknown function> + 0x6915eb (0x723afcbbc5eb in /root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+frame #2: <unknown function> + 0xecdb4 (0x723b8206edb4 in /lib/x86_64-linux-gnu/libstdc++.so.6)
+frame #3: <unknown function> + 0x9caa4 (0x723bb2832aa4 in /lib/x86_64-linux-gnu/libc.so.6)
+frame #4: __clone + 0x44 (0x723bb28bfa34 in /lib/x86_64-linux-gnu/libc.so.6)
+
+[rank3]:[E530 11:44:44.767979857 ProcessGroupNCCL.cpp:818] [Rank 3] Some NCCL operations have failed or timed out. Due to the asynchronous nature of CUDA kernels, subsequent GPU operations might run on corrupted/incomplete data.
+[rank3]:[E530 11:44:44.768014664 ProcessGroupNCCL.cpp:832] [Rank 3] To avoid data inconsistency, we are taking the entire process down.
+[rank3]:[E530 11:44:44.768894093 ProcessGroupNCCL.cpp:2197] [PG ID 0 PG GUID 0(default_pg) Rank 3] Process group watchdog thread terminated with exception: [Rank 3] Watchdog caught collective operation timeout: WorkNCCL(SeqNum=77, OpType=ALLREDUCE, NumelIn=1, NumelOut=1, Timeout(ms)=600000) ran for 600053 milliseconds before timing out.
+Exception raised from checkTimeout at /pytorch/torch/csrc/distributed/c10d/ProcessGroupNCCL.cpp:760 (most recent call first):
+frame #0: c10::Error::Error(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x9d (0x76b46cf6afad in /root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/lib/libc10.so)
+frame #1: c10d::ProcessGroupNCCL::WorkNCCL::checkTimeout(std::optional<std::chrono::duration<long, std::ratio<1l, 1000l> > >) + 0x2b1 (0x76b3b8834611 in /root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+frame #2: c10d::ProcessGroupNCCL::Watchdog::runLoop() + 0x14f1 (0x76b3b88403b1 in /root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+frame #3: c10d::ProcessGroupNCCL::Watchdog::run() + 0x157 (0x76b3b8841847 in /root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+frame #4: <unknown function> + 0xecdb4 (0x76b43d46edb4 in /lib/x86_64-linux-gnu/libstdc++.so.6)
+frame #5: <unknown function> + 0x9caa4 (0x76b46dc2caa4 in /lib/x86_64-linux-gnu/libc.so.6)
+frame #6: __clone + 0x44 (0x76b46dcb9a34 in /lib/x86_64-linux-gnu/libc.so.6)
+
+terminate called after throwing an instance of 'c10::DistBackendError'
+  what():  [PG ID 0 PG GUID 0(default_pg) Rank 3] Process group watchdog thread terminated with exception: [Rank 3] Watchdog caught collective operation timeout: WorkNCCL(SeqNum=77, OpType=ALLREDUCE, NumelIn=1, NumelOut=1, Timeout(ms)=600000) ran for 600053 milliseconds before timing out.
+Exception raised from checkTimeout at /pytorch/torch/csrc/distributed/c10d/ProcessGroupNCCL.cpp:760 (most recent call first):
+frame #0: c10::Error::Error(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x9d (0x76b46cf6afad in /root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/lib/libc10.so)
+frame #1: c10d::ProcessGroupNCCL::WorkNCCL::checkTimeout(std::optional<std::chrono::duration<long, std::ratio<1l, 1000l> > >) + 0x2b1 (0x76b3b8834611 in /root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+frame #2: c10d::ProcessGroupNCCL::Watchdog::runLoop() + 0x14f1 (0x76b3b88403b1 in /root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+frame #3: c10d::ProcessGroupNCCL::Watchdog::run() + 0x157 (0x76b3b8841847 in /root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+frame #4: <unknown function> + 0xecdb4 (0x76b43d46edb4 in /lib/x86_64-linux-gnu/libstdc++.so.6)
+frame #5: <unknown function> + 0x9caa4 (0x76b46dc2caa4 in /lib/x86_64-linux-gnu/libc.so.6)
+frame #6: __clone + 0x44 (0x76b46dcb9a34 in /lib/x86_64-linux-gnu/libc.so.6)
+
+Exception raised from run at /pytorch/torch/csrc/distributed/c10d/ProcessGroupNCCL.cpp:2203 (most recent call first):
+frame #0: c10::Error::Error(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x9d (0x76b46cf6afad in /root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/lib/libc10.so)
+frame #1: <unknown function> + 0x6915eb (0x76b3b7fbc5eb in /root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+frame #2: <unknown function> + 0xecdb4 (0x76b43d46edb4 in /lib/x86_64-linux-gnu/libstdc++.so.6)
+frame #3: <unknown function> + 0x9caa4 (0x76b46dc2caa4 in /lib/x86_64-linux-gnu/libc.so.6)
+frame #4: __clone + 0x44 (0x76b46dcb9a34 in /lib/x86_64-linux-gnu/libc.so.6)
+
+[rank2]:[E530 11:44:44.029333612 ProcessGroupNCCL.cpp:818] [Rank 2] Some NCCL operations have failed or timed out. Due to the asynchronous nature of CUDA kernels, subsequent GPU operations might run on corrupted/incomplete data.
+[rank2]:[E530 11:44:44.029370412 ProcessGroupNCCL.cpp:832] [Rank 2] To avoid data inconsistency, we are taking the entire process down.
+[rank2]:[E530 11:44:44.030259429 ProcessGroupNCCL.cpp:2197] [PG ID 0 PG GUID 0(default_pg) Rank 2] Process group watchdog thread terminated with exception: [Rank 2] Watchdog caught collective operation timeout: WorkNCCL(SeqNum=77, OpType=ALLREDUCE, NumelIn=1, NumelOut=1, Timeout(ms)=600000) ran for 600097 milliseconds before timing out.
+Exception raised from checkTimeout at /pytorch/torch/csrc/distributed/c10d/ProcessGroupNCCL.cpp:760 (most recent call first):
+frame #0: c10::Error::Error(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x9d (0x7cf2a396afad in /root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/lib/libc10.so)
+frame #1: c10d::ProcessGroupNCCL::WorkNCCL::checkTimeout(std::optional<std::chrono::duration<long, std::ratio<1l, 1000l> > >) + 0x2b1 (0x7cf1ef634611 in /root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+frame #2: c10d::ProcessGroupNCCL::Watchdog::runLoop() + 0x14f1 (0x7cf1ef6403b1 in /root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+frame #3: c10d::ProcessGroupNCCL::Watchdog::run() + 0x157 (0x7cf1ef641847 in /root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+frame #4: <unknown function> + 0xecdb4 (0x7cf27426edb4 in /lib/x86_64-linux-gnu/libstdc++.so.6)
+frame #5: <unknown function> + 0x9caa4 (0x7cf2a49acaa4 in /lib/x86_64-linux-gnu/libc.so.6)
+frame #6: __clone + 0x44 (0x7cf2a4a39a34 in /lib/x86_64-linux-gnu/libc.so.6)
+
+terminate called after throwing an instance of 'c10::DistBackendError'
+  what():  [PG ID 0 PG GUID 0(default_pg) Rank 2] Process group watchdog thread terminated with exception: [Rank 2] Watchdog caught collective operation timeout: WorkNCCL(SeqNum=77, OpType=ALLREDUCE, NumelIn=1, NumelOut=1, Timeout(ms)=600000) ran for 600097 milliseconds before timing out.
+Exception raised from checkTimeout at /pytorch/torch/csrc/distributed/c10d/ProcessGroupNCCL.cpp:760 (most recent call first):
+frame #0: c10::Error::Error(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x9d (0x7cf2a396afad in /root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/lib/libc10.so)
+frame #1: c10d::ProcessGroupNCCL::WorkNCCL::checkTimeout(std::optional<std::chrono::duration<long, std::ratio<1l, 1000l> > >) + 0x2b1 (0x7cf1ef634611 in /root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+frame #2: c10d::ProcessGroupNCCL::Watchdog::runLoop() + 0x14f1 (0x7cf1ef6403b1 in /root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+frame #3: c10d::ProcessGroupNCCL::Watchdog::run() + 0x157 (0x7cf1ef641847 in /root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+frame #4: <unknown function> + 0xecdb4 (0x7cf27426edb4 in /lib/x86_64-linux-gnu/libstdc++.so.6)
+frame #5: <unknown function> + 0x9caa4 (0x7cf2a49acaa4 in /lib/x86_64-linux-gnu/libc.so.6)
+frame #6: __clone + 0x44 (0x7cf2a4a39a34 in /lib/x86_64-linux-gnu/libc.so.6)
+
+Exception raised from run at /pytorch/torch/csrc/distributed/c10d/ProcessGroupNCCL.cpp:2203 (most recent call first):
+frame #0: c10::Error::Error(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x9d (0x7cf2a396afad in /root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/lib/libc10.so)
+frame #1: <unknown function> + 0x6915eb (0x7cf1eedbc5eb in /root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/lib/libtorch_cuda.so)
+frame #2: <unknown function> + 0xecdb4 (0x7cf27426edb4 in /lib/x86_64-linux-gnu/libstdc++.so.6)
+frame #3: <unknown function> + 0x9caa4 (0x7cf2a49acaa4 in /lib/x86_64-linux-gnu/libc.so.6)
+frame #4: __clone + 0x44 (0x7cf2a4a39a34 in /lib/x86_64-linux-gnu/libc.so.6)
+
+W0530 11:44:46.983000 1164791 sf_venv/lib/python3.10/site-packages/torch/distributed/elastic/multiprocessing/api.py:1014] Sending process 1164911 closing signal SIGTERM
+W0530 11:44:46.984000 1164791 sf_venv/lib/python3.10/site-packages/torch/distributed/elastic/multiprocessing/api.py:1014] Sending process 1164913 closing signal SIGTERM
+W0530 11:44:46.984000 1164791 sf_venv/lib/python3.10/site-packages/torch/distributed/elastic/multiprocessing/api.py:1014] Sending process 1164914 closing signal SIGTERM
+E0530 11:44:52.262000 1164791 sf_venv/lib/python3.10/site-packages/torch/distributed/elastic/multiprocessing/api.py:988] failed (exitcode: -6) local_rank: 1 (pid: 1164912) of binary: /root/Self-Forcing/sf_venv/bin/python
+Traceback (most recent call last):
+  File "/root/.local/share/uv/python/cpython-3.10-linux-x86_64-gnu/lib/python3.10/runpy.py", line 196, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "/root/.local/share/uv/python/cpython-3.10-linux-x86_64-gnu/lib/python3.10/runpy.py", line 86, in _run_code
+    exec(code, run_globals)
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/distributed/run.py", line 1020, in <module>
+    main()
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 367, in wrapper
+    return f(*args, **kwargs)
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/distributed/run.py", line 1016, in main
+    run(args)
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/distributed/run.py", line 1007, in run
+    elastic_launch(
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/distributed/launcher/api.py", line 191, in __call__
+    return launch_agent(self._config, self._entrypoint, list(args))
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/distributed/launcher/api.py", line 371, in launch_agent
+    raise ChildFailedError(
+torch.distributed.elastic.multiprocessing.errors.ChildFailedError: 
+=========================================================
+train_draft_head.py FAILED
+---------------------------------------------------------
+Failures:
+[1]:
+  time      : 2026-05-30_11:44:52
+  host      : lanxiang-prl-pod-2-67d469f5c6-f2kks
+  rank      : 0 (local_rank: 0)
+  exitcode  : -15 (pid: 1164911)  (SIGTERM)
+  error_file: <N/A>
+  traceback : Signal 15 (SIGTERM) received by PID 1164911
+[2]:
+  time      : 2026-05-30_11:44:52
+  host      : lanxiang-prl-pod-2-67d469f5c6-f2kks
+  rank      : 2 (local_rank: 2)
+  exitcode  : -6 (pid: 1164913)  (SIGABRT)
+  error_file: <N/A>
+  traceback : Signal 6 (SIGABRT) received by PID 1164913
+[3]:
+  time      : 2026-05-30_11:44:52
+  host      : lanxiang-prl-pod-2-67d469f5c6-f2kks
+  rank      : 3 (local_rank: 3)
+  exitcode  : -6 (pid: 1164914)  (SIGABRT)
+  error_file: <N/A>
+  traceback : Signal 6 (SIGABRT) received by PID 1164914
+---------------------------------------------------------
+Root Cause (first observed failure):
+[0]:
+  time      : 2026-05-30_11:44:46
+  host      : lanxiang-prl-pod-2-67d469f5c6-f2kks
+  rank      : 1 (local_rank: 1)
+  exitcode  : -6 (pid: 1164912)  (SIGABRT)
+  error_file: <N/A>
+  traceback : Signal 6 (SIGABRT) received by PID 1164912
+=========================================================

@@ -30,7 +30,7 @@ class CausalInferencePipeline(torch.nn.Module):
             timesteps = torch.cat((self.scheduler.timesteps.cpu(), torch.tensor([0], dtype=torch.float32)))
             self.denoising_step_list = timesteps[1000 - self.denoising_step_list]
 
-        self.num_transformer_blocks = 30
+        self.num_transformer_blocks = len(self.generator.model.blocks)
         self.frame_seq_length = 1560
 
         self.kv_cache1 = None
@@ -287,10 +287,14 @@ class CausalInferencePipeline(torch.nn.Module):
             # Use the default KV cache size
             kv_cache_size = 32760
 
+        num_heads = self.generator.model.num_heads
+        dim = self.generator.model.dim
+        head_dim = dim // num_heads
+
         for _ in range(self.num_transformer_blocks):
             kv_cache1.append({
-                "k": torch.zeros([batch_size, kv_cache_size, 12, 128], dtype=dtype, device=device),
-                "v": torch.zeros([batch_size, kv_cache_size, 12, 128], dtype=dtype, device=device),
+                "k": torch.zeros([batch_size, kv_cache_size, num_heads, head_dim], dtype=dtype, device=device),
+                "v": torch.zeros([batch_size, kv_cache_size, num_heads, head_dim], dtype=dtype, device=device),
                 "global_end_index": torch.tensor([0], dtype=torch.long, device=device),
                 "local_end_index": torch.tensor([0], dtype=torch.long, device=device)
             })
@@ -303,10 +307,14 @@ class CausalInferencePipeline(torch.nn.Module):
         """
         crossattn_cache = []
 
+        num_heads = self.generator.model.num_heads
+        dim = self.generator.model.dim
+        head_dim = dim // num_heads
+
         for _ in range(self.num_transformer_blocks):
             crossattn_cache.append({
-                "k": torch.zeros([batch_size, 512, 12, 128], dtype=dtype, device=device),
-                "v": torch.zeros([batch_size, 512, 12, 128], dtype=dtype, device=device),
+                "k": torch.zeros([batch_size, 512, num_heads, head_dim], dtype=dtype, device=device),
+                "v": torch.zeros([batch_size, 512, num_heads, head_dim], dtype=dtype, device=device),
                 "is_init": False
             })
         self.crossattn_cache = crossattn_cache

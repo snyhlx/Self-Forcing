@@ -1,0 +1,204 @@
+[2026-05-27 22:40:45] Profiling draft_only MovieGen subset
+[2026-05-27 22:40:45] Dataset: /root/Self-Forcing/prompts/MovieGenVideoBench.txt
+[2026-05-27 22:40:45] Prompts: start=0 max=16
+[2026-05-27 22:40:45] Blocks:  9
+[2026-05-27 22:40:45] Drafter: /mnt/lanxiangh/models/Self-Forcing/checkpoints/self_forcing_dmd.pt
+[2026-05-27 22:40:45] Output:  /root/Self-Forcing/outputs/sdvg/moviegen_draft_only_blocks9_start0_max16_20260527_224045
+Loading drafter: Wan2.1-T2V-1.3B /mnt/lanxiangh/models/Self-Forcing/checkpoints/self_forcing_dmd.pt
+KV inference with 3 frames per block
+prompts:   0%|          | 0/16 [00:00<?, ?it/s]
+draft_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+draft_only blocks:  11%|█         | 1/9 [00:00<00:04,  1.93it/s][A
+draft_only blocks:  22%|██▏       | 2/9 [00:00<00:03,  2.04it/s][A
+draft_only blocks:  33%|███▎      | 3/9 [00:01<00:03,  1.94it/s][A
+draft_only blocks:  44%|████▍     | 4/9 [00:02<00:02,  1.80it/s][A
+draft_only blocks:  56%|█████▌    | 5/9 [00:02<00:02,  1.66it/s][A
+draft_only blocks:  67%|██████▋   | 6/9 [00:03<00:01,  1.52it/s][A
+draft_only blocks:  78%|███████▊  | 7/9 [00:04<00:01,  1.40it/s][A
+draft_only blocks:  89%|████████▉ | 8/9 [00:05<00:00,  1.33it/s][A
+draft_only blocks: 100%|██████████| 9/9 [00:06<00:00,  1.29it/s][Adraft_only blocks: 100%|██████████| 9/9 [00:06<00:00,  1.48it/s]
+prompts:   6%|▋         | 1/16 [00:09<02:23,  9.55s/it]
+draft_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+draft_only blocks:  11%|█         | 1/9 [00:00<00:03,  2.45it/s][A
+draft_only blocks:  22%|██▏       | 2/9 [00:00<00:03,  2.24it/s][A
+draft_only blocks:  33%|███▎      | 3/9 [00:01<00:02,  2.03it/s][A
+draft_only blocks:  44%|████▍     | 4/9 [00:02<00:02,  1.85it/s][A
+draft_only blocks:  56%|█████▌    | 5/9 [00:02<00:02,  1.69it/s][A
+draft_only blocks:  67%|██████▋   | 6/9 [00:03<00:01,  1.54it/s][A
+draft_only blocks:  78%|███████▊  | 7/9 [00:04<00:01,  1.41it/s][A
+draft_only blocks:  89%|████████▉ | 8/9 [00:05<00:00,  1.34it/s][A
+draft_only blocks: 100%|██████████| 9/9 [00:05<00:00,  1.30it/s][Adraft_only blocks: 100%|██████████| 9/9 [00:05<00:00,  1.51it/s]
+prompts:  12%|█▎        | 2/16 [00:18<02:09,  9.27s/it]
+draft_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+draft_only blocks:  11%|█         | 1/9 [00:00<00:03,  2.38it/s][A
+draft_only blocks:  22%|██▏       | 2/9 [00:00<00:03,  2.19it/s][A
+draft_only blocks:  33%|███▎      | 3/9 [00:01<00:02,  2.01it/s][A
+draft_only blocks:  44%|████▍     | 4/9 [00:02<00:02,  1.84it/s][A
+draft_only blocks:  56%|█████▌    | 5/9 [00:02<00:02,  1.69it/s][A
+draft_only blocks:  67%|██████▋   | 6/9 [00:03<00:01,  1.54it/s][A
+draft_only blocks:  78%|███████▊  | 7/9 [00:04<00:01,  1.41it/s][A
+draft_only blocks:  89%|████████▉ | 8/9 [00:05<00:00,  1.34it/s][A
+draft_only blocks: 100%|██████████| 9/9 [00:05<00:00,  1.30it/s][Adraft_only blocks: 100%|██████████| 9/9 [00:05<00:00,  1.50it/s]
+prompts:  19%|█▉        | 3/16 [00:27<01:59,  9.16s/it]
+draft_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+draft_only blocks:  11%|█         | 1/9 [00:00<00:03,  2.43it/s][A
+draft_only blocks:  22%|██▏       | 2/9 [00:00<00:03,  2.23it/s][A
+draft_only blocks:  33%|███▎      | 3/9 [00:01<00:02,  2.03it/s][A
+draft_only blocks:  44%|████▍     | 4/9 [00:02<00:02,  1.85it/s][A
+draft_only blocks:  56%|█████▌    | 5/9 [00:02<00:02,  1.68it/s][A
+draft_only blocks:  67%|██████▋   | 6/9 [00:03<00:01,  1.54it/s][A
+draft_only blocks:  78%|███████▊  | 7/9 [00:04<00:01,  1.41it/s][A
+draft_only blocks:  89%|████████▉ | 8/9 [00:05<00:00,  1.34it/s][A
+draft_only blocks: 100%|██████████| 9/9 [00:05<00:00,  1.29it/s][Adraft_only blocks: 100%|██████████| 9/9 [00:05<00:00,  1.51it/s]
+prompts:  25%|██▌       | 4/16 [00:36<01:49,  9.16s/it]
+draft_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+draft_only blocks:  11%|█         | 1/9 [00:00<00:03,  2.42it/s][A
+draft_only blocks:  22%|██▏       | 2/9 [00:00<00:03,  2.22it/s][A
+draft_only blocks:  33%|███▎      | 3/9 [00:01<00:02,  2.03it/s][A
+draft_only blocks:  44%|████▍     | 4/9 [00:02<00:02,  1.85it/s][A
+draft_only blocks:  56%|█████▌    | 5/9 [00:02<00:02,  1.68it/s][A
+draft_only blocks:  67%|██████▋   | 6/9 [00:03<00:01,  1.54it/s][A
+draft_only blocks:  78%|███████▊  | 7/9 [00:04<00:01,  1.41it/s][A
+draft_only blocks:  89%|████████▉ | 8/9 [00:05<00:00,  1.34it/s][A
+draft_only blocks: 100%|██████████| 9/9 [00:05<00:00,  1.29it/s][Adraft_only blocks: 100%|██████████| 9/9 [00:05<00:00,  1.50it/s]
+prompts:  31%|███▏      | 5/16 [00:45<01:40,  9.10s/it]
+draft_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+draft_only blocks:  11%|█         | 1/9 [00:00<00:03,  2.35it/s][A
+draft_only blocks:  22%|██▏       | 2/9 [00:00<00:03,  2.20it/s][A
+draft_only blocks:  33%|███▎      | 3/9 [00:01<00:02,  2.01it/s][A
+draft_only blocks:  44%|████▍     | 4/9 [00:02<00:02,  1.84it/s][A
+draft_only blocks:  56%|█████▌    | 5/9 [00:02<00:02,  1.68it/s][A
+draft_only blocks:  67%|██████▋   | 6/9 [00:03<00:01,  1.54it/s][A
+draft_only blocks:  78%|███████▊  | 7/9 [00:04<00:01,  1.41it/s][A
+draft_only blocks:  89%|████████▉ | 8/9 [00:05<00:00,  1.34it/s][A
+draft_only blocks: 100%|██████████| 9/9 [00:05<00:00,  1.29it/s][Adraft_only blocks: 100%|██████████| 9/9 [00:05<00:00,  1.50it/s]
+prompts:  38%|███▊      | 6/16 [00:55<01:31,  9.13s/it]
+draft_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+draft_only blocks:  11%|█         | 1/9 [00:00<00:03,  2.32it/s][A
+draft_only blocks:  22%|██▏       | 2/9 [00:00<00:03,  2.18it/s][A
+draft_only blocks:  33%|███▎      | 3/9 [00:01<00:03,  2.00it/s][A
+draft_only blocks:  44%|████▍     | 4/9 [00:02<00:02,  1.83it/s][A
+draft_only blocks:  56%|█████▌    | 5/9 [00:02<00:02,  1.68it/s][A
+draft_only blocks:  67%|██████▋   | 6/9 [00:03<00:01,  1.54it/s][A
+draft_only blocks:  78%|███████▊  | 7/9 [00:04<00:01,  1.41it/s][A
+draft_only blocks:  89%|████████▉ | 8/9 [00:05<00:00,  1.34it/s][A
+draft_only blocks: 100%|██████████| 9/9 [00:06<00:00,  1.29it/s][Adraft_only blocks: 100%|██████████| 9/9 [00:06<00:00,  1.50it/s]
+prompts:  44%|████▍     | 7/16 [01:04<01:22,  9.13s/it]
+draft_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+draft_only blocks:  11%|█         | 1/9 [00:00<00:03,  2.43it/s][A
+draft_only blocks:  22%|██▏       | 2/9 [00:00<00:03,  2.20it/s][A
+draft_only blocks:  33%|███▎      | 3/9 [00:01<00:02,  2.01it/s][A
+draft_only blocks:  44%|████▍     | 4/9 [00:02<00:02,  1.84it/s][A
+draft_only blocks:  56%|█████▌    | 5/9 [00:02<00:02,  1.68it/s][A
+draft_only blocks:  67%|██████▋   | 6/9 [00:03<00:01,  1.54it/s][A
+draft_only blocks:  78%|███████▊  | 7/9 [00:04<00:01,  1.41it/s][A
+draft_only blocks:  89%|████████▉ | 8/9 [00:05<00:00,  1.34it/s][A
+draft_only blocks: 100%|██████████| 9/9 [00:05<00:00,  1.30it/s][Adraft_only blocks: 100%|██████████| 9/9 [00:05<00:00,  1.50it/s]
+prompts:  50%|█████     | 8/16 [01:13<01:12,  9.11s/it]
+draft_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+draft_only blocks:  11%|█         | 1/9 [00:00<00:03,  2.44it/s][A
+draft_only blocks:  22%|██▏       | 2/9 [00:00<00:03,  2.23it/s][A
+draft_only blocks:  33%|███▎      | 3/9 [00:01<00:02,  2.04it/s][A
+draft_only blocks:  44%|████▍     | 4/9 [00:02<00:02,  1.85it/s][A
+draft_only blocks:  56%|█████▌    | 5/9 [00:02<00:02,  1.69it/s][A
+draft_only blocks:  67%|██████▋   | 6/9 [00:03<00:01,  1.54it/s][A
+draft_only blocks:  78%|███████▊  | 7/9 [00:04<00:01,  1.41it/s][A
+draft_only blocks:  89%|████████▉ | 8/9 [00:05<00:00,  1.34it/s][A
+draft_only blocks: 100%|██████████| 9/9 [00:05<00:00,  1.29it/s][Adraft_only blocks: 100%|██████████| 9/9 [00:05<00:00,  1.51it/s]
+prompts:  56%|█████▋    | 9/16 [01:22<01:03,  9.08s/it]
+draft_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+draft_only blocks:  11%|█         | 1/9 [00:00<00:03,  2.45it/s][A
+draft_only blocks:  22%|██▏       | 2/9 [00:00<00:03,  2.24it/s][A
+draft_only blocks:  33%|███▎      | 3/9 [00:01<00:02,  2.04it/s][A
+draft_only blocks:  44%|████▍     | 4/9 [00:02<00:02,  1.85it/s][A
+draft_only blocks:  56%|█████▌    | 5/9 [00:02<00:02,  1.69it/s][A
+draft_only blocks:  67%|██████▋   | 6/9 [00:03<00:01,  1.54it/s][A
+draft_only blocks:  78%|███████▊  | 7/9 [00:04<00:01,  1.41it/s][A
+draft_only blocks:  89%|████████▉ | 8/9 [00:05<00:00,  1.34it/s][A
+draft_only blocks: 100%|██████████| 9/9 [00:05<00:00,  1.30it/s][Adraft_only blocks: 100%|██████████| 9/9 [00:05<00:00,  1.51it/s]
+prompts:  62%|██████▎   | 10/16 [01:31<00:54,  9.12s/it]
+draft_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+draft_only blocks:  11%|█         | 1/9 [00:00<00:03,  2.42it/s][A
+draft_only blocks:  22%|██▏       | 2/9 [00:00<00:03,  2.23it/s][A
+draft_only blocks:  33%|███▎      | 3/9 [00:01<00:02,  2.03it/s][A
+draft_only blocks:  44%|████▍     | 4/9 [00:02<00:02,  1.84it/s][A
+draft_only blocks:  56%|█████▌    | 5/9 [00:02<00:02,  1.68it/s][A
+draft_only blocks:  67%|██████▋   | 6/9 [00:03<00:01,  1.53it/s][A
+draft_only blocks:  78%|███████▊  | 7/9 [00:04<00:01,  1.41it/s][A
+draft_only blocks:  89%|████████▉ | 8/9 [00:05<00:00,  1.33it/s][A
+draft_only blocks: 100%|██████████| 9/9 [00:05<00:00,  1.29it/s][Adraft_only blocks: 100%|██████████| 9/9 [00:05<00:00,  1.50it/s]
+prompts:  69%|██████▉   | 11/16 [01:40<00:45,  9.09s/it]
+draft_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+draft_only blocks:  11%|█         | 1/9 [00:00<00:03,  2.41it/s][A
+draft_only blocks:  22%|██▏       | 2/9 [00:00<00:03,  2.21it/s][A
+draft_only blocks:  33%|███▎      | 3/9 [00:01<00:02,  2.02it/s][A
+draft_only blocks:  44%|████▍     | 4/9 [00:02<00:02,  1.85it/s][A
+draft_only blocks:  56%|█████▌    | 5/9 [00:02<00:02,  1.68it/s][A
+draft_only blocks:  67%|██████▋   | 6/9 [00:03<00:01,  1.54it/s][A
+draft_only blocks:  78%|███████▊  | 7/9 [00:04<00:01,  1.41it/s][A
+draft_only blocks:  89%|████████▉ | 8/9 [00:05<00:00,  1.34it/s][A
+draft_only blocks: 100%|██████████| 9/9 [00:05<00:00,  1.29it/s][Adraft_only blocks: 100%|██████████| 9/9 [00:05<00:00,  1.50it/s]
+prompts:  75%|███████▌  | 12/16 [01:49<00:36,  9.08s/it]
+draft_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+draft_only blocks:  11%|█         | 1/9 [00:00<00:03,  2.39it/s][A
+draft_only blocks:  22%|██▏       | 2/9 [00:00<00:03,  2.22it/s][A
+draft_only blocks:  33%|███▎      | 3/9 [00:01<00:02,  2.03it/s][A
+draft_only blocks:  44%|████▍     | 4/9 [00:02<00:02,  1.85it/s][A
+draft_only blocks:  56%|█████▌    | 5/9 [00:02<00:02,  1.69it/s][A
+draft_only blocks:  67%|██████▋   | 6/9 [00:03<00:01,  1.54it/s][A
+draft_only blocks:  78%|███████▊  | 7/9 [00:04<00:01,  1.41it/s][A
+draft_only blocks:  89%|████████▉ | 8/9 [00:05<00:00,  1.34it/s][A
+draft_only blocks: 100%|██████████| 9/9 [00:05<00:00,  1.30it/s][Adraft_only blocks: 100%|██████████| 9/9 [00:05<00:00,  1.51it/s]
+prompts:  81%|████████▏ | 13/16 [01:58<00:27,  9.07s/it]
+draft_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+draft_only blocks:  11%|█         | 1/9 [00:00<00:03,  2.40it/s][A
+draft_only blocks:  22%|██▏       | 2/9 [00:00<00:03,  2.22it/s][A
+draft_only blocks:  33%|███▎      | 3/9 [00:01<00:02,  2.03it/s][A
+draft_only blocks:  44%|████▍     | 4/9 [00:02<00:02,  1.84it/s][A
+draft_only blocks:  56%|█████▌    | 5/9 [00:02<00:02,  1.67it/s][A
+draft_only blocks:  67%|██████▋   | 6/9 [00:03<00:01,  1.53it/s][A
+draft_only blocks:  78%|███████▊  | 7/9 [00:04<00:01,  1.41it/s][A
+draft_only blocks:  89%|████████▉ | 8/9 [00:05<00:00,  1.33it/s][A
+draft_only blocks: 100%|██████████| 9/9 [00:06<00:00,  1.29it/s][Adraft_only blocks: 100%|██████████| 9/9 [00:06<00:00,  1.50it/s]
+prompts:  88%|████████▊ | 14/16 [02:07<00:18,  9.11s/it]
+draft_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+draft_only blocks:  11%|█         | 1/9 [00:00<00:03,  2.42it/s][A
+draft_only blocks:  22%|██▏       | 2/9 [00:00<00:03,  2.24it/s][A
+draft_only blocks:  33%|███▎      | 3/9 [00:01<00:02,  2.04it/s][A
+draft_only blocks:  44%|████▍     | 4/9 [00:02<00:02,  1.85it/s][A
+draft_only blocks:  56%|█████▌    | 5/9 [00:02<00:02,  1.69it/s][A
+draft_only blocks:  67%|██████▋   | 6/9 [00:03<00:01,  1.54it/s][A
+draft_only blocks:  78%|███████▊  | 7/9 [00:04<00:01,  1.42it/s][A
+draft_only blocks:  89%|████████▉ | 8/9 [00:05<00:00,  1.34it/s][A
+draft_only blocks: 100%|██████████| 9/9 [00:05<00:00,  1.30it/s][Adraft_only blocks: 100%|██████████| 9/9 [00:05<00:00,  1.51it/s]
+prompts:  94%|█████████▍| 15/16 [02:16<00:09,  9.11s/it]
+draft_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+draft_only blocks:  11%|█         | 1/9 [00:00<00:03,  2.42it/s][A
+draft_only blocks:  22%|██▏       | 2/9 [00:00<00:03,  2.23it/s][A
+draft_only blocks:  33%|███▎      | 3/9 [00:01<00:02,  2.03it/s][A
+draft_only blocks:  44%|████▍     | 4/9 [00:02<00:02,  1.84it/s][A
+draft_only blocks:  56%|█████▌    | 5/9 [00:02<00:02,  1.68it/s][A
+draft_only blocks:  67%|██████▋   | 6/9 [00:03<00:01,  1.54it/s][A
+draft_only blocks:  78%|███████▊  | 7/9 [00:04<00:01,  1.41it/s][A
+draft_only blocks:  89%|████████▉ | 8/9 [00:05<00:00,  1.34it/s][A
+draft_only blocks: 100%|██████████| 9/9 [00:05<00:00,  1.29it/s][Adraft_only blocks: 100%|██████████| 9/9 [00:05<00:00,  1.50it/s]
+prompts: 100%|██████████| 16/16 [02:26<00:00,  9.12s/it]prompts: 100%|██████████| 16/16 [02:26<00:00,  9.13s/it]
+Wrote profile: /root/Self-Forcing/outputs/sdvg/moviegen_draft_only_blocks9_start0_max16_20260527_224045/profile.json
+draft_only: 8.32s -> /root/Self-Forcing/outputs/sdvg/moviegen_draft_only_blocks9_start0_max16_20260527_224045/prompt_0000_draft_only.mp4
+draft_only: 8.11s -> /root/Self-Forcing/outputs/sdvg/moviegen_draft_only_blocks9_start0_max16_20260527_224045/prompt_0001_draft_only.mp4
+draft_only: 8.12s -> /root/Self-Forcing/outputs/sdvg/moviegen_draft_only_blocks9_start0_max16_20260527_224045/prompt_0002_draft_only.mp4
+draft_only: 8.12s -> /root/Self-Forcing/outputs/sdvg/moviegen_draft_only_blocks9_start0_max16_20260527_224045/prompt_0003_draft_only.mp4
+draft_only: 8.12s -> /root/Self-Forcing/outputs/sdvg/moviegen_draft_only_blocks9_start0_max16_20260527_224045/prompt_0004_draft_only.mp4
+draft_only: 8.14s -> /root/Self-Forcing/outputs/sdvg/moviegen_draft_only_blocks9_start0_max16_20260527_224045/prompt_0005_draft_only.mp4
+draft_only: 8.15s -> /root/Self-Forcing/outputs/sdvg/moviegen_draft_only_blocks9_start0_max16_20260527_224045/prompt_0006_draft_only.mp4
+draft_only: 8.13s -> /root/Self-Forcing/outputs/sdvg/moviegen_draft_only_blocks9_start0_max16_20260527_224045/prompt_0007_draft_only.mp4
+draft_only: 8.12s -> /root/Self-Forcing/outputs/sdvg/moviegen_draft_only_blocks9_start0_max16_20260527_224045/prompt_0008_draft_only.mp4
+draft_only: 8.12s -> /root/Self-Forcing/outputs/sdvg/moviegen_draft_only_blocks9_start0_max16_20260527_224045/prompt_0009_draft_only.mp4
+draft_only: 8.14s -> /root/Self-Forcing/outputs/sdvg/moviegen_draft_only_blocks9_start0_max16_20260527_224045/prompt_0010_draft_only.mp4
+draft_only: 8.13s -> /root/Self-Forcing/outputs/sdvg/moviegen_draft_only_blocks9_start0_max16_20260527_224045/prompt_0011_draft_only.mp4
+draft_only: 8.12s -> /root/Self-Forcing/outputs/sdvg/moviegen_draft_only_blocks9_start0_max16_20260527_224045/prompt_0012_draft_only.mp4
+draft_only: 8.16s -> /root/Self-Forcing/outputs/sdvg/moviegen_draft_only_blocks9_start0_max16_20260527_224045/prompt_0013_draft_only.mp4
+draft_only: 8.12s -> /root/Self-Forcing/outputs/sdvg/moviegen_draft_only_blocks9_start0_max16_20260527_224045/prompt_0014_draft_only.mp4
+draft_only: 8.13s -> /root/Self-Forcing/outputs/sdvg/moviegen_draft_only_blocks9_start0_max16_20260527_224045/prompt_0015_draft_only.mp4
+[2026-05-27 22:44:13] Profile JSON: /root/Self-Forcing/outputs/sdvg/moviegen_draft_only_blocks9_start0_max16_20260527_224045/profile.json
+[2026-05-27 22:44:13] Outputs saved under: /root/Self-Forcing/outputs/sdvg/moviegen_draft_only_blocks9_start0_max16_20260527_224045

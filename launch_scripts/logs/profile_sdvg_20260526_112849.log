@@ -1,0 +1,45 @@
+[2026-05-26 11:28:49] Profiling target_only vs SDVG
+[2026-05-26 11:28:49] Router: heuristic tau=0.02
+[2026-05-26 11:28:49] Blocks: 9
+[2026-05-26 11:28:49] Output: /root/Self-Forcing/outputs/sdvg/profile_20260526_112849
+Loading target: Wan2.1-T2V-14B /mnt/lanxiangh/models/realtime-video/checkpoints/krea-realtime-video-14b.safetensors
+KV inference with 3 frames per block
+Loading drafter: Wan2.1-T2V-1.3B /mnt/lanxiangh/models/Self-Forcing/checkpoints/self_forcing_dmd.pt
+KV inference with 3 frames per block
+target_only blocks:   0%|          | 0/9 [00:00<?, ?it/s]target_only blocks:  11%|█         | 1/9 [00:02<00:16,  2.04s/it]target_only blocks:  22%|██▏       | 2/9 [00:04<00:15,  2.15s/it]target_only blocks:  33%|███▎      | 3/9 [00:06<00:13,  2.33s/it]target_only blocks:  44%|████▍     | 4/9 [00:09<00:12,  2.53s/it]target_only blocks:  56%|█████▌    | 5/9 [00:12<00:10,  2.74s/it]target_only blocks:  67%|██████▋   | 6/9 [00:16<00:08,  2.97s/it]target_only blocks:  78%|███████▊  | 7/9 [00:19<00:06,  3.22s/it]target_only blocks:  78%|███████▊  | 7/9 [00:19<00:05,  2.85s/it]
+Traceback (most recent call last):
+  File "/root/Self-Forcing/sdvg_inference.py", line 426, in <module>
+    draft_pipeline = None
+  File "/root/Self-Forcing/sdvg_inference.py", line 398, in main
+    torch.set_grad_enabled(False)
+  File "/root/Self-Forcing/sdvg_inference.py", line 286, in run_mode
+    if use_target:
+  File "/root/Self-Forcing/sdvg_inference.py", line 129, in denoise_block
+    _, denoised_pred = pipeline.generator(
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/root/Self-Forcing/utils/wan_wrapper.py", line 241, in forward
+    flow_pred = self.model(
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/root/Self-Forcing/wan/modules/causal_model.py", line 1007, in forward
+    return self._forward_inference(*args, **kwargs)
+  File "/root/Self-Forcing/wan/modules/causal_model.py", line 835, in _forward_inference
+    x = block(x, **kwargs)
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/root/Self-Forcing/wan/modules/causal_model.py", line 313, in forward
+    y = self.self_attn(
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/root/Self-Forcing/wan/modules/causal_model.py", line 227, in forward
+    kv_cache["k"][:, local_start_index:local_end_index] = roped_key
+RuntimeError: The expanded size of the tensor (0) must match the existing size (4680) at non-singleton dimension 1.  Target sizes: [1, 0, 40, 128].  Tensor sizes: [4680, 40, 128]

@@ -1,0 +1,32 @@
+[2026-06-06 10:25:59] Draft-head oracle-context quality diagnostic
+[2026-06-06 10:25:59] Checkpoint: /root/Self-Forcing/outputs/draft_head/checkpoints/20260606_081441_wan_dflash_6layer_uniform_targetinit_unrolled_freeze_copied_wan0_dh_wan_dflash_attention_clean_latent_flow_unrolled_h5120_ctx4680_p1x1x1_st1000_750_500_250_0_bs1_g4_lr5e-4_fl0_25_ampbf16_gc1_fw0_cfgf9c263af/epoch_0001.pt
+[2026-06-06 10:25:59] Output:     /root/Self-Forcing/outputs/draft_head/test_runs/wan_dflash_6layer_uniform_20260606_081441_lr5e-4_epoch0001_frozenwan_0epoch_unrolled_prompt002_oracle_20260606_102558
+[2026-06-06 10:25:59] Blocks:     9
+[2026-06-06 10:25:59] Metric:     rmse
+Loading target: Wan2.1-T2V-14B /mnt/lanxiangh/models/realtime-video/checkpoints/krea-realtime-video-14b.safetensors
+KV inference with 3 frames per block
+Loading draft head: /root/Self-Forcing/outputs/draft_head/checkpoints/20260606_081441_wan_dflash_6layer_uniform_targetinit_unrolled_freeze_copied_wan0_dh_wan_dflash_attention_clean_latent_flow_unrolled_h5120_ctx4680_p1x1x1_st1000_750_500_250_0_bs1_g4_lr5e-4_fl0_25_ampbf16_gc1_fw0_cfgf9c263af/epoch_0001.pt
+prompts:   0%|          | 0/1 [00:00<?, ?it/s]
+target_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_only blocks:  11%|█         | 1/9 [00:03<00:30,  3.77s/it][A
+target_only blocks:  22%|██▏       | 2/9 [00:07<00:25,  3.68s/it][A
+target_only blocks:  33%|███▎      | 3/9 [00:09<00:18,  3.16s/it][A
+target_only blocks:  44%|████▍     | 4/9 [00:12<00:15,  3.04s/it][A
+target_only blocks:  56%|█████▌    | 5/9 [00:15<00:12,  3.07s/it][A
+target_only blocks:  67%|██████▋   | 6/9 [00:19<00:09,  3.20s/it][A
+target_only blocks:  78%|███████▊  | 7/9 [00:23<00:06,  3.38s/it][A
+target_only blocks:  89%|████████▉ | 8/9 [00:26<00:03,  3.49s/it][A
+target_only blocks: 100%|██████████| 9/9 [00:30<00:00,  3.57s/it][Atarget_only blocks: 100%|██████████| 9/9 [00:30<00:00,  3.40s/it]
+prompts:   0%|          | 0/1 [00:35<?, ?it/s]
+Traceback (most recent call last):
+  File "/root/Self-Forcing/sdvg_inference.py", line 1272, in <module>
+    main()
+  File "/root/Self-Forcing/sdvg_inference.py", line 1216, in main
+    summary = run_mode(
+  File "/root/Self-Forcing/sdvg_inference.py", line 594, in run_mode
+    reset_pipeline_cache(target_pipeline, batch_size, dtype, device, total_frames=num_frames)
+  File "/root/Self-Forcing/sdvg_inference.py", line 210, in reset_pipeline_cache
+    pipeline.kv_cache1 = [
+  File "/root/Self-Forcing/sdvg_inference.py", line 212, in <listcomp>
+    "k": torch.zeros([batch_size, kv_cache_size, num_heads, head_dim], dtype=dtype, device=device),
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 412.00 MiB. GPU 0 has a total capacity of 139.81 GiB of which 135.88 MiB is free. Process 2773426 has 49.36 GiB memory in use. Including non-PyTorch memory, this process has 90.31 GiB memory in use. Of the allocated memory 88.02 GiB is allocated by PyTorch, and 1.62 GiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/docs/stable/notes/cuda.html#optimizing-memory-usage-with-pytorch-cuda-alloc-conf)

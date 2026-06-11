@@ -1,0 +1,16 @@
+[2026-06-03 11:30:17] Training latent draft head with clean-latent + flow loss
+[2026-06-03 11:30:17] Manifest: /mnt/lanxiangh/data/ff_exec/draft_head_full_dataset/tau_delta_0p0/manifest.json
+[2026-06-03 11:30:17] Run dir:   /root/Self-Forcing/outputs/draft_head/checkpoints/20260603_113017_dh_wan_dflash_attention_clean_latent_flow_one_step_h5120_ctx4680_p1x1x1_st1000_750_500_250_0_bs1_g4_lr1e-5_fl0_5_ampbf16_gc0_cfg57dbe94f
+[2026-06-03 11:30:17] Output:    /root/Self-Forcing/outputs/draft_head/checkpoints/20260603_113017_dh_wan_dflash_attention_clean_latent_flow_one_step_h5120_ctx4680_p1x1x1_st1000_750_500_250_0_bs1_g4_lr1e-5_fl0_5_ampbf16_gc0_cfg57dbe94f/final.pt
+[2026-06-03 11:30:17] Config:    dh_wan_dflash_attention_clean_latent_flow_one_step_h5120_l3_nh40_ctx4680_pool1x1x1_ffm4_ffn13824_st1000_750_500_250_0_sh5_0_nb9_bs1_gpu4_ep3_lr1e-5_wd0_0_val0_05_cl1_0_fl0_5_dmd0_0_de1_ampbf16_gc0_layersblocks_8_blocks_16_blocks_24_tinit8_16_24_dinit20260603_090857_dh_wan_dflash_attention_clean_latent_flow_one_step_h5120_ctx4680_p1x1x1_st1000_750_500_250_0_bs1_g4_lr5e-5_fl0_25_ampbf16_gc0_cfg8c1279c4_latest_pt
+[2026-06-03 11:30:17] Config hash: 57dbe94f
+[2026-06-03 11:30:17] Layers:   blocks.8 blocks.16 blocks.24
+[2026-06-03 11:30:17] Head:     wan_dflash_attention input_source=scheduled_latents hidden=5120 layers=3 heads=40 ffn_dim=13824
+[2026-06-03 11:30:17] Loss:     type=clean_latent_flow clean_latent=1.0 flow=0.5 dmd=0.0 every=1
+[2026-06-03 11:30:17] Training: mode=one_step unroll_noise=fixed weights=auto
+[2026-06-03 11:30:17] Memory:   amp_dtype=bf16 gradient_checkpointing=0
+[2026-06-03 11:30:17] Schedule: [1000 750 500 250 0] timestep_shift=5.0
+[2026-06-03 11:30:17] Target init: 8 16 24
+[2026-06-03 11:30:17] Draft init: /root/Self-Forcing/outputs/draft_head/checkpoints/20260603_090857_dh_wan_dflash_attention_clean_latent_flow_one_step_h5120_ctx4680_p1x1x1_st1000_750_500_250_0_bs1_g4_lr5e-5_fl0_25_ampbf16_gc0_cfg8c1279c4/latest.pt
+[2026-06-03 11:30:17] GPUs:     4 visible=0,1,2,3
+[2026-06-03 11:30:17] Epochs:   3 batch_size=1 lr=1e-5

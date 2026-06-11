@@ -1,0 +1,11 @@
+[2026-06-01 10:46:56] Training latent draft head with clean-latent + flow loss
+[2026-06-01 10:46:56] Manifest: /mnt/lanxiangh/data/ff_exec/draft_head_full_dataset/tau_delta_0p0/manifest.json
+[2026-06-01 10:46:56] Run dir:   /root/Self-Forcing/outputs/draft_head/checkpoints/20260601_104656_3gpu_bs1_uniform_steps_moviegen_draft_head_attention_clean_latent_flow_h5120_l3_heads40_ctx4680_pool1x1x1_ffn13824_steps1000_750_500_250_0_blocks9_targetinit8_16_24
+[2026-06-01 10:46:56] Output:    /root/Self-Forcing/outputs/draft_head/checkpoints/20260601_104656_3gpu_bs1_uniform_steps_moviegen_draft_head_attention_clean_latent_flow_h5120_l3_heads40_ctx4680_pool1x1x1_ffn13824_steps1000_750_500_250_0_blocks9_targetinit8_16_24/final.pt
+[2026-06-01 10:46:56] Layers:   infer from manifest records
+[2026-06-01 10:46:56] Head:     attention input_source=scheduled_latents hidden=5120 layers=3 heads=40 ffn_dim=13824
+[2026-06-01 10:46:56] Loss:     type=clean_latent_flow clean_latent=1.0 flow=0.25 dmd=0.0 every=1
+[2026-06-01 10:46:56] Schedule: [1000 750 500 250 0] timestep_shift=5.0
+[2026-06-01 10:46:56] Target init: 8 16 24
+[2026-06-01 10:46:56] GPUs:     3 visible=1,2,3
+[2026-06-01 10:46:56] Epochs:   3 batch_size=2 lr=5e-5

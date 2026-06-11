@@ -1,0 +1,120 @@
+[2026-06-07 09:57:17] Training bidirectional prompt-anchor draft head
+[2026-06-07 09:57:17] Manifest: /mnt/lanxiangh/data/ff_exec/draft_head_full_dataset_6layer_uniform/tau_delta_0p0/manifest.json
+[2026-06-07 09:57:17] Dataset cache: /mnt/lanxiangh/data/cache/specgen index_workers=8 wait_seconds=3600
+[2026-06-07 09:57:17] Run dir:   /root/Self-Forcing/outputs/draft_head/checkpoints/20260607_095717_bidirectional_prompt_anchor_wan_targetinit_tempmix2_unrolled_h5120_l6_st1000_750_500_250_0_bs1_g4_lr1e-5_fl1_0_dt0_0_td0_0_bd0_0
+[2026-06-07 09:57:17] Output:    /root/Self-Forcing/outputs/draft_head/checkpoints/20260607_095717_bidirectional_prompt_anchor_wan_targetinit_tempmix2_unrolled_h5120_l6_st1000_750_500_250_0_bs1_g4_lr1e-5_fl1_0_dt0_0_td0_0_bd0_0/final.pt
+[2026-06-07 09:57:17] GPUs:      4 visible=0,1,2,3
+[2026-06-07 09:57:17] Anchor:    online_target target=Wan2.1-T2V-14B seed=42
+[2026-06-07 09:57:17] Model:     wan hidden=5120 layers=6 heads=40 ffn_dim=13824 prompt_dim=4096 temporal_mixer_layers=2 temporal_mixer_ffn_dim=2048 gradient_checkpointing=1
+[2026-06-07 09:57:17] Parallel:  strategy=fsdp fsdp_min_num_params=100000000 fsdp_mixed_precision=none
+[2026-06-07 09:57:17] Init:      target_blocks=[0 8 16 24 32 39]
+[2026-06-07 09:57:17] Training:  mode=unrolled steps=[1000 750 500 250 0] unroll_noise=fixed weights=auto num_workers=0
+[2026-06-07 09:57:17] Loss:      clean=0.0 flow=1.0 detail=0.0 temporal_delta=0.0 boundary=0.0
+Loaded bidirectional dataset index cache: /mnt/lanxiangh/data/cache/specgen/bidirectional_prompt_anchor/c9e59c8913f6f06a4fcb.json examples=1003
+[startup rank0 2026-06-07 09:57:23] building/loading bidirectional dataset index
+Loaded bidirectional dataset index cache: /mnt/lanxiangh/data/cache/specgen/bidirectional_prompt_anchor/c9e59c8913f6f06a4fcb.json examples=1003
+Loaded bidirectional dataset index cache: /mnt/lanxiangh/data/cache/specgen/bidirectional_prompt_anchor/c9e59c8913f6f06a4fcb.json examples=1003
+[startup rank0 2026-06-07 09:57:23] dataset index ready in 0.1s examples=1003
+[startup rank0 2026-06-07 09:57:23] loading one sample to infer latent shape
+Loaded bidirectional dataset index cache: /mnt/lanxiangh/data/cache/specgen/bidirectional_prompt_anchor/c9e59c8913f6f06a4fcb.json examples=1003
+[startup rank0 2026-06-07 09:57:45] sample shape ready in 21.3s latent_channels=16 frames=27
+[startup rank0 2026-06-07 09:57:47] loading Wan text encoder
+[startup rank0 2026-06-07 09:58:42] Wan text encoder ready in 54.4s
+[startup rank0 2026-06-07 09:58:42] loading online target Wan anchor generator
+KV inference with 3 frames per block
+[startup rank0 2026-06-07 10:00:00] online target Wan anchor generator ready in 78.5s
+[startup rank0 2026-06-07 10:00:00] building bidirectional Wan draft head
+KV inference with 3 frames per block
+KV inference with 3 frames per block
+KV inference with 3 frames per block
+[startup rank0 2026-06-07 10:00:11] bidirectional Wan draft head ready in 10.5s
+[startup rank0 2026-06-07 10:00:11] initializing draft head from target blocks [0, 8, 16, 24, 32, 39]
+[startup rank0 2026-06-07 10:00:11] target block initialization ready in 0.0s report={'patch_embedding': 1, 'time_embedding': 1, 'time_projection': 1, 'head': 1, 'attention': 6, 'norm': 12, 'ffn': 6, 'skipped': 0}
+Initialized bidirectional Wan head from target blocks [0, 8, 16, 24, 32, 39]: {'patch_embedding': 1, 'time_embedding': 1, 'time_projection': 1, 'head': 1, 'attention': 6, 'norm': 12, 'ffn': 6, 'skipped': 0}
+[startup rank0 2026-06-07 10:00:11] wrapping model with fsdp
+[rank0]: Traceback (most recent call last):
+[rank0]:   File "/root/Self-Forcing/train_bidirectional_draft_head.py", line 1325, in <module>
+[rank0]:     main()
+[rank0]:   File "/root/Self-Forcing/train_bidirectional_draft_head.py", line 1141, in main
+[rank0]:     model = wrap_model_for_training(
+[rank0]:   File "/root/Self-Forcing/fsdp_utils.py", line 66, in wrap_model_for_training
+[rank0]:     return FSDP(
+[rank0]:   File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/distributed/fsdp/fully_sharded_data_parallel.py", line 493, in __init__
+[rank0]:     _init_param_handle_from_module(
+[rank0]:   File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/distributed/fsdp/_init_utils.py", line 618, in _init_param_handle_from_module
+[rank0]:     _verify_managed_params(fully_sharded_module, managed_params)
+[rank0]:   File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/distributed/fsdp/_init_utils.py", line 556, in _verify_managed_params
+[rank0]:     raise ValueError(
+[rank0]: ValueError: FSDP doesn't support scalar parameters. Change temporal_inject_scale to a 1D tensor with numel equal to 1.
+[rank0]:[W607 10:00:12.552121111 ProcessGroupNCCL.cpp:1647] Warning: WARNING: destroy_process_group() was not called before program exit, which can leak resources. For more info, please see https://pytorch.org/docs/stable/distributed.html#shutdown (function operator())
+[rank3]: Traceback (most recent call last):
+[rank3]:   File "/root/Self-Forcing/train_bidirectional_draft_head.py", line 1325, in <module>
+[rank3]:     main()
+[rank3]:   File "/root/Self-Forcing/train_bidirectional_draft_head.py", line 1141, in main
+[rank3]:     model = wrap_model_for_training(
+[rank3]:   File "/root/Self-Forcing/fsdp_utils.py", line 66, in wrap_model_for_training
+[rank3]:     return FSDP(
+[rank3]:   File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/distributed/fsdp/fully_sharded_data_parallel.py", line 493, in __init__
+[rank3]:     _init_param_handle_from_module(
+[rank3]:   File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/distributed/fsdp/_init_utils.py", line 618, in _init_param_handle_from_module
+[rank3]:     _verify_managed_params(fully_sharded_module, managed_params)
+[rank3]:   File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/distributed/fsdp/_init_utils.py", line 556, in _verify_managed_params
+[rank3]:     raise ValueError(
+[rank3]: ValueError: FSDP doesn't support scalar parameters. Change temporal_inject_scale to a 1D tensor with numel equal to 1.
+W0607 10:00:14.600000 2982894 sf_venv/lib/python3.10/site-packages/torch/distributed/elastic/multiprocessing/api.py:1014] Sending process 2982995 closing signal SIGTERM
+W0607 10:00:14.602000 2982894 sf_venv/lib/python3.10/site-packages/torch/distributed/elastic/multiprocessing/api.py:1014] Sending process 2982996 closing signal SIGTERM
+W0607 10:00:14.603000 2982894 sf_venv/lib/python3.10/site-packages/torch/distributed/elastic/multiprocessing/api.py:1014] Sending process 2982997 closing signal SIGTERM
+E0607 10:00:18.302000 2982894 sf_venv/lib/python3.10/site-packages/torch/distributed/elastic/multiprocessing/api.py:988] failed (exitcode: 1) local_rank: 0 (pid: 2982994) of binary: /root/Self-Forcing/sf_venv/bin/python
+Traceback (most recent call last):
+  File "/root/.local/share/uv/python/cpython-3.10-linux-x86_64-gnu/lib/python3.10/runpy.py", line 196, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "/root/.local/share/uv/python/cpython-3.10-linux-x86_64-gnu/lib/python3.10/runpy.py", line 86, in _run_code
+    exec(code, run_globals)
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/distributed/run.py", line 1020, in <module>
+    main()
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 367, in wrapper
+    return f(*args, **kwargs)
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/distributed/run.py", line 1016, in main
+    run(args)
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/distributed/run.py", line 1007, in run
+    elastic_launch(
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/distributed/launcher/api.py", line 191, in __call__
+    return launch_agent(self._config, self._entrypoint, list(args))
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/distributed/launcher/api.py", line 371, in launch_agent
+    raise ChildFailedError(
+torch.distributed.elastic.multiprocessing.errors.ChildFailedError: 
+============================================================
+train_bidirectional_draft_head.py FAILED
+------------------------------------------------------------
+Failures:
+[1]:
+  time      : 2026-06-07_10:00:18
+  host      : lanxiang-prl-pod-2-67d469f5c6-f2kks
+  rank      : 1 (local_rank: 1)
+  exitcode  : -15 (pid: 2982995)  (SIGTERM)
+  error_file: <N/A>
+  traceback : Signal 15 (SIGTERM) received by PID 2982995
+[2]:
+  time      : 2026-06-07_10:00:18
+  host      : lanxiang-prl-pod-2-67d469f5c6-f2kks
+  rank      : 2 (local_rank: 2)
+  exitcode  : -15 (pid: 2982996)  (SIGTERM)
+  error_file: <N/A>
+  traceback : Signal 15 (SIGTERM) received by PID 2982996
+[3]:
+  time      : 2026-06-07_10:00:18
+  host      : lanxiang-prl-pod-2-67d469f5c6-f2kks
+  rank      : 3 (local_rank: 3)
+  exitcode  : 1 (pid: 2982997) 
+  error_file: <N/A>
+  traceback : To enable traceback see: https://pytorch.org/docs/stable/elastic/errors.html
+------------------------------------------------------------
+Root Cause (first observed failure):
+[0]:
+  time      : 2026-06-07_10:00:14
+  host      : lanxiang-prl-pod-2-67d469f5c6-f2kks
+  rank      : 0 (local_rank: 0)
+  exitcode  : 1 (pid: 2982994) 
+  error_file: <N/A>
+  traceback : To enable traceback see: https://pytorch.org/docs/stable/elastic/errors.html
+============================================================

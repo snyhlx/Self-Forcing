@@ -1,0 +1,35 @@
+[2026-06-04 09:47:06] Draft-head oracle-context quality diagnostic
+[2026-06-04 09:47:06] Checkpoint: /root/Self-Forcing/outputs/draft_head/checkpoints/20260604_061825_wan_dflash_perblock_meanctx_targetinit_unrolled_dh_wan_dflash_attention_clean_latent_flow_unrolled_h5120_ctx4680_p1x1x1_st1000_750_500_250_0_bs1_g4_lr5e-5_fl0_25_ampbf16_gc1_fw0_cfge9942a8d/latest.pt
+[2026-06-04 09:47:06] Output:     /root/Self-Forcing/outputs/draft_head/test_runs/wan_dflash_20260604_061825_perblock_meanctx_unrolled_prompt002_oracle_context_20260604_094705
+[2026-06-04 09:47:06] Blocks:     9
+[2026-06-04 09:47:06] Metric:     rmse
+Loading target: Wan2.1-T2V-14B /mnt/lanxiangh/models/realtime-video/checkpoints/krea-realtime-video-14b.safetensors
+KV inference with 3 frames per block
+Loading draft head: /root/Self-Forcing/outputs/draft_head/checkpoints/20260604_061825_wan_dflash_perblock_meanctx_targetinit_unrolled_dh_wan_dflash_attention_clean_latent_flow_unrolled_h5120_ctx4680_p1x1x1_st1000_750_500_250_0_bs1_g4_lr5e-5_fl0_25_ampbf16_gc1_fw0_cfge9942a8d/latest.pt
+prompts:   0%|          | 0/1 [00:00<?, ?it/s]
+target_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_only blocks:  11%|█         | 1/9 [00:02<00:16,  2.10s/it][A
+target_only blocks:  22%|██▏       | 2/9 [00:04<00:15,  2.17s/it][A
+target_only blocks:  33%|███▎      | 3/9 [00:06<00:14,  2.34s/it][A
+target_only blocks:  44%|████▍     | 4/9 [00:09<00:12,  2.53s/it][A
+target_only blocks:  56%|█████▌    | 5/9 [00:12<00:10,  2.74s/it][A
+target_only blocks:  67%|██████▋   | 6/9 [00:16<00:08,  2.97s/it][A
+target_only blocks:  78%|███████▊  | 7/9 [00:19<00:06,  3.21s/it][A
+target_only blocks:  89%|████████▉ | 8/9 [00:23<00:03,  3.37s/it][A
+target_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.48s/it][Atarget_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.04s/it]
+
+draft_head blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+draft_head blocks:  11%|█         | 1/9 [00:01<00:15,  1.95s/it][A
+draft_head blocks:  22%|██▏       | 2/9 [00:04<00:15,  2.23s/it][A
+draft_head blocks:  33%|███▎      | 3/9 [00:07<00:14,  2.44s/it][A
+draft_head blocks:  44%|████▍     | 4/9 [00:10<00:13,  2.66s/it][A
+draft_head blocks:  56%|█████▌    | 5/9 [00:13<00:11,  2.89s/it][A
+draft_head blocks:  67%|██████▋   | 6/9 [00:16<00:09,  3.13s/it][A
+draft_head blocks:  78%|███████▊  | 7/9 [00:20<00:06,  3.37s/it][A
+draft_head blocks:  89%|████████▉ | 8/9 [00:24<00:03,  3.53s/it][A
+draft_head blocks: 100%|██████████| 9/9 [00:28<00:00,  3.64s/it][Adraft_head blocks: 100%|██████████| 9/9 [00:28<00:00,  3.18s/it]
+prompts: 100%|██████████| 1/1 [01:02<00:00, 62.81s/it]prompts: 100%|██████████| 1/1 [01:02<00:00, 62.81s/it]
+Wrote profile: /root/Self-Forcing/outputs/draft_head/test_runs/wan_dflash_20260604_061825_perblock_meanctx_unrolled_prompt002_oracle_context_20260604_094705/profile.json
+target_only: 29.70s -> /root/Self-Forcing/outputs/draft_head/test_runs/wan_dflash_20260604_061825_perblock_meanctx_unrolled_prompt002_oracle_context_20260604_094705/prompt_0002_target_only.mp4
+draft_head: 30.73s -> /root/Self-Forcing/outputs/draft_head/test_runs/wan_dflash_20260604_061825_perblock_meanctx_unrolled_prompt002_oracle_context_20260604_094705/prompt_0002_draft_head.mp4
+[2026-06-04 09:49:36] Done. Profile: /root/Self-Forcing/outputs/draft_head/test_runs/wan_dflash_20260604_061825_perblock_meanctx_unrolled_prompt002_oracle_context_20260604_094705/profile.json

@@ -1,0 +1,84 @@
+{
+    "subject_consistency": [
+        0.9545417612848374,
+        [
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_target_regen_smoke_20260528_013716/tau_delta_0p5/prompt_0000_target_only.mp4",
+                "video_results": 0.9643062396118274
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_target_regen_smoke_20260528_013716/tau_delta_0p5/prompt_0000_target_regen.mp4",
+                "video_results": 0.9447772829578474
+            }
+        ]
+    ],
+    "background_consistency": [
+        0.9603248009314904,
+        [
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_target_regen_smoke_20260528_013716/tau_delta_0p5/prompt_0000_target_only.mp4",
+                "video_results": 0.9651277982271634,
+                "video_sim": 100.373291015625,
+                "cnt_per_video": 104
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_target_regen_smoke_20260528_013716/tau_delta_0p5/prompt_0000_target_regen.mp4",
+                "video_results": 0.9555218036358173,
+                "video_sim": 99.374267578125,
+                "cnt_per_video": 104
+            }
+        ]
+    ],
+    "motion_smoothness": [
+        0.9900795498853974,
+        [
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_target_regen_smoke_20260528_013716/tau_delta_0p5/prompt_0000_target_only.mp4",
+                "video_results": 0.9909761746244973
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_target_regen_smoke_20260528_013716/tau_delta_0p5/prompt_0000_target_regen.mp4",
+                "video_results": 0.9891829251462975
+            }
+        ]
+    ],
+    "dynamic_degree": [
+        0.0,
+        [
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_target_regen_smoke_20260528_013716/tau_delta_0p5/prompt_0000_target_only.mp4",
+                "video_results": false
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_target_regen_smoke_20260528_013716/tau_delta_0p5/prompt_0000_target_regen.mp4",
+                "video_results": false
+            }
+        ]
+    ],
+    "aesthetic_quality": [
+        0.6574912667274475,
+        [
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_target_regen_smoke_20260528_013716/tau_delta_0p5/prompt_0000_target_only.mp4",
+                "video_results": 0.6479008793830872
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_target_regen_smoke_20260528_013716/tau_delta_0p5/prompt_0000_target_regen.mp4",
+                "video_results": 0.6670816540718079
+            }
+        ]
+    ],
+    "imaging_quality": [
+        0.5722954386756534,
+        [
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_target_regen_smoke_20260528_013716/tau_delta_0p5/prompt_0000_target_only.mp4",
+                "video_results": 56.45803059169224
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/sdvg/moviegen_target_regen_smoke_20260528_013716/tau_delta_0p5/prompt_0000_target_regen.mp4",
+                "video_results": 58.00105714343843
+            }
+        ]
+    ]
+}

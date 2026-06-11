@@ -1,0 +1,97 @@
+[2026-06-02 09:45:21] Training latent draft head with clean-latent + flow loss
+[2026-06-02 09:45:21] Manifest: /mnt/lanxiangh/data/ff_exec/draft_head_full_dataset/tau_delta_0p0/manifest.json
+[2026-06-02 09:45:21] Run dir:   /root/Self-Forcing/outputs/draft_head/checkpoints/20260602_094520_dh_kv_cache_attention_clean_latent_flow_one_step_h5120_ctx4680_p1x1x1_st1000_750_500_250_0_bs2_g4_lr5e-5_fl0_25_ampbf16_gc0_cfgb428fc17
+[2026-06-02 09:45:21] Output:    /root/Self-Forcing/outputs/draft_head/checkpoints/20260602_094520_dh_kv_cache_attention_clean_latent_flow_one_step_h5120_ctx4680_p1x1x1_st1000_750_500_250_0_bs2_g4_lr5e-5_fl0_25_ampbf16_gc0_cfgb428fc17/final.pt
+[2026-06-02 09:45:21] Config:    dh_kv_cache_attention_clean_latent_flow_one_step_h5120_l3_nh40_ctx4680_pool1x1x1_ffm4_ffn13824_st1000_750_500_250_0_sh5_0_nb9_bs2_gpu4_ep3_lr5e-5_wd0_0_val0_05_cl1_0_fl0_25_dmd0_0_de1_ampbf16_gc0_layersblocks_8_blocks_16_blocks_24_onlinekv_ks42_ktmWan2_1-T2V-14B
+[2026-06-02 09:45:21] Config hash: b428fc17
+[2026-06-02 09:45:21] Layers:   blocks.8 blocks.16 blocks.24
+[2026-06-02 09:45:21] Head:     kv_cache_attention input_source=scheduled_latents hidden=5120 layers=3 heads=40 ffn_dim=13824
+[2026-06-02 09:45:21] Loss:     type=clean_latent_flow clean_latent=1.0 flow=0.25 dmd=0.0 every=1
+[2026-06-02 09:45:21] Training: mode=one_step unroll_noise=fixed weights=auto
+[2026-06-02 09:45:21] Memory:   amp_dtype=bf16 gradient_checkpointing=0
+[2026-06-02 09:45:21] Schedule: [1000 750 500 250 0] timestep_shift=5.0
+[2026-06-02 09:45:21] Target init: disabled
+[2026-06-02 09:45:21] Draft init: disabled
+[2026-06-02 09:45:21] Online KV: target_model=Wan2.1-T2V-14B checkpoint=/mnt/lanxiangh/models/realtime-video/checkpoints/krea-realtime-video-14b.safetensors noise_seed=42
+[2026-06-02 09:45:21] GPUs:     4 visible=0,1,2,3
+[2026-06-02 09:45:21] Epochs:   3 batch_size=2 lr=5e-5
+Traceback (most recent call last):
+  File "/root/Self-Forcing/train_draft_head.py", line 1259, in <module>
+Traceback (most recent call last):
+  File "/root/Self-Forcing/train_draft_head.py", line 1259, in <module>
+    main()
+  File "/root/Self-Forcing/train_draft_head.py", line 801, in main
+    main()
+  File "/root/Self-Forcing/train_draft_head.py", line 801, in main
+    raise ValueError("--head_type kv_cache_attention currently requires per-rank --batch_size 1 for online KV replay")
+ValueError: --head_type kv_cache_attention currently requires per-rank --batch_size 1 for online KV replay
+    raise ValueError("--head_type kv_cache_attention currently requires per-rank --batch_size 1 for online KV replay")
+ValueError: --head_type kv_cache_attention currently requires per-rank --batch_size 1 for online KV replay
+Traceback (most recent call last):
+  File "/root/Self-Forcing/train_draft_head.py", line 1259, in <module>
+    main()
+  File "/root/Self-Forcing/train_draft_head.py", line 801, in main
+    raise ValueError("--head_type kv_cache_attention currently requires per-rank --batch_size 1 for online KV replay")
+ValueError: --head_type kv_cache_attention currently requires per-rank --batch_size 1 for online KV replay
+Traceback (most recent call last):
+  File "/root/Self-Forcing/train_draft_head.py", line 1259, in <module>
+    main()
+  File "/root/Self-Forcing/train_draft_head.py", line 801, in main
+    raise ValueError("--head_type kv_cache_attention currently requires per-rank --batch_size 1 for online KV replay")
+ValueError: --head_type kv_cache_attention currently requires per-rank --batch_size 1 for online KV replay
+W0602 09:45:25.593000 1897282 sf_venv/lib/python3.10/site-packages/torch/distributed/elastic/multiprocessing/api.py:1014] Sending process 1897384 closing signal SIGTERM
+W0602 09:45:25.594000 1897282 sf_venv/lib/python3.10/site-packages/torch/distributed/elastic/multiprocessing/api.py:1014] Sending process 1897385 closing signal SIGTERM
+E0602 09:45:25.626000 1897282 sf_venv/lib/python3.10/site-packages/torch/distributed/elastic/multiprocessing/api.py:988] failed (exitcode: 1) local_rank: 2 (pid: 1897386) of binary: /root/Self-Forcing/sf_venv/bin/python
+Traceback (most recent call last):
+  File "/root/.local/share/uv/python/cpython-3.10-linux-x86_64-gnu/lib/python3.10/runpy.py", line 196, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "/root/.local/share/uv/python/cpython-3.10-linux-x86_64-gnu/lib/python3.10/runpy.py", line 86, in _run_code
+    exec(code, run_globals)
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/distributed/run.py", line 1020, in <module>
+    main()
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 367, in wrapper
+    return f(*args, **kwargs)
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/distributed/run.py", line 1016, in main
+    run(args)
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/distributed/run.py", line 1007, in run
+    elastic_launch(
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/distributed/launcher/api.py", line 191, in __call__
+    return launch_agent(self._config, self._entrypoint, list(args))
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/distributed/launcher/api.py", line 371, in launch_agent
+    raise ChildFailedError(
+torch.distributed.elastic.multiprocessing.errors.ChildFailedError: 
+============================================================
+train_draft_head.py FAILED
+------------------------------------------------------------
+Failures:
+[1]:
+  time      : 2026-06-02_09:45:25
+  host      : lanxiang-prl-pod-2-67d469f5c6-f2kks
+  rank      : 3 (local_rank: 3)
+  exitcode  : 1 (pid: 1897387) 
+  error_file: <N/A>
+  traceback : To enable traceback see: https://pytorch.org/docs/stable/elastic/errors.html
+[2]:
+  time      : 2026-06-02_09:45:25
+  host      : lanxiang-prl-pod-2-67d469f5c6-f2kks
+  rank      : 0 (local_rank: 0)
+  exitcode  : 1 (pid: 1897384) 
+  error_file: <N/A>
+  traceback : To enable traceback see: https://pytorch.org/docs/stable/elastic/errors.html
+[3]:
+  time      : 2026-06-02_09:45:25
+  host      : lanxiang-prl-pod-2-67d469f5c6-f2kks
+  rank      : 1 (local_rank: 1)
+  exitcode  : 1 (pid: 1897385) 
+  error_file: <N/A>
+  traceback : To enable traceback see: https://pytorch.org/docs/stable/elastic/errors.html
+------------------------------------------------------------
+Root Cause (first observed failure):
+[0]:
+  time      : 2026-06-02_09:45:25
+  host      : lanxiang-prl-pod-2-67d469f5c6-f2kks
+  rank      : 2 (local_rank: 2)
+  exitcode  : 1 (pid: 1897386) 
+  error_file: <N/A>
+  traceback : To enable traceback see: https://pytorch.org/docs/stable/elastic/errors.html
+============================================================

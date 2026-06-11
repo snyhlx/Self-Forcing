@@ -1,0 +1,29 @@
+[2026-06-10 11:10:29] Bidirectional prompt-anchor video diagnostic
+[2026-06-10 11:10:29] Checkpoint: /root/Self-Forcing/outputs/draft_head/checkpoints/flow_unroll10_20260610_051405_bidirectional_prompt_anchor_wan_targetinit_tempmix2_unrolled_h5120_l6_st1000_750_500_250_0_dense10_overfit0_bs1_g4_lr1e-5_fl1_0_dt0_0_td0_0_bd0_0/final.pt
+[2026-06-10 11:10:29] Output:     /root/Self-Forcing/outputs/draft_head/test_runs/flow_unroll10_head10_prompt002_20260610_111029
+[2026-06-10 11:10:29] Blocks:     9
+[2026-06-10 11:10:29] Prompts:    /root/Self-Forcing/prompts/MovieGenVideoBench.txt start=2 max=1
+[2026-06-10 11:10:29] Manifest:   off dataset_index=default prompt_index=off split=all split_index=0
+[2026-06-10 11:10:29] Prediction: flow
+[2026-06-10 11:10:29] Head steps: 10
+[2026-06-10 11:10:29] Refine:     target_timestep=0 save_raw=0 save_target=1
+video prompts:   0%|          | 0/1 [00:00<?, ?it/s]
+  0%|          | 0/50 [00:00<?, ?it/s][A
+  2%|▏         | 1/50 [00:12<10:06, 12.39s/it][A
+  4%|▍         | 2/50 [00:24<09:51, 12.32s/it][A
+  6%|▌         | 3/50 [00:36<09:38, 12.31s/it][A
+  8%|▊         | 4/50 [00:49<09:26, 12.31s/it][A
+ 10%|█         | 5/50 [01:01<09:14, 12.31s/it][A
+ 12%|█▏        | 6/50 [01:13<09:01, 12.32s/it][A
+ 14%|█▍        | 7/50 [01:26<08:49, 12.33s/it][A
+ 16%|█▌        | 8/50 [01:38<08:37, 12.33s/it][A
+ 18%|█▊        | 9/50 [01:50<08:25, 12.34s/it][A
+ 20%|██        | 10/50 [02:03<08:13, 12.34s/it][A
+ 22%|██▏       | 11/50 [02:15<08:01, 12.34s/it][A
+ 24%|██▍       | 12/50 [02:27<07:48, 12.34s/it][A
+ 26%|██▌       | 13/50 [02:40<07:36, 12.34s/it][A
+ 28%|██▊       | 14/50 [02:52<07:24, 12.35s/it][A
+ 30%|███       | 15/50 [03:05<07:12, 12.35s/it][A
+ 32%|███▏      | 16/50 [03:17<07:00, 12.35s/it][A
+ 34%|███▍      | 17/50 [03:29<06:47, 12.35s/it][A
+ 36%|███▌      | 18/50 [03:42<06:35, 12.35s/it][A

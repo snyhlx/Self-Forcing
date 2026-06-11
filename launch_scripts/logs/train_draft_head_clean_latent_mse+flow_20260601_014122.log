@@ -1,0 +1,20 @@
+[2026-06-01 01:41:22] Training latent draft head with clean-latent + flow loss
+[2026-06-01 01:41:22] Manifest: /mnt/lanxiangh/data/ff_exec/draft_head_full_dataset/tau_delta_0p0/manifest.json
+[2026-06-01 01:41:22] Run dir:   /root/Self-Forcing/outputs/draft_head/checkpoints/20260601_014122_3gpu_bs1_moviegen_draft_head_attention_clean_latent_flow_h5120_l3_heads40_ctx4680_pool1x1x1_ffn13824_steps1000_937_833_625_0_blocks9_targetinit8_16_24
+[2026-06-01 01:41:22] Output:    /root/Self-Forcing/outputs/draft_head/checkpoints/20260601_014122_3gpu_bs1_moviegen_draft_head_attention_clean_latent_flow_h5120_l3_heads40_ctx4680_pool1x1x1_ffn13824_steps1000_937_833_625_0_blocks9_targetinit8_16_24/final.pt
+[2026-06-01 01:41:22] Layers:   infer from manifest records
+[2026-06-01 01:41:22] Head:     attention input_source=scheduled_latents hidden=5120 layers=3 heads=40 ffn_dim=13824
+[2026-06-01 01:41:22] Loss:     type=clean_latent_flow clean_latent=1.0 flow=0.25 dmd=0.0 every=1
+[2026-06-01 01:41:22] Schedule: [1000 937 833 625 0] timestep_shift=5.0
+[2026-06-01 01:41:22] Target init: 8 16 24
+[2026-06-01 01:41:22] GPUs:     3 visible=1,2,3
+[2026-06-01 01:41:22] Epochs:   3 batch_size=1 lr=5e-5
+KV inference with 3 frames per block
+Training draft head records=8024 train=7623 val=401 layers=['blocks.16', 'blocks.24', 'blocks.8'] latent_channels=16 feature_dim=15360 head_type=attention input_source=scheduled_latents denoising_steps=[1000, 937, 833, 625, 0] loss_type=clean_latent_flow dmd_weight=0.0 world_size=3
+Target initialization report: {'attention': 3, 'ffn': 3, 'skipped': 0}
+epoch 1:   0%|          | 0/2541 [00:00<?, ?it/s]epoch 1:   0%|          | 0/2541 [00:03<?, ?it/s, avg=1.65, loss=1.65, rmse=1.13, sec=3.47]step=1 epoch=1 batch=1 running_loss=1.647208 running_clean_latent_mse=1.282049 running_clean_latent_rmse=1.132276 step_seconds=3.473286 loss=1.647208 clean_latent_mse=1.282049 clean_latent_loss=1.282049 flow_loss=0.365159
+epoch 1:   0%|          | 1/2541 [00:03<2:35:11,  3.67s/it, avg=1.65, loss=1.65, rmse=1.13, sec=3.47]epoch 1:   0%|          | 1/2541 [00:04<2:35:11,  3.67s/it, avg=16.9, loss=32.3, rmse=3.24, sec=0.897]step=2 epoch=1 batch=2 running_loss=16.948803 running_clean_latent_mse=10.473463 running_clean_latent_rmse=3.236273 step_seconds=0.897274 loss=32.250397 clean_latent_mse=19.664877 clean_latent_loss=19.664877 flow_loss=12.585521
+epoch 1:   0%|          | 2/2541 [00:04<1:32:06,  2.18s/it, avg=16.9, loss=32.3, rmse=3.24, sec=0.897]epoch 1:   0%|          | 2/2541 [00:07<1:32:06,  2.18s/it, avg=11.6, loss=1, rmse=2.7, sec=2.96]     step=3 epoch=1 batch=3 running_loss=11.633586 running_clean_latent_mse=7.316693 running_clean_latent_rmse=2.704939 step_seconds=2.958346 loss=1.003152 clean_latent_mse=1.003152 clean_latent_loss=1.003152 flow_loss=0.000000
+epoch 1:   0%|          | 3/2541 [00:07<1:51:45,  2.64s/it, avg=11.6, loss=1, rmse=2.7, sec=2.96]epoch 1:   0%|          | 3/2541 [00:11<1:51:45,  2.64s/it, avg=9.39, loss=2.64, rmse=2.45, sec=3.16]step=4 epoch=1 batch=4 running_loss=9.385615 running_clean_latent_mse=6.015860 running_clean_latent_rmse=2.452725 step_seconds=3.156399 loss=2.641702 clean_latent_mse=2.113362 clean_latent_loss=2.113362 flow_loss=0.528340
+epoch 1:   0%|          | 4/2541 [00:11<2:02:20,  2.89s/it, avg=9.39, loss=2.64, rmse=2.45, sec=3.16]epoch 1:   0%|          | 4/2541 [00:14<2:02:20,  2.89s/it, avg=7.97, loss=2.3, rmse=2.28, sec=3.1]  step=5 epoch=1 batch=5 running_loss=7.968400 running_clean_latent_mse=5.180615 running_clean_latent_rmse=2.276096 step_seconds=3.104213 loss=2.299543 clean_latent_mse=1.839634 clean_latent_loss=1.839634 flow_loss=0.459909
+epoch 1:   0%|          | 5/2541 [00:14<2:07:53,  3.03s/it, avg=7.97, loss=2.3, rmse=2.28, sec=3.1]

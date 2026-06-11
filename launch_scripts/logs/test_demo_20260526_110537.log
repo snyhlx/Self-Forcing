@@ -1,0 +1,77 @@
+[2026-05-26 11:05:37] Starting demo at http://0.0.0.0:5001
+[2026-05-26 11:05:37] Wan model: /mnt/lanxiangh/models/wan_models/Wan2.1-T2V-1.3B
+[2026-05-26 11:05:37] Checkpoint: /mnt/lanxiangh/models/Self-Forcing/checkpoints/self_forcing_dmd.pt
+[2026-05-26 11:05:37] Open in browser, then stop with Ctrl+C
+Free VRAM 139.29632568359375 GB
+✅ VAE decoder initialized with default VAE
+KV inference with 3 frames per block
+🚀 Starting demo on http://0.0.0.0:5001
+ * Serving Flask app 'demo'
+ * Debug mode: off
+[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5001
+ * Running on http://10.50.167.164:5001
+[33mPress CTRL+C to quit[0m
+127.0.0.1 - - [26/May/2026 11:20:11] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [26/May/2026 11:20:12] "GET /socket.io/?EIO=4&transport=polling&t=Pva0uCt HTTP/1.1" 200 -
+127.0.0.1 - - [26/May/2026 11:20:12] "GET /api/status HTTP/1.1" 200 -
+127.0.0.1 - - [26/May/2026 11:20:12] "POST /socket.io/?EIO=4&transport=polling&t=Pva0uGD&sid=v7mbqZwL2kyGWV8-AAAA HTTP/1.1" 200 -
+127.0.0.1 - - [26/May/2026 11:20:12] "GET /socket.io/?EIO=4&transport=polling&t=Pva0uGD.0&sid=v7mbqZwL2kyGWV8-AAAA HTTP/1.1" 200 -
+127.0.0.1 - - [26/May/2026 11:20:12] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+127.0.0.1 - - [26/May/2026 11:20:13] "GET /socket.io/?EIO=4&transport=polling&t=Pva0uMj&sid=v7mbqZwL2kyGWV8-AAAA HTTP/1.1" 200 -
+ffmpeg version 6.1.1-3ubuntu5 Copyright (c) 2000-2023 the FFmpeg developers
+  built with gcc 13 (Ubuntu 13.2.0-23ubuntu3)
+  configuration: --prefix=/usr --extra-version=3ubuntu5 --toolchain=hardened --libdir=/usr/lib/x86_64-linux-gnu --incdir=/usr/include/x86_64-linux-gnu --arch=amd64 --enable-gpl --disable-stripping --disable-omx --enable-gnutls --enable-libaom --enable-libass --enable-libbs2b --enable-libcaca --enable-libcdio --enable-libcodec2 --enable-libdav1d --enable-libflite --enable-libfontconfig --enable-libfreetype --enable-libfribidi --enable-libglslang --enable-libgme --enable-libgsm --enable-libharfbuzz --enable-libmp3lame --enable-libmysofa --enable-libopenjpeg --enable-libopenmpt --enable-libopus --enable-librubberband --enable-libshine --enable-libsnappy --enable-libsoxr --enable-libspeex --enable-libtheora --enable-libtwolame --enable-libvidstab --enable-libvorbis --enable-libvpx --enable-libwebp --enable-libx265 --enable-libxml2 --enable-libxvid --enable-libzimg --enable-openal --enable-opencl --enable-opengl --disable-sndio --enable-libvpl --disable-libmfx --enable-libdc1394 --enable-libdrm --enable-libiec61883 --enable-chromaprint --enable-frei0r --enable-ladspa --enable-libbluray --enable-libjack --enable-libpulse --enable-librabbitmq --enable-librist --enable-libsrt --enable-libssh --enable-libsvtav1 --enable-libx264 --enable-libzmq --enable-libzvbi --enable-lv2 --enable-sdl2 --enable-libplacebo --enable-librav1e --enable-pocketsphinx --enable-librsvg --enable-libjxl --enable-shared
+  libavutil      58. 29.100 / 58. 29.100
+  libavcodec     60. 31.102 / 60. 31.102
+  libavformat    60. 16.100 / 60. 16.100
+  libavdevice    60.  3.100 / 60.  3.100
+  libavfilter     9. 12.100 /  9. 12.100
+  libswscale      7.  5.100 /  7.  5.100
+  libswresample   4. 12.100 /  4. 12.100
+  libpostproc    57.  3.100 / 57.  3.100
+Input #0, image2, from './images/A stylish woman walk_2136518861_5665df7398/A stylish woman walk_2136518861_5665df7398_%03d.jpg':
+  Duration: 00:00:13.50, start: 0.000000, bitrate: N/A
+  Stream #0:0: Video: mjpeg (Baseline), yuvj420p(pc, bt470bg/unknown/unknown), 832x480 [SAR 1:1 DAR 26:15], 6 fps, 6 tbr, 6 tbn
+Stream mapping:
+  Stream #0:0 -> #0:0 (mjpeg (native) -> h264 (libx264))
+Press [q] to stop, [?] for help
+[swscaler @ 0x5fb6cb48fc80] deprecated pixel format used, make sure you did set range correctly
+[swscaler @ 0x5fb6cb7d1240] deprecated pixel format used, make sure you did set range correctly
+[swscaler @ 0x5fb6cb89b4c0] deprecated pixel format used, make sure you did set range correctly
+    Last message repeated 1 times
+[libx264 @ 0x5fb6cb46d180] using SAR=1/1
+[libx264 @ 0x5fb6cb46d180] using cpu capabilities: MMX2 SSE2Fast SSSE3 SSE4.2 AVX FMA3 BMI2 AVX2 AVX512
+[libx264 @ 0x5fb6cb46d180] profile High, level 2.2, 4:2:0, 8-bit
+[libx264 @ 0x5fb6cb46d180] 264 - core 164 r3108 31e19f9 - H.264/MPEG-4 AVC codec - Copyleft 2003-2023 - http://www.videolan.org/x264.html - options: cabac=1 ref=3 deblock=1:0:0 analyse=0x3:0x113 me=hex subme=7 psy=1 psy_rd=1.00:0.00 mixed_ref=1 me_range=16 chroma_me=1 trellis=1 8x8dct=1 cqm=0 deadzone=21,11 fast_pskip=1 chroma_qp_offset=-2 threads=15 lookahead_threads=2 sliced_threads=0 nr=0 decimate=1 interlaced=0 bluray_compat=0 constrained_intra=0 bframes=3 b_pyramid=2 b_adapt=1 b_bias=0 direct=1 weightb=1 open_gop=0 weightp=2 keyint=250 keyint_min=6 scenecut=40 intra_refresh=0 rc_lookahead=40 rc=crf mbtree=1 crf=23.0 qcomp=0.60 qpmin=0 qpmax=69 qpstep=4 ip_ratio=1.40 aq=1:1.00
+Output #0, mp4, to './videos/A stylish woman walk_2136518861_5665df7398.mp4':
+  Metadata:
+    encoder         : Lavf60.16.100
+  Stream #0:0: Video: h264 (avc1 / 0x31637661), yuv420p(tv, bt470bg/unknown/unknown, progressive), 832x480 [SAR 1:1 DAR 26:15], q=2-31, 6 fps, 12288 tbn
+    Metadata:
+      encoder         : Lavc60.31.102 libx264
+    Side data:
+      cpb: bitrate max/min/avg: 0/0/0 buffer size: 0 vbv_delay: N/A
+frame=    0 fps=0.0 q=0.0 size=       0kB time=N/A bitrate=N/A speed=N/A    [out#0/mp4 @ 0x5fb6cb45f380] video:2607kB audio:0kB subtitle:0kB other streams:0kB global headers:0kB muxing overhead: 0.070603%
+frame=   81 fps=0.0 q=-1.0 Lsize=    2609kB time=00:00:13.00 bitrate=1644.1kbits/s speed=23.7x    
+[libx264 @ 0x5fb6cb46d180] frame I:1     Avg QP:21.94  size: 80943
+[libx264 @ 0x5fb6cb46d180] frame P:21    Avg QP:20.84  size: 63236
+[libx264 @ 0x5fb6cb46d180] frame B:59    Avg QP:24.66  size: 21360
+[libx264 @ 0x5fb6cb46d180] consecutive B-frames:  1.2%  4.9%  0.0% 93.8%
+[libx264 @ 0x5fb6cb46d180] mb I  I16..4:  0.3% 97.3%  2.4%
+[libx264 @ 0x5fb6cb46d180] mb P  I16..4:  0.4% 31.3%  1.8%  P16..4: 17.8% 27.8% 20.4%  0.0%  0.0%    skip: 0.5%
+[libx264 @ 0x5fb6cb46d180] mb B  I16..4:  0.1%  3.6%  0.2%  B16..8: 32.1% 16.4%  6.2%  direct:14.5%  skip:26.8%  L0:21.6% L1:21.0% BI:57.4%
+[libx264 @ 0x5fb6cb46d180] 8x8 transform intra:93.5% inter:81.1%
+[libx264 @ 0x5fb6cb46d180] coded y,uvDC,uvAC intra: 94.0% 95.2% 63.7% inter: 52.8% 56.1% 27.5%
+[libx264 @ 0x5fb6cb46d180] i16 v,h,dc,p: 54%  9% 14% 22%
+[libx264 @ 0x5fb6cb46d180] i8 v,h,dc,ddl,ddr,vr,hd,vl,hu: 26% 20% 23%  4%  4%  5%  5%  7%  6%
+[libx264 @ 0x5fb6cb46d180] i4 v,h,dc,ddl,ddr,vr,hd,vl,hu: 43% 12% 10%  5%  5%  6%  7%  7%  5%
+[libx264 @ 0x5fb6cb46d180] i8c dc,h,v,p: 31% 15% 37% 17%
+[libx264 @ 0x5fb6cb46d180] Weighted P-Frames: Y:23.8% UV:14.3%
+[libx264 @ 0x5fb6cb46d180] ref P L0: 51.8% 22.2% 19.5%  5.7%  0.8%
+[libx264 @ 0x5fb6cb46d180] ref B L0: 95.3%  4.3%  0.4%
+[libx264 @ 0x5fb6cb46d180] ref B L1: 99.6%  0.4%
+[libx264 @ 0x5fb6cb46d180] kb/s:1581.72
+127.0.0.1 - - [26/May/2026 11:20:31] "GET /api/status HTTP/1.1" 200 -
+127.0.0.1 - - [26/May/2026 11:20:36] "GET /socket.io/?EIO=4&transport=websocket&sid=v7mbqZwL2kyGWV8-AAAA HTTP/1.1" 200 -

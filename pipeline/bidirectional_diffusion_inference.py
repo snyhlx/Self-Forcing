@@ -35,7 +35,8 @@ class BidirectionalDiffusionInferencePipeline(torch.nn.Module):
         self,
         noise: torch.Tensor,
         text_prompts: List[str],
-        return_latents=False
+        return_latents=False,
+        decode_video=True,
     ) -> torch.Tensor:
         """
         Perform inference on the given noise and text prompts.
@@ -56,11 +57,20 @@ class BidirectionalDiffusionInferencePipeline(torch.nn.Module):
         )
 
         latents = noise
+        # WanDiffusionWrapper defaults seq_len for 21 latent frames. Option-B
+        # collection may use more frames, so match the model token budget to
+        # the actual latent grid before each full-video denoise.
+        patch_size = getattr(self.generator.model, "patch_size", (1, 2, 2))
+        self.generator.seq_len = (
+            latents.shape[1]
+            * (latents.shape[3] // patch_size[1])
+            * (latents.shape[4] // patch_size[2])
+        )
 
         sample_scheduler = self._initialize_sample_scheduler(noise)
         for _, t in enumerate(tqdm(sample_scheduler.timesteps)):
             latent_model_input = latents
-            timestep = t * torch.ones([latents.shape[0], 21], device=noise.device, dtype=torch.float32)
+            timestep = t * torch.ones([latents.shape[0], latents.shape[1]], device=noise.device, dtype=torch.float32)
 
             flow_pred_cond, _ = self.generator(latent_model_input, conditional_dict, timestep)
             flow_pred_uncond, _ = self.generator(latent_model_input, unconditional_dict, timestep)
@@ -76,8 +86,10 @@ class BidirectionalDiffusionInferencePipeline(torch.nn.Module):
             latents = temp_x0.squeeze(0)
 
         x0 = latents
-        video = self.vae.decode_to_pixel(x0)
-        video = (video * 0.5 + 0.5).clamp(0, 1)
+        video = None
+        if decode_video:
+            video = self.vae.decode_to_pixel(x0)
+            video = (video * 0.5 + 0.5).clamp(0, 1)
 
         del sample_scheduler
 

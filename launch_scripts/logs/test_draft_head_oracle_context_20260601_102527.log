@@ -1,0 +1,23 @@
+[2026-06-01 10:25:27] Draft-head oracle-context quality diagnostic
+[2026-06-01 10:25:27] Checkpoint: /root/Self-Forcing/outputs/draft_head/checkpoints/20260601_015502_3gpu_bs1_moviegen_draft_head_attention_clean_latent_flow_h5120_l3_heads40_ctx4680_pool1x1x1_ffn13824_steps1000_937_833_625_0_blocks9_targetinit8_16_24/final.pt
+[2026-06-01 10:25:27] Output:     /root/Self-Forcing/outputs/draft_head/test_runs/clean_latent_flow_3gpu_final_20260601_102527
+[2026-06-01 10:25:27] Blocks:     3
+[2026-06-01 10:25:27] Metric:     rmse
+Loading target: Wan2.1-T2V-14B /mnt/lanxiangh/models/realtime-video/checkpoints/krea-realtime-video-14b.safetensors
+KV inference with 3 frames per block
+Loading draft head: /root/Self-Forcing/outputs/draft_head/checkpoints/20260601_015502_3gpu_bs1_moviegen_draft_head_attention_clean_latent_flow_h5120_l3_heads40_ctx4680_pool1x1x1_ffn13824_steps1000_937_833_625_0_blocks9_targetinit8_16_24/final.pt
+prompts:   0%|          | 0/1 [00:00<?, ?it/s]
+target_only blocks:   0%|          | 0/3 [00:00<?, ?it/s][A
+target_only blocks:  33%|███▎      | 1/3 [00:02<00:04,  2.08s/it][A
+target_only blocks:  67%|██████▋   | 2/3 [00:04<00:02,  2.16s/it][A
+target_only blocks: 100%|██████████| 3/3 [00:06<00:00,  2.33s/it][Atarget_only blocks: 100%|██████████| 3/3 [00:06<00:00,  2.27s/it]
+
+draft_head blocks:   0%|          | 0/3 [00:00<?, ?it/s][A
+draft_head blocks:  33%|███▎      | 1/3 [00:01<00:03,  1.94s/it][A
+draft_head blocks:  67%|██████▋   | 2/3 [00:04<00:02,  2.50s/it][A
+draft_head blocks: 100%|██████████| 3/3 [00:07<00:00,  2.79s/it][Adraft_head blocks: 100%|██████████| 3/3 [00:07<00:00,  2.65s/it]
+prompts: 100%|██████████| 1/1 [00:17<00:00, 17.79s/it]prompts: 100%|██████████| 1/1 [00:17<00:00, 17.79s/it]
+Wrote profile: /root/Self-Forcing/outputs/draft_head/test_runs/clean_latent_flow_3gpu_final_20260601_102527/profile.json
+target_only: 7.67s -> /root/Self-Forcing/outputs/draft_head/test_runs/clean_latent_flow_3gpu_final_20260601_102527/prompt_single_target_only.mp4
+draft_head: 8.64s -> /root/Self-Forcing/outputs/draft_head/test_runs/clean_latent_flow_3gpu_final_20260601_102527/prompt_single_draft_head.mp4
+[2026-06-01 10:27:15] Done. Profile: /root/Self-Forcing/outputs/draft_head/test_runs/clean_latent_flow_3gpu_final_20260601_102527/profile.json

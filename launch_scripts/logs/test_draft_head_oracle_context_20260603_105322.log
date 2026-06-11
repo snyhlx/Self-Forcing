@@ -1,0 +1,16 @@
+[2026-06-03 10:53:22] Draft-head oracle-context quality diagnostic
+[2026-06-03 10:53:22] Checkpoint: /root/Self-Forcing/outputs/draft_head/checkpoints/20260603_090857_dh_wan_dflash_attention_clean_latent_flow_one_step_h5120_ctx4680_p1x1x1_st1000_750_500_250_0_bs1_g4_lr5e-5_fl0_25_ampbf16_gc0_cfg8c1279c4/latest.pt
+[2026-06-03 10:53:22] Output:     /root/Self-Forcing/outputs/draft_head/test_runs/wan_dflash_20260603_090857_latest_oracle_context_20260603_105322
+[2026-06-03 10:53:22] Blocks:     3
+[2026-06-03 10:53:22] Metric:     rmse
+Loading target: Wan2.1-T2V-14B /mnt/lanxiangh/models/realtime-video/checkpoints/krea-realtime-video-14b.safetensors
+KV inference with 3 frames per block
+Loading draft head: /root/Self-Forcing/outputs/draft_head/checkpoints/20260603_090857_dh_wan_dflash_attention_clean_latent_flow_one_step_h5120_ctx4680_p1x1x1_st1000_750_500_250_0_bs1_g4_lr5e-5_fl0_25_ampbf16_gc0_cfg8c1279c4/latest.pt
+prompts:   0%|          | 0/1 [00:00<?, ?it/s]
+target_only blocks:   0%|          | 0/3 [00:00<?, ?it/s][A
+target_only blocks:  33%|███▎      | 1/3 [00:02<00:04,  2.12s/it][A
+target_only blocks:  67%|██████▋   | 2/3 [00:04<00:02,  2.18s/it][A
+target_only blocks: 100%|██████████| 3/3 [00:06<00:00,  2.34s/it][Atarget_only blocks: 100%|██████████| 3/3 [00:06<00:00,  2.29s/it]
+
+draft_head blocks:   0%|          | 0/3 [00:00<?, ?it/s][A
+draft_head blocks:  33%|███▎      | 1/3 [00:01<00:03,  1.93s/it][A

@@ -1,0 +1,166 @@
+[2026-06-04 05:45:12] Training latent draft head with clean-latent + flow loss
+[2026-06-04 05:45:12] Manifest: /mnt/lanxiangh/data/ff_exec/draft_head_full_dataset/tau_delta_0p0/manifest.json
+[2026-06-04 05:45:12] Run dir:   /root/Self-Forcing/outputs/draft_head/checkpoints/20260604_054511_wan_dflash_targetinit_clflow_unrolled_lr5e-5_ep5_dh_wan_dflash_attention_clean_latent_flow_unrolled_h5120_ctx4680_p1x1x1_st1000_750_500_250_0_bs1_g4_lr5e-5_fl0_25_ampbf16_gc0_fw0_cfg1b6b4271
+[2026-06-04 05:45:12] Output:    /root/Self-Forcing/outputs/draft_head/checkpoints/20260604_054511_wan_dflash_targetinit_clflow_unrolled_lr5e-5_ep5_dh_wan_dflash_attention_clean_latent_flow_unrolled_h5120_ctx4680_p1x1x1_st1000_750_500_250_0_bs1_g4_lr5e-5_fl0_25_ampbf16_gc0_fw0_cfg1b6b4271/final.pt
+[2026-06-04 05:45:12] Config:    dh_wan_dflash_attention_clean_latent_flow_unrolled_h5120_l3_nh40_ctx4680_pool1x1x1_ffm4_ffn13824_st1000_750_500_250_0_sh5_0_nb9_bs1_gpu4_ep5_lr5e-5_wd0_0_val0_05_cl1_0_fl0_25_dmd0_0_de1_ampbf16_gc0_fw0_layersblocks_8_blocks_16_blocks_24_unoisefixed_uwauto_tinit8_16_24
+[2026-06-04 05:45:12] Config hash: 1b6b4271
+[2026-06-04 05:45:12] Layers:   blocks.8 blocks.16 blocks.24
+[2026-06-04 05:45:12] Head:     wan_dflash_attention input_source=scheduled_latents hidden=5120 layers=3 heads=40 ffn_dim=13824
+[2026-06-04 05:45:12] Loss:     type=clean_latent_flow clean_latent=1.0 flow=0.25 dmd=0.0 every=1
+[2026-06-04 05:45:12] Training: mode=unrolled unroll_noise=fixed weights=auto
+[2026-06-04 05:45:12] Memory:   amp_dtype=bf16 gradient_checkpointing=0 freeze_copied_wan_epochs=0
+[2026-06-04 05:45:12] Schedule: [1000 750 500 250 0] timestep_shift=5.0
+[2026-06-04 05:45:12] Target init: 8 16 24
+[2026-06-04 05:45:12] Draft init: disabled
+[2026-06-04 05:45:12] GPUs:     4 visible=0,1,2,3
+[2026-06-04 05:45:12] Epochs:   5 batch_size=1 lr=5e-5
+KV inference with 3 frames per block
+Training draft head records=8024 train=7623 val=401 layers=['blocks.8', 'blocks.16', 'blocks.24'] latent_channels=16 feature_dim=15360 head_type=wan_dflash_attention input_source=scheduled_latents training_mode=unrolled denoising_steps=[1000, 750, 500, 250, 0] loss_type=clean_latent_flow dmd_weight=0.0 world_size=4
+Target initialization report: {'patch_embedding': 1, 'time_embedding': 1, 'time_projection': 1, 'head': 1, 'attention': 3, 'norm': 6, 'ffn': 3, 'skipped': 0}
+epoch 1:   0%|          | 0/1906 [00:00<?, ?it/s]epoch 1:   0%|          | 0/1906 [00:02<?, ?it/s, avg=1.87, loss=1.87, rmse=1.21, sec=1.62]step=1 epoch=1 batch=1 running_loss=1.866542 running_clean_latent_mse=1.459903 running_clean_latent_rmse=1.208264 step_seconds=1.619330 loss=1.866542 clean_latent_mse=1.459903 unrolled_clean_latent_mse=1.440871 clean_latent_loss=1.461171 flow_loss=0.405371 unrolled_flow_mse=1.554687
+epoch 1:   0%|          | 1/1906 [00:02<1:04:48,  2.04s/it, avg=1.87, loss=1.87, rmse=1.21, sec=1.62]                                                                                                     [rank1]: Traceback (most recent call last):
+[rank1]:   File "/root/Self-Forcing/train_draft_head.py", line 1348, in <module>
+[rank1]:     main()
+[rank1]:   File "/root/Self-Forcing/train_draft_head.py", line 1104, in main
+[rank1]:     loss_tensor, loss_metrics = compute_unrolled_draft_head_losses(
+[rank1]:   File "/root/Self-Forcing/train_draft_head.py", line 500, in compute_unrolled_draft_head_losses
+[rank1]:     prediction = predict_draft_head_batch(model, step_batch, num_blocks, input_key="scheduled_latents")
+[rank1]:   File "/root/Self-Forcing/sdvg_draft_head.py", line 1341, in predict_draft_head_batch
+[rank1]:     return model(
+[rank1]:   File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
+[rank1]:     return self._call_impl(*args, **kwargs)
+[rank1]:   File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
+[rank1]:     return forward_call(*args, **kwargs)
+[rank1]:   File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/parallel/distributed.py", line 1828, in forward
+[rank1]:     inputs, kwargs = self._pre_forward(*inputs, **kwargs)
+[rank1]:   File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/parallel/distributed.py", line 1717, in _pre_forward
+[rank1]:     if torch.is_grad_enabled() and self.reducer._rebuild_buckets():
+[rank1]: RuntimeError: Expected to have finished reduction in the prior iteration before starting a new one. This error indicates that your module has parameters that were not used in producing loss. You can enable unused parameter detection by passing the keyword argument `find_unused_parameters=True` to `torch.nn.parallel.DistributedDataParallel`, and by 
+[rank1]: making sure all `forward` function outputs participate in calculating loss. 
+[rank1]: If you already have done the above, then the distributed data parallel module wasn't able to locate the output tensors in the return value of your module's `forward` function. Please include the loss function and the structure of the return value of `forward` of your module when reporting this issue (e.g. list, dict, iterable).
+[rank1]: Parameter indices which did not receive grad for rank 1: 2
+[rank1]:  In addition, you can set the environment variable TORCH_DISTRIBUTED_DEBUG to either INFO or DETAIL to print out information about which particular parameters did not receive gradient on this rank as part of this error
+[rank0]: Traceback (most recent call last):
+[rank0]:   File "/root/Self-Forcing/train_draft_head.py", line 1348, in <module>
+[rank0]:     main()
+[rank0]:   File "/root/Self-Forcing/train_draft_head.py", line 1104, in main
+[rank0]:     loss_tensor, loss_metrics = compute_unrolled_draft_head_losses(
+[rank0]:   File "/root/Self-Forcing/train_draft_head.py", line 500, in compute_unrolled_draft_head_losses
+[rank0]:     prediction = predict_draft_head_batch(model, step_batch, num_blocks, input_key="scheduled_latents")
+[rank0]:   File "/root/Self-Forcing/sdvg_draft_head.py", line 1341, in predict_draft_head_batch
+[rank0]:     return model(
+[rank0]:   File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
+[rank0]:     return self._call_impl(*args, **kwargs)
+[rank0]:   File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
+[rank0]:     return forward_call(*args, **kwargs)
+[rank0]:   File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/parallel/distributed.py", line 1828, in forward
+[rank0]:     inputs, kwargs = self._pre_forward(*inputs, **kwargs)
+[rank0]:   File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/parallel/distributed.py", line 1717, in _pre_forward
+[rank0]:     if torch.is_grad_enabled() and self.reducer._rebuild_buckets():
+[rank0]: RuntimeError: Expected to have finished reduction in the prior iteration before starting a new one. This error indicates that your module has parameters that were not used in producing loss. You can enable unused parameter detection by passing the keyword argument `find_unused_parameters=True` to `torch.nn.parallel.DistributedDataParallel`, and by 
+[rank0]: making sure all `forward` function outputs participate in calculating loss. 
+[rank0]: If you already have done the above, then the distributed data parallel module wasn't able to locate the output tensors in the return value of your module's `forward` function. Please include the loss function and the structure of the return value of `forward` of your module when reporting this issue (e.g. list, dict, iterable).
+[rank0]: Parameter indices which did not receive grad for rank 0: 2
+[rank0]:  In addition, you can set the environment variable TORCH_DISTRIBUTED_DEBUG to either INFO or DETAIL to print out information about which particular parameters did not receive gradient on this rank as part of this error
+[rank2]: Traceback (most recent call last):
+[rank2]:   File "/root/Self-Forcing/train_draft_head.py", line 1348, in <module>
+[rank2]:     main()
+[rank2]:   File "/root/Self-Forcing/train_draft_head.py", line 1104, in main
+[rank2]:     loss_tensor, loss_metrics = compute_unrolled_draft_head_losses(
+[rank2]:   File "/root/Self-Forcing/train_draft_head.py", line 500, in compute_unrolled_draft_head_losses
+[rank2]:     prediction = predict_draft_head_batch(model, step_batch, num_blocks, input_key="scheduled_latents")
+[rank2]:   File "/root/Self-Forcing/sdvg_draft_head.py", line 1341, in predict_draft_head_batch
+[rank2]:     return model(
+[rank2]:   File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
+[rank2]:     return self._call_impl(*args, **kwargs)
+[rank2]:   File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
+[rank2]:     return forward_call(*args, **kwargs)
+[rank2]:   File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/parallel/distributed.py", line 1828, in forward
+[rank2]:     inputs, kwargs = self._pre_forward(*inputs, **kwargs)
+[rank2]:   File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/parallel/distributed.py", line 1717, in _pre_forward
+[rank2]:     if torch.is_grad_enabled() and self.reducer._rebuild_buckets():
+[rank2]: RuntimeError: Expected to have finished reduction in the prior iteration before starting a new one. This error indicates that your module has parameters that were not used in producing loss. You can enable unused parameter detection by passing the keyword argument `find_unused_parameters=True` to `torch.nn.parallel.DistributedDataParallel`, and by 
+[rank2]: making sure all `forward` function outputs participate in calculating loss. 
+[rank2]: If you already have done the above, then the distributed data parallel module wasn't able to locate the output tensors in the return value of your module's `forward` function. Please include the loss function and the structure of the return value of `forward` of your module when reporting this issue (e.g. list, dict, iterable).
+[rank2]: Parameter indices which did not receive grad for rank 2: 2
+[rank2]:  In addition, you can set the environment variable TORCH_DISTRIBUTED_DEBUG to either INFO or DETAIL to print out information about which particular parameters did not receive gradient on this rank as part of this error
+[rank3]: Traceback (most recent call last):
+[rank3]:   File "/root/Self-Forcing/train_draft_head.py", line 1348, in <module>
+[rank3]:     main()
+[rank3]:   File "/root/Self-Forcing/train_draft_head.py", line 1104, in main
+[rank3]:     loss_tensor, loss_metrics = compute_unrolled_draft_head_losses(
+[rank3]:   File "/root/Self-Forcing/train_draft_head.py", line 500, in compute_unrolled_draft_head_losses
+[rank3]:     prediction = predict_draft_head_batch(model, step_batch, num_blocks, input_key="scheduled_latents")
+[rank3]:   File "/root/Self-Forcing/sdvg_draft_head.py", line 1341, in predict_draft_head_batch
+[rank3]:     return model(
+[rank3]:   File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
+[rank3]:     return self._call_impl(*args, **kwargs)
+[rank3]:   File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
+[rank3]:     return forward_call(*args, **kwargs)
+[rank3]:   File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/parallel/distributed.py", line 1828, in forward
+[rank3]:     inputs, kwargs = self._pre_forward(*inputs, **kwargs)
+[rank3]:   File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/nn/parallel/distributed.py", line 1717, in _pre_forward
+[rank3]:     if torch.is_grad_enabled() and self.reducer._rebuild_buckets():
+[rank3]: RuntimeError: Expected to have finished reduction in the prior iteration before starting a new one. This error indicates that your module has parameters that were not used in producing loss. You can enable unused parameter detection by passing the keyword argument `find_unused_parameters=True` to `torch.nn.parallel.DistributedDataParallel`, and by 
+[rank3]: making sure all `forward` function outputs participate in calculating loss. 
+[rank3]: If you already have done the above, then the distributed data parallel module wasn't able to locate the output tensors in the return value of your module's `forward` function. Please include the loss function and the structure of the return value of `forward` of your module when reporting this issue (e.g. list, dict, iterable).
+[rank3]: Parameter indices which did not receive grad for rank 3: 2
+[rank3]:  In addition, you can set the environment variable TORCH_DISTRIBUTED_DEBUG to either INFO or DETAIL to print out information about which particular parameters did not receive gradient on this rank as part of this error
+[rank0]:[W604 05:47:15.599649273 ProcessGroupNCCL.cpp:1647] Warning: WARNING: destroy_process_group() was not called before program exit, which can leak resources. For more info, please see https://pytorch.org/docs/stable/distributed.html#shutdown (function operator())
+W0604 05:47:16.934000 2381374 sf_venv/lib/python3.10/site-packages/torch/distributed/elastic/multiprocessing/api.py:1014] Sending process 2381481 closing signal SIGTERM
+W0604 05:47:16.934000 2381374 sf_venv/lib/python3.10/site-packages/torch/distributed/elastic/multiprocessing/api.py:1014] Sending process 2381482 closing signal SIGTERM
+W0604 05:47:16.934000 2381374 sf_venv/lib/python3.10/site-packages/torch/distributed/elastic/multiprocessing/api.py:1014] Sending process 2381484 closing signal SIGTERM
+E0604 05:47:18.050000 2381374 sf_venv/lib/python3.10/site-packages/torch/distributed/elastic/multiprocessing/api.py:988] failed (exitcode: 1) local_rank: 2 (pid: 2381483) of binary: /root/Self-Forcing/sf_venv/bin/python
+Traceback (most recent call last):
+  File "/root/.local/share/uv/python/cpython-3.10-linux-x86_64-gnu/lib/python3.10/runpy.py", line 196, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "/root/.local/share/uv/python/cpython-3.10-linux-x86_64-gnu/lib/python3.10/runpy.py", line 86, in _run_code
+    exec(code, run_globals)
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/distributed/run.py", line 1020, in <module>
+    main()
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 367, in wrapper
+    return f(*args, **kwargs)
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/distributed/run.py", line 1016, in main
+    run(args)
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/distributed/run.py", line 1007, in run
+    elastic_launch(
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/distributed/launcher/api.py", line 191, in __call__
+    return launch_agent(self._config, self._entrypoint, list(args))
+  File "/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torch/distributed/launcher/api.py", line 371, in launch_agent
+    raise ChildFailedError(
+torch.distributed.elastic.multiprocessing.errors.ChildFailedError: 
+============================================================
+train_draft_head.py FAILED
+------------------------------------------------------------
+Failures:
+[1]:
+  time      : 2026-06-04_05:47:18
+  host      : lanxiang-prl-pod-2-67d469f5c6-f2kks
+  rank      : 0 (local_rank: 0)
+  exitcode  : 1 (pid: 2381481) 
+  error_file: <N/A>
+  traceback : To enable traceback see: https://pytorch.org/docs/stable/elastic/errors.html
+[2]:
+  time      : 2026-06-04_05:47:18
+  host      : lanxiang-prl-pod-2-67d469f5c6-f2kks
+  rank      : 1 (local_rank: 1)
+  exitcode  : 1 (pid: 2381482) 
+  error_file: <N/A>
+  traceback : To enable traceback see: https://pytorch.org/docs/stable/elastic/errors.html
+[3]:
+  time      : 2026-06-04_05:47:18
+  host      : lanxiang-prl-pod-2-67d469f5c6-f2kks
+  rank      : 3 (local_rank: 3)
+  exitcode  : 1 (pid: 2381484) 
+  error_file: <N/A>
+  traceback : To enable traceback see: https://pytorch.org/docs/stable/elastic/errors.html
+------------------------------------------------------------
+Root Cause (first observed failure):
+[0]:
+  time      : 2026-06-04_05:47:16
+  host      : lanxiang-prl-pod-2-67d469f5c6-f2kks
+  rank      : 2 (local_rank: 2)
+  exitcode  : 1 (pid: 2381483) 
+  error_file: <N/A>
+  traceback : To enable traceback see: https://pytorch.org/docs/stable/elastic/errors.html
+============================================================

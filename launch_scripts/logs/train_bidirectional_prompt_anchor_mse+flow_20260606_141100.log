@@ -1,0 +1,11 @@
+[2026-06-06 14:11:00] Training bidirectional prompt-anchor draft head
+[2026-06-06 14:11:00] Manifest: /mnt/lanxiangh/data/ff_exec/draft_head_full_dataset_6layer_uniform/tau_delta_0p0/manifest.json
+[2026-06-06 14:11:00] Run dir:   /root/Self-Forcing/outputs/draft_head/checkpoints/20260606_141100_bidirectional_prompt_anchor_wan_targetinit_unrolled_h5120_l6_st1000_750_500_250_0_bs1_g4_lr5e-4_fl0_25_td0_0_bd0_0
+[2026-06-06 14:11:00] Output:    /root/Self-Forcing/outputs/draft_head/checkpoints/20260606_141100_bidirectional_prompt_anchor_wan_targetinit_unrolled_h5120_l6_st1000_750_500_250_0_bs1_g4_lr5e-4_fl0_25_td0_0_bd0_0/final.pt
+[2026-06-06 14:11:00] GPUs:      4 visible=0,1,2,3
+[2026-06-06 14:11:00] Anchor:    online_target target=Wan2.1-T2V-14B seed=42
+[2026-06-06 14:11:00] Model:     wan hidden=5120 layers=6 heads=40 ffn_dim=13824 prompt_dim=4096 gradient_checkpointing=1
+[2026-06-06 14:11:00] Parallel:  strategy=fsdp fsdp_min_num_params=100000000 fsdp_mixed_precision=none
+[2026-06-06 14:11:00] Init:      target_blocks=[0 8 16 24 32 39]
+[2026-06-06 14:11:00] Training:  mode=unrolled steps=[1000 750 500 250 0] unroll_noise=fixed weights=auto
+[2026-06-06 14:11:00] Loss:      clean=1.0 flow=0.25 temporal_delta=0.0 boundary=0.0

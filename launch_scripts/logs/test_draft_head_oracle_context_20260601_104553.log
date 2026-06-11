@@ -1,0 +1,5 @@
+[2026-06-01 10:45:53] Draft-head oracle-context quality diagnostic
+[2026-06-01 10:45:53] Checkpoint: /root/Self-Forcing/outputs/draft_head/checkpoints/20260601_015502_3gpu_bs1_moviegen_draft_head_attention_clean_latent_flow_h5120_l3_heads40_ctx4680_pool1x1x1_ffn13824_steps1000_937_833_625_0_blocks9_targetinit8_16_24/final.pt
+[2026-06-01 10:45:53] Output:     /root/Self-Forcing/outputs/draft_head/test_runs/clean_latent_flow_3gpu_final_20260601_104553
+[2026-06-01 10:45:53] Blocks:     3
+[2026-06-01 10:45:53] Metric:     rmse

@@ -1,0 +1,12 @@
+[2026-05-26 06:41:04] Project: /root/Self-Forcing
+[2026-05-26 06:41:04] Python:  /root/Self-Forcing/sf_venv/bin/python (Python 3.10.20)
+[2026-05-26 06:41:04] GPU:     CUDA_VISIBLE_DEVICES=0
+[2026-05-26 06:41:04] Config:  /root/Self-Forcing/configs/self_forcing_dmd.yaml
+[2026-05-26 06:41:04] Ckpt:    /mnt/lanxiangh/models/Self-Forcing/checkpoints/self_forcing_dmd.pt
+[2026-05-26 06:41:04] Wan:     /mnt/lanxiangh/models/wan_models/Wan2.1-T2V-1.3B
+[2026-05-26 06:41:04] Prompt:  /root/Self-Forcing/prompts/test_single.txt
+[2026-05-26 06:41:04] Output:  /root/Self-Forcing/outputs/test_runs/inference_dmd_20260526_064104
+Traceback (most recent call last):
+  File "/root/Self-Forcing/inference.py", line 7, in <module>
+    from torchvision.io import write_video
+ImportError: cannot import name 'write_video' from 'torchvision.io' (/root/Self-Forcing/sf_venv/lib/python3.10/site-packages/torchvision/io/__init__.py)

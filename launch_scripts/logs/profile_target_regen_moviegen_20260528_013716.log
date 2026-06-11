@@ -1,0 +1,41 @@
+[2026-05-28 01:37:16] Dataset:   /root/Self-Forcing/prompts/MovieGenVideoBench.txt
+[2026-05-28 01:37:16] Prompts:   start=0 max=1
+[2026-05-28 01:37:16] Mode:      target_only vs target_regen
+[2026-05-28 01:37:16] Agreement: rmse tau_delta_sweep=[0.5]
+[2026-05-28 01:37:16] Save pairs: 0 (STORE_CONTEXT=0)
+[2026-05-28 01:37:16] Reuse block decodes for output: 1
+[2026-05-28 01:37:16] Blocks:    9
+[2026-05-28 01:37:16] Output:    /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_smoke_20260528_013716
+[2026-05-28 01:37:16] === Running tau_delta=0.5 -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_smoke_20260528_013716/tau_delta_0p5 ===
+Loading target: Wan2.1-T2V-14B /mnt/lanxiangh/models/realtime-video/checkpoints/krea-realtime-video-14b.safetensors
+KV inference with 3 frames per block
+Loading drafter: Wan2.1-T2V-1.3B /mnt/lanxiangh/models/Self-Forcing/checkpoints/self_forcing_dmd.pt
+KV inference with 3 frames per block
+prompts:   0%|          | 0/1 [00:00<?, ?it/s]
+target_only blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_only blocks:  11%|█         | 1/9 [00:02<00:16,  2.10s/it][A
+target_only blocks:  22%|██▏       | 2/9 [00:04<00:15,  2.18s/it][A
+target_only blocks:  33%|███▎      | 3/9 [00:06<00:14,  2.34s/it][A
+target_only blocks:  44%|████▍     | 4/9 [00:09<00:12,  2.54s/it][A
+target_only blocks:  56%|█████▌    | 5/9 [00:12<00:11,  2.75s/it][A
+target_only blocks:  67%|██████▋   | 6/9 [00:16<00:08,  2.99s/it][A
+target_only blocks:  78%|███████▊  | 7/9 [00:20<00:06,  3.23s/it][A
+target_only blocks:  89%|████████▉ | 8/9 [00:23<00:03,  3.39s/it][A
+target_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.50s/it][Atarget_only blocks: 100%|██████████| 9/9 [00:27<00:00,  3.05s/it]
+
+target_regen blocks:   0%|          | 0/9 [00:00<?, ?it/s][A
+target_regen blocks:  11%|█         | 1/9 [00:02<00:20,  2.62s/it][A
+target_regen blocks:  22%|██▏       | 2/9 [00:05<00:19,  2.85s/it][A
+target_regen blocks:  33%|███▎      | 3/9 [00:09<00:18,  3.10s/it][A
+target_regen blocks:  44%|████▍     | 4/9 [00:12<00:16,  3.35s/it][A
+target_regen blocks:  56%|█████▌    | 5/9 [00:16<00:14,  3.63s/it][A
+target_regen blocks:  67%|██████▋   | 6/9 [00:21<00:11,  3.92s/it][A
+target_regen blocks:  78%|███████▊  | 7/9 [00:26<00:08,  4.22s/it][A
+target_regen blocks:  89%|████████▉ | 8/9 [00:31<00:04,  4.42s/it][A
+target_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  4.56s/it][Atarget_regen blocks: 100%|██████████| 9/9 [00:35<00:00,  3.99s/it]
+prompts: 100%|██████████| 1/1 [01:08<00:00, 68.13s/it]prompts: 100%|██████████| 1/1 [01:08<00:00, 68.13s/it]
+Wrote profile: /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_smoke_20260528_013716/tau_delta_0p5/profile.json
+target_only: 29.83s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_smoke_20260528_013716/tau_delta_0p5/prompt_0000_target_only.mp4
+target_regen: 35.93s -> /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_smoke_20260528_013716/tau_delta_0p5/prompt_0000_target_regen.mp4
+[2026-05-28 01:39:42] Profile JSON: /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_smoke_20260528_013716/tau_delta_0p5/profile.json
+[2026-05-28 01:39:42] Sweep complete. Outputs saved under: /root/Self-Forcing/outputs/sdvg/moviegen_target_regen_smoke_20260528_013716

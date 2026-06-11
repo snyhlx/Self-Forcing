@@ -1,0 +1,17 @@
+[2026-05-26 11:27:16] Mode:      compare
+[2026-05-26 11:27:16] Router:    heuristic tau=0.02
+[2026-05-26 11:27:16] Blocks:    3
+[2026-05-26 11:27:16] Drafter:   /mnt/lanxiangh/models/Self-Forcing/checkpoints/self_forcing_dmd.pt
+[2026-05-26 11:27:16] Target:    /mnt/lanxiangh/models/realtime-video/checkpoints/krea-realtime-video-14b.safetensors
+[2026-05-26 11:27:16] Output:    /root/Self-Forcing/outputs/sdvg/smoke_20260526_112716
+Loading target: Wan2.1-T2V-14B /mnt/lanxiangh/models/realtime-video/checkpoints/krea-realtime-video-14b.safetensors
+KV inference with 3 frames per block
+Loading drafter: Wan2.1-T2V-1.3B /mnt/lanxiangh/models/Self-Forcing/checkpoints/self_forcing_dmd.pt
+KV inference with 3 frames per block
+target_only blocks:   0%|          | 0/3 [00:00<?, ?it/s]target_only blocks:  33%|███▎      | 1/3 [00:02<00:04,  2.03s/it]target_only blocks:  67%|██████▋   | 2/3 [00:04<00:02,  2.15s/it]target_only blocks: 100%|██████████| 3/3 [00:06<00:00,  2.32s/it]target_only blocks: 100%|██████████| 3/3 [00:06<00:00,  2.26s/it]
+sdvg blocks:   0%|          | 0/3 [00:00<?, ?it/s]sdvg blocks:  33%|███▎      | 1/3 [00:02<00:04,  2.37s/it]sdvg blocks:  67%|██████▋   | 2/3 [00:03<00:01,  1.59s/it]sdvg blocks: 100%|██████████| 3/3 [00:04<00:00,  1.39s/it]sdvg blocks: 100%|██████████| 3/3 [00:04<00:00,  1.52s/it]
+SDVG speedup vs target: 1.440x
+Wrote profile: /root/Self-Forcing/outputs/sdvg/smoke_20260526_112716/profile.json
+target_only: 7.53s -> /root/Self-Forcing/outputs/sdvg/smoke_20260526_112716/target_only.mp4
+sdvg: 5.23s -> /root/Self-Forcing/outputs/sdvg/smoke_20260526_112716/sdvg.mp4
+[2026-05-26 11:28:49] Done. Profile: /root/Self-Forcing/outputs/sdvg/smoke_20260526_112716/profile.json
