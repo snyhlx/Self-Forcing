@@ -12,6 +12,7 @@ import torch
 from einops import rearrange
 from torch.utils.data import DataLoader, Subset
 from tqdm import tqdm
+from wan.utils.fm_solvers_unipc import FlowUniPCMultistepScheduler
 
 from train_bidirectional_draft_head import (
     BidirectionalPromptAnchorDataset,
@@ -32,7 +33,7 @@ from train_bidirectional_draft_head import (
 
 
 def _arg_or_checkpoint(args: argparse.Namespace, train_args: dict[str, Any], name: str, default: Any = None) -> Any:
-    value = getattr(args, name)
+    value = getattr(args, name, None)
     if value is not None:
         return value
     return train_args.get(name, default)
@@ -81,6 +82,44 @@ def draft_output_to_clean_latent(
 
 
 @torch.no_grad()
+def unipc_head_sample(
+    *,
+    model: torch.nn.Module,
+    initial_latents: torch.Tensor,
+    prompt_embeds: torch.Tensor,
+    anchor_latents: torch.Tensor | None,
+    num_steps: int,
+    shift: float,
+) -> tuple[torch.Tensor, list[int]]:
+    if num_steps < 2:
+        raise ValueError("--head_sampling_steps must be >= 2 for --head_solver unipc")
+    sample_scheduler = FlowUniPCMultistepScheduler(
+        num_train_timesteps=1000,
+        shift=1,
+        use_dynamic_shifting=False,
+    )
+    sample_scheduler.set_timesteps(num_steps, device=initial_latents.device, shift=shift)
+    current = initial_latents
+    used_timesteps: list[int] = []
+    for t in tqdm(sample_scheduler.timesteps, desc="draft head unipc", leave=True):
+        timestep = t * torch.ones(current.shape[:2], device=current.device, dtype=torch.float32)
+        flow_prediction = model(
+            anchor_latents=anchor_latents,
+            future_noise=current,
+            prompt_embeds=prompt_embeds,
+            timestep=timestep,
+        )
+        current = sample_scheduler.step(
+            flow_prediction.unsqueeze(0),
+            t,
+            current.unsqueeze(0),
+            return_dict=False,
+        )[0].squeeze(0)
+        used_timesteps.append(int(round(float(t.detach().cpu().item()))))
+    return current, used_timesteps
+
+
+@torch.no_grad()
 def generate_videos(
     *,
     model: BidirectionalPromptAnchorDraftHead,
@@ -98,6 +137,9 @@ def generate_videos(
     training_mode: str,
     denoising_step_list: list[int],
     prediction_type: str,
+    anchor_conditioning: str,
+    head_solver: str,
+    head_solver_shift: float,
     teacher_sampling_steps: int | None,
     unroll_noise_mode: str,
     timestep_shift: float,
@@ -113,6 +155,12 @@ def generate_videos(
 
     if training_mode not in ("one_step", "unrolled"):
         raise ValueError(f"Unsupported training_mode: {training_mode}")
+    if anchor_conditioning not in ("clean", "none"):
+        raise ValueError("--anchor_conditioning must be 'clean' or 'none'")
+    if head_solver not in ("euler", "unipc"):
+        raise ValueError("--head_solver must be 'euler' or 'unipc'")
+    if head_solver == "unipc" and prediction_type != "flow":
+        raise ValueError("--head_solver unipc requires --prediction_type flow")
     if num_blocks <= 1:
         raise ValueError("num_blocks must be greater than 1")
 
@@ -175,25 +223,38 @@ def generate_videos(
         anchor = teacher_latents[:, :3].detach()
         prompt_embeds = target_pipeline.text_encoder([prompt])["prompt_embeds"].detach().to(device=device, dtype=dtype)
         future_noise = noise[:, 3:]
+        model_input = noise if anchor_conditioning == "none" else future_noise
+        model_anchor = None if anchor_conditioning == "none" else anchor
 
-        if training_mode == "one_step":
-            timestep = torch.full(future_noise.shape[:2], int(denoising_step_list[0]), device=device, dtype=torch.long)
-            model_output = model(anchor_latents=anchor, future_noise=future_noise, prompt_embeds=prompt_embeds, timestep=timestep)
+        actual_denoising_step_list = list(denoising_step_list)
+        if head_solver == "unipc":
+            output_prediction, actual_denoising_step_list = unipc_head_sample(
+                model=model,
+                initial_latents=model_input,
+                prompt_embeds=prompt_embeds,
+                anchor_latents=model_anchor,
+                num_steps=len(denoising_step_list),
+                shift=head_solver_shift,
+            )
+            prediction = output_prediction
+        elif training_mode == "one_step":
+            timestep = torch.full(model_input.shape[:2], int(denoising_step_list[0]), device=device, dtype=torch.long)
+            model_output = model(anchor_latents=model_anchor, future_noise=model_input, prompt_embeds=prompt_embeds, timestep=timestep)
             prediction = draft_output_to_clean_latent(
                 model_output=model_output,
                 prediction_type=prediction_type,
                 scheduler=scheduler,
-                noisy_latents=future_noise,
+                noisy_latents=model_input,
                 timestep=timestep,
             )
         else:
-            current = future_noise
-            current_noise = future_noise
+            current = model_input
+            current_noise = model_input
             prediction = current
             step_iter = tqdm(denoising_step_list, desc="draft head denoise", leave=True)
             for step_index, current_timestep in enumerate(step_iter):
                 timestep = torch.full(current.shape[:2], int(current_timestep), device=device, dtype=torch.long)
-                model_output = model(anchor_latents=anchor, future_noise=current, prompt_embeds=prompt_embeds, timestep=timestep)
+                model_output = model(anchor_latents=model_anchor, future_noise=current, prompt_embeds=prompt_embeds, timestep=timestep)
                 prediction = draft_output_to_clean_latent(
                     model_output=model_output,
                     prediction_type=prediction_type,
@@ -203,7 +264,7 @@ def generate_videos(
                 )
                 if step_index < len(denoising_step_list) - 1:
                     next_timestep = int(denoising_step_list[step_index + 1])
-                    next_noise = torch.randn_like(prediction) if unroll_noise_mode == "fresh" else future_noise
+                    next_noise = torch.randn_like(prediction) if unroll_noise_mode == "fresh" else model_input
                     next_timestep_tensor = torch.full(current.shape[:2], next_timestep, device=device, dtype=torch.long)
                     if prediction_type == "flow":
                         current = flow_prediction_step(
@@ -245,7 +306,7 @@ def generate_videos(
             raw_path = output_dir / f"{output_stem}_bidirectional_draft_head_raw.mp4"
             write_video(raw_path, 255.0 * rearrange(raw_video, "b t c h w -> b t h w c")[0], fps=fps)
 
-        latents = torch.cat([anchor, output_prediction], dim=1)
+        latents = output_prediction if anchor_conditioning == "none" else torch.cat([anchor, output_prediction], dim=1)
         video = target_pipeline.vae.decode_to_pixel(latents, use_cache=False)
         video = (video * 0.5 + 0.5).clamp(0, 1)
         video_path = output_dir / f"{output_stem}_{source}.mp4"
@@ -258,6 +319,7 @@ def generate_videos(
                 "video_path": str(video_path),
                 "num_blocks": num_blocks,
                 "target_refine_timestep": int(target_refine_timestep),
+                    "head_solver": head_solver,
             }
         )
 
@@ -266,8 +328,11 @@ def generate_videos(
         "num_prompts": len(summaries),
         "training_mode": training_mode,
         "prediction_type": prediction_type,
+        "anchor_conditioning": anchor_conditioning,
+        "head_solver": head_solver,
+        "head_solver_shift": float(head_solver_shift),
         "teacher_sampling_steps": int(target_pipeline.sampling_steps),
-        "denoising_step_list": list(denoising_step_list),
+        "denoising_step_list": list(actual_denoising_step_list) if summaries else list(denoising_step_list),
         "unroll_noise_mode": unroll_noise_mode,
         "target_refine_timestep": int(target_refine_timestep),
         "runs": summaries,
@@ -298,6 +363,9 @@ def generate_manifest_videos(
     training_mode: str,
     denoising_step_list: list[int],
     prediction_type: str,
+    anchor_conditioning: str,
+    head_solver: str,
+    head_solver_shift: float,
     unroll_noise_mode: str,
     timestep_shift: float,
     dataset_cache_dir: str,
@@ -310,6 +378,12 @@ def generate_manifest_videos(
 
     if training_mode not in ("one_step", "unrolled"):
         raise ValueError(f"Unsupported training_mode: {training_mode}")
+    if anchor_conditioning not in ("clean", "none"):
+        raise ValueError("--anchor_conditioning must be 'clean' or 'none'")
+    if head_solver not in ("euler", "unipc"):
+        raise ValueError("--head_solver must be 'euler' or 'unipc'")
+    if head_solver == "unipc" and prediction_type != "flow":
+        raise ValueError("--head_solver unipc requires --prediction_type flow")
     output_dir = Path(output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
     os.chdir(Path(__file__).parent)
@@ -358,24 +432,44 @@ def generate_manifest_videos(
     future_noise = record["future_noise"].to(device=device, dtype=dtype)
     target_future = record["future_target_latents"].to(device=device, dtype=dtype)
     prompt_embeds = text_encoder([prompt])["prompt_embeds"].detach().to(device=device, dtype=dtype)
+    if anchor_conditioning == "none":
+        if dataset.format != "bidirectional_wan_full_video_v1":
+            raise ValueError("--anchor_conditioning none video generation requires the full-video Option-B manifest")
+        raw_record = dataset._load_record(dataset.index[dataset_index])
+        model_input = raw_record["noise"].to(device=device, dtype=dtype)
+        model_anchor = None
+        target_latents = torch.cat([anchor, target_future], dim=1)
+    else:
+        model_input = future_noise
+        model_anchor = anchor
 
-    if training_mode == "one_step":
-        timestep = torch.full(future_noise.shape[:2], int(denoising_step_list[0]), device=device, dtype=torch.long)
-        model_output = model(anchor_latents=anchor, future_noise=future_noise, prompt_embeds=prompt_embeds, timestep=timestep)
+    actual_denoising_step_list = list(denoising_step_list)
+    if head_solver == "unipc":
+        prediction, actual_denoising_step_list = unipc_head_sample(
+            model=model,
+            initial_latents=model_input,
+            prompt_embeds=prompt_embeds,
+            anchor_latents=model_anchor,
+            num_steps=len(denoising_step_list),
+            shift=head_solver_shift,
+        )
+    elif training_mode == "one_step":
+        timestep = torch.full(model_input.shape[:2], int(denoising_step_list[0]), device=device, dtype=torch.long)
+        model_output = model(anchor_latents=model_anchor, future_noise=model_input, prompt_embeds=prompt_embeds, timestep=timestep)
         prediction = draft_output_to_clean_latent(
             model_output=model_output,
             prediction_type=prediction_type,
             scheduler=scheduler,
-            noisy_latents=future_noise,
+            noisy_latents=model_input,
             timestep=timestep,
         )
     else:
-        current = future_noise
+        current = model_input
         prediction = current
         step_iter = tqdm(denoising_step_list, desc="draft head denoise", leave=True)
         for step_index, current_timestep in enumerate(step_iter):
             timestep = torch.full(current.shape[:2], int(current_timestep), device=device, dtype=torch.long)
-            model_output = model(anchor_latents=anchor, future_noise=current, prompt_embeds=prompt_embeds, timestep=timestep)
+            model_output = model(anchor_latents=model_anchor, future_noise=current, prompt_embeds=prompt_embeds, timestep=timestep)
             prediction = draft_output_to_clean_latent(
                 model_output=model_output,
                 prediction_type=prediction_type,
@@ -385,7 +479,7 @@ def generate_manifest_videos(
             )
             if step_index < len(denoising_step_list) - 1:
                 next_timestep = int(denoising_step_list[step_index + 1])
-                next_noise = torch.randn_like(prediction) if unroll_noise_mode == "fresh" else future_noise
+                next_noise = torch.randn_like(prediction) if unroll_noise_mode == "fresh" else model_input
                 next_timestep_tensor = torch.full(current.shape[:2], next_timestep, device=device, dtype=torch.long)
                 if prediction_type == "flow":
                     current = flow_prediction_step(
@@ -403,13 +497,12 @@ def generate_manifest_videos(
                     ).unflatten(0, prediction.shape[:2])
 
     output_stem = f"train_prompt_{record_prompt_index:04d}_idx_{dataset_index:05d}"
-    target_latents = torch.cat([anchor, target_future], dim=1)
     target_video = vae.decode_to_pixel(target_latents, use_cache=False)
     target_video = (target_video * 0.5 + 0.5).clamp(0, 1)
     target_path = output_dir / f"{output_stem}_stored_target_teacher.mp4"
     write_video(target_path, 255.0 * rearrange(target_video, "b t c h w -> b t h w c")[0], fps=fps)
 
-    draft_latents = torch.cat([anchor, prediction], dim=1)
+    draft_latents = prediction if anchor_conditioning == "none" else torch.cat([anchor, prediction], dim=1)
     draft_video = vae.decode_to_pixel(draft_latents, use_cache=False)
     draft_video = (draft_video * 0.5 + 0.5).clamp(0, 1)
     draft_path = output_dir / f"{output_stem}_bidirectional_draft_head.mp4"
@@ -423,7 +516,10 @@ def generate_manifest_videos(
         "prompt": prompt,
         "training_mode": training_mode,
         "prediction_type": prediction_type,
-        "denoising_step_list": list(denoising_step_list),
+        "anchor_conditioning": anchor_conditioning,
+        "head_solver": head_solver,
+        "head_solver_shift": float(head_solver_shift),
+        "denoising_step_list": list(actual_denoising_step_list),
         "unroll_noise_mode": unroll_noise_mode,
         "runs": [
             {"mode": "stored_target_teacher", "video_path": str(target_path)},
@@ -614,6 +710,8 @@ def main() -> None:
     parser.add_argument("--anchor_conditioning", choices=["clean", "none"], default=None)
     parser.add_argument("--denoising_step_list", nargs="+", type=int, default=None)
     parser.add_argument("--head_sampling_steps", type=int, default=None)
+    parser.add_argument("--head_solver", choices=["euler", "unipc"], default="euler")
+    parser.add_argument("--head_solver_shift", type=float, default=8.0)
     parser.add_argument("--teacher_sampling_steps", type=int, default=None)
     parser.add_argument("--random_timestep_sampling", choices=["uniform_schedule", "logit_normal"], default=None)
     parser.add_argument("--logit_normal_mean", type=float, default=None)
@@ -629,6 +727,8 @@ def main() -> None:
     parser.add_argument("--teacher_trajectory_cache_dir", default=None)
     parser.add_argument("--teacher_trajectory_steps", type=int, default=None)
     parser.add_argument("--teacher_trajectory_solver", choices=["unipc", "dpm++"], default=None)
+    parser.add_argument("--overfit_num_examples", type=int, default=None)
+    parser.add_argument("--overfit_start_index", type=int, default=None)
     parser.add_argument("--max_examples", type=int, default=0)
     args = parser.parse_args()
 
@@ -680,6 +780,9 @@ def main() -> None:
                 training_mode=training_mode,
                 denoising_step_list=denoising_step_list,
                 prediction_type=prediction_type,
+                anchor_conditioning=anchor_conditioning,
+                head_solver=args.head_solver,
+                head_solver_shift=args.head_solver_shift,
                 unroll_noise_mode=unroll_noise_mode,
                 timestep_shift=timestep_shift,
                 dataset_cache_dir=args.dataset_cache_dir,
@@ -707,6 +810,9 @@ def main() -> None:
             training_mode=training_mode,
             denoising_step_list=denoising_step_list,
             prediction_type=prediction_type,
+            anchor_conditioning=anchor_conditioning,
+            head_solver=args.head_solver,
+            head_solver_shift=args.head_solver_shift,
             teacher_sampling_steps=args.teacher_sampling_steps,
             unroll_noise_mode=unroll_noise_mode,
             timestep_shift=timestep_shift,

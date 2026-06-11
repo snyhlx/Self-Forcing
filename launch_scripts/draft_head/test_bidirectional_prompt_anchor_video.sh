@@ -29,9 +29,12 @@ SAVE_RAW_VIDEO="${SAVE_RAW_VIDEO:-0}"
 SAVE_TARGET_VIDEO="${SAVE_TARGET_VIDEO:-0}"
 TRAINING_MODE="${TRAINING_MODE:-}"
 PREDICTION_TYPE="${PREDICTION_TYPE:-}"
+ANCHOR_CONDITIONING="${ANCHOR_CONDITIONING:-}"
 UNROLL_NOISE_MODE="${UNROLL_NOISE_MODE:-}"
 DENOISING_STEP_LIST="${DENOISING_STEP_LIST:-}"
 HEAD_SAMPLING_STEPS="${HEAD_SAMPLING_STEPS:-}"
+HEAD_SOLVER="${HEAD_SOLVER:-}"
+HEAD_SOLVER_SHIFT="${HEAD_SOLVER_SHIFT:-}"
 TEACHER_SAMPLING_STEPS="${TEACHER_SAMPLING_STEPS:-}"
 VIDEO_MANIFEST_PATH="${VIDEO_MANIFEST_PATH:-}"
 VIDEO_DATASET_INDEX="${VIDEO_DATASET_INDEX:-}"
@@ -78,6 +81,9 @@ fi
 if [[ -n "$PREDICTION_TYPE" ]]; then
   OPTIONAL_ARGS+=(--prediction_type "$PREDICTION_TYPE")
 fi
+if [[ -n "$ANCHOR_CONDITIONING" ]]; then
+  OPTIONAL_ARGS+=(--anchor_conditioning "$ANCHOR_CONDITIONING")
+fi
 if [[ -n "$UNROLL_NOISE_MODE" ]]; then
   OPTIONAL_ARGS+=(--unroll_noise_mode "$UNROLL_NOISE_MODE")
 fi
@@ -88,6 +94,12 @@ if [[ -n "$DENOISING_STEP_LIST" ]]; then
 fi
 if [[ -n "$HEAD_SAMPLING_STEPS" ]]; then
   OPTIONAL_ARGS+=(--head_sampling_steps "$HEAD_SAMPLING_STEPS")
+fi
+if [[ -n "$HEAD_SOLVER" ]]; then
+  OPTIONAL_ARGS+=(--head_solver "$HEAD_SOLVER")
+fi
+if [[ -n "$HEAD_SOLVER_SHIFT" ]]; then
+  OPTIONAL_ARGS+=(--head_solver_shift "$HEAD_SOLVER_SHIFT")
 fi
 if [[ -n "$TEACHER_SAMPLING_STEPS" ]]; then
   OPTIONAL_ARGS+=(--teacher_sampling_steps "$TEACHER_SAMPLING_STEPS")
@@ -121,7 +133,9 @@ log "Blocks:     $NUM_BLOCKS"
 log "Prompts:    ${PROMPT_FILE:-single prompt} start=$START_INDEX max=$MAX_PROMPTS"
 log "Manifest:   ${VIDEO_MANIFEST_PATH:-off} dataset_index=${VIDEO_DATASET_INDEX:-default} prompt_index=${VIDEO_PROMPT_INDEX:-off} split=$VIDEO_SPLIT split_index=$VIDEO_SPLIT_INDEX"
 log "Prediction: ${PREDICTION_TYPE:-checkpoint/default}"
+log "Anchor conditioning: ${ANCHOR_CONDITIONING:-checkpoint/default}"
 log "Head steps: ${HEAD_SAMPLING_STEPS:-checkpoint/default}"
+log "Head solver: ${HEAD_SOLVER:-euler} shift=${HEAD_SOLVER_SHIFT:-8.0}"
 log "Teacher steps: ${TEACHER_SAMPLING_STEPS:-default}"
 log "Refine:     target_timestep=$TARGET_REFINE_TIMESTEP save_raw=$SAVE_RAW_VIDEO save_target=$SAVE_TARGET_VIDEO"
 
