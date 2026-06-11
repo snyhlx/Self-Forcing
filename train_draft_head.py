@@ -165,6 +165,30 @@ def flow_prediction_to_clean_latent(
     return noisy_latents - sigma * flow_prediction
 
 
+def flow_prediction_step(
+    scheduler: FlowMatchScheduler,
+    flow_prediction: torch.Tensor,
+    noisy_latents: torch.Tensor,
+    current_timestep: torch.Tensor,
+    next_timestep: torch.Tensor,
+) -> torch.Tensor:
+    current_sigma = sigma_for_timestep(
+        scheduler,
+        current_timestep,
+        device=flow_prediction.device,
+        dtype=flow_prediction.dtype,
+        clamp_min=0.0,
+    )
+    next_sigma = sigma_for_timestep(
+        scheduler,
+        next_timestep,
+        device=flow_prediction.device,
+        dtype=flow_prediction.dtype,
+        clamp_min=0.0,
+    )
+    return noisy_latents + (next_sigma - current_sigma) * flow_prediction
+
+
 class OnlineTargetKVCacheReplay:
     """Rebuild target-model context KV cache for a draft-head record on demand."""
 
@@ -546,7 +570,10 @@ def compute_unrolled_draft_head_losses(
             components[f"clean_latent_loss_step_{index}"] = clean_loss * clean_latent_loss_weight * normalized_step_weight
 
         if loss_type in ("flow", "clean_latent_flow") and current_timestep > 0 and step_weight > 0:
-            flow_target = current_noise - target_latents
+            if prediction_type == "flow":
+                flow_target = clean_latent_to_flow_prediction(scheduler, target_latents, current, timestep)
+            else:
+                flow_target = current_noise - target_latents
             flow_loss = F.mse_loss(flow_prediction.float(), flow_target.float())
             flow_losses.append(flow_loss.detach())
             normalized_step_weight = step_weight / flow_weight_denominator
@@ -558,11 +585,21 @@ def compute_unrolled_draft_head_losses(
                 next_noise = torch.randn_like(target_latents)
             else:
                 next_noise = initial_noise
-            current = scheduler.add_noise(
-                prediction.detach().flatten(0, 1),
-                next_noise.flatten(0, 1),
-                _timestep_batch(next_timestep, batch_size, frames, device=device).flatten(0, 1),
-            ).unflatten(0, prediction.shape[:2])
+            next_timestep_tensor = _timestep_batch(next_timestep, batch_size, frames, device=device)
+            if prediction_type == "flow":
+                current = flow_prediction_step(
+                    scheduler,
+                    flow_prediction.detach(),
+                    current,
+                    timestep,
+                    next_timestep_tensor,
+                )
+            else:
+                current = scheduler.add_noise(
+                    prediction.detach().flatten(0, 1),
+                    next_noise.flatten(0, 1),
+                    next_timestep_tensor.flatten(0, 1),
+                ).unflatten(0, prediction.shape[:2])
             current_noise = next_noise
 
     final_clean_loss = F.mse_loss(prediction.float(), target_latents.float())
@@ -598,6 +635,7 @@ def predict_unrolled_draft_head_batch(
     num_blocks: int,
     scheduler: FlowMatchScheduler,
     denoising_step_list: list[int],
+    prediction_type: str,
     noise_mode: str,
 ) -> torch.Tensor:
     if noise_mode not in ("fixed", "fresh"):
@@ -610,18 +648,35 @@ def predict_unrolled_draft_head_batch(
     batch_size, frames = current.shape[:2]
     prediction = current
     for index, current_timestep in enumerate(denoising_step_list):
+        timestep = _timestep_batch(current_timestep, batch_size, frames, device=device)
         step_batch = dict(batch)
         step_batch["scheduled_latents"] = current
-        step_batch["timestep"] = _timestep_batch(current_timestep, batch_size, frames, device=device)
-        prediction = predict_draft_head_batch(model, step_batch, num_blocks, input_key="scheduled_latents")
+        step_batch["timestep"] = timestep
+        model_output = predict_draft_head_batch(model, step_batch, num_blocks, input_key="scheduled_latents")
+        if prediction_type == "flow":
+            prediction = flow_prediction_to_clean_latent(scheduler, model_output, current, timestep)
+        elif prediction_type == "clean_latent":
+            prediction = model_output
+        else:
+            raise ValueError("--prediction_type must be 'flow' or 'clean_latent'")
         if index < len(denoising_step_list) - 1:
             next_timestep = denoising_step_list[index + 1]
             next_noise = torch.randn_like(current) if noise_mode == "fresh" else initial_noise
-            current = scheduler.add_noise(
-                prediction.flatten(0, 1),
-                next_noise.flatten(0, 1),
-                _timestep_batch(next_timestep, batch_size, frames, device=device).flatten(0, 1),
-            ).unflatten(0, prediction.shape[:2])
+            next_timestep_tensor = _timestep_batch(next_timestep, batch_size, frames, device=device)
+            if prediction_type == "flow":
+                current = flow_prediction_step(
+                    scheduler,
+                    model_output,
+                    current,
+                    timestep,
+                    next_timestep_tensor,
+                )
+            else:
+                current = scheduler.add_noise(
+                    prediction.flatten(0, 1),
+                    next_noise.flatten(0, 1),
+                    next_timestep_tensor.flatten(0, 1),
+                ).unflatten(0, prediction.shape[:2])
     return prediction
 
 
@@ -635,6 +690,7 @@ def evaluate(
     input_key: str,
     scheduler: FlowMatchScheduler | None = None,
     denoising_step_list: list[int] | None = None,
+    prediction_type: str = "clean_latent",
     training_mode: str = "one_step",
     unroll_noise_mode: str = "fixed",
     online_kv_replay: OnlineTargetKVCacheReplay | None = None,
@@ -656,6 +712,7 @@ def evaluate(
                 num_blocks=num_blocks,
                 scheduler=scheduler,
                 denoising_step_list=denoising_step_list,
+                prediction_type=prediction_type,
                 noise_mode=unroll_noise_mode,
             )
         elif scheduler is not None and denoising_step_list is not None:
@@ -666,7 +723,18 @@ def evaluate(
                 device=device,
                 dtype=dtype,
             )
-            prediction = predict_draft_head_batch(model, batch, num_blocks, input_key=input_key)
+            model_output = predict_draft_head_batch(model, batch, num_blocks, input_key=input_key)
+            if prediction_type == "flow":
+                prediction = flow_prediction_to_clean_latent(
+                    scheduler,
+                    model_output,
+                    batch[input_key].to(device=device, dtype=dtype),
+                    batch["timestep"].to(device=device),
+                )
+            elif prediction_type == "clean_latent":
+                prediction = model_output
+            else:
+                raise ValueError("--prediction_type must be 'flow' or 'clean_latent'")
         else:
             prediction = predict_draft_head_batch(model, batch, num_blocks, input_key=input_key)
         target_latents = batch["target_latents"].to(device=device, dtype=dtype)
@@ -1281,6 +1349,7 @@ def main() -> None:
                 input_key="scheduled_latents",
                 scheduler=scheduler,
                 denoising_step_list=args.denoising_step_list,
+                prediction_type=args.prediction_type,
                 training_mode=args.training_mode,
                 unroll_noise_mode=args.unroll_noise_mode,
                 online_kv_replay=online_kv_replay,
@@ -1397,6 +1466,7 @@ def main() -> None:
             input_key="scheduled_latents",
             scheduler=scheduler,
             denoising_step_list=args.denoising_step_list,
+            prediction_type=args.prediction_type,
             training_mode=args.training_mode,
             unroll_noise_mode=args.unroll_noise_mode,
             online_kv_replay=online_kv_replay,

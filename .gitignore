@@ -3,8 +3,11 @@ __pycache__
 
 wan_models
 checkpoints
+launch_scripts/logs
+
 outputs
 videos
+images
 
 sf_venv
 tmp

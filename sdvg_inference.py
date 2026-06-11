@@ -386,6 +386,42 @@ def draft_output_to_clean_latent(
     raise ValueError("draft head prediction_type must be 'flow' or 'clean_latent'")
 
 
+def draft_flow_step(
+    model_output: torch.Tensor,
+    *,
+    prediction_type: str,
+    scheduler: Any,
+    noisy_latents: torch.Tensor,
+    current_timestep: torch.Tensor,
+    next_timestep: torch.Tensor,
+    clean_prediction: torch.Tensor,
+    next_noise: torch.Tensor,
+) -> torch.Tensor:
+    if prediction_type == "flow":
+        current_sigma = sigma_for_timestep(
+            scheduler,
+            current_timestep,
+            device=model_output.device,
+            dtype=model_output.dtype,
+            clamp_min=0.0,
+        )
+        next_sigma = sigma_for_timestep(
+            scheduler,
+            next_timestep,
+            device=model_output.device,
+            dtype=model_output.dtype,
+            clamp_min=0.0,
+        )
+        return noisy_latents + (next_sigma - current_sigma) * model_output
+    if prediction_type == "clean_latent":
+        return scheduler.add_noise(
+            clean_prediction.flatten(0, 1),
+            next_noise.flatten(0, 1),
+            next_timestep.flatten(0, 1),
+        ).unflatten(0, clean_prediction.shape[:2])
+    raise ValueError("draft head prediction_type must be 'flow' or 'clean_latent'")
+
+
 @torch.no_grad()
 def denoise_block_with_draft_head(
     draft_head: torch.nn.Module,
@@ -432,16 +468,21 @@ def denoise_block_with_draft_head(
                 )
                 if index < len(denoising_step_list) - 1:
                     next_timestep = denoising_step_list[index + 1]
-                    current = scheduler.add_noise(
-                        prediction.flatten(0, 1),
-                        torch.randn_like(prediction.flatten(0, 1)),
-                        next_timestep
-                        * torch.ones(
-                            [batch_size * current_num_frames],
-                            device=block_latents.device,
-                            dtype=torch.long,
-                        ),
-                    ).unflatten(0, prediction.shape[:2])
+                    next_timestep_tensor = next_timestep * torch.ones(
+                        [batch_size, current_num_frames],
+                        device=block_latents.device,
+                        dtype=torch.long,
+                    )
+                    current = draft_flow_step(
+                        model_output,
+                        prediction_type=prediction_type,
+                        scheduler=scheduler,
+                        noisy_latents=current,
+                        current_timestep=timestep,
+                        next_timestep=next_timestep_tensor,
+                        clean_prediction=prediction,
+                        next_noise=torch.randn_like(prediction),
+                    )
             return prediction
         return draft_head(block_latents, kv_cache, block_index=block_index, num_blocks=num_blocks)
     if isinstance(draft_head, (KVInjectedLatentDraftHead, WanDFlashLatentDraftHead)):
@@ -475,15 +516,21 @@ def denoise_block_with_draft_head(
                 )
                 if step_index < len(denoising_step_list) - 1:
                     next_timestep = denoising_step_list[step_index + 1]
-                    current = scheduler.add_noise(
-                        prediction.flatten(0, 1),
-                        torch.randn_like(prediction.flatten(0, 1)),
-                        next_timestep * torch.ones(
-                            [batch_size * current_num_frames],
-                            device=block_latents.device,
-                            dtype=torch.long,
-                        ),
-                    ).unflatten(0, prediction.shape[:2])
+                    next_timestep_tensor = next_timestep * torch.ones(
+                        [batch_size, current_num_frames],
+                        device=block_latents.device,
+                        dtype=torch.long,
+                    )
+                    current = draft_flow_step(
+                        model_output,
+                        prediction_type=prediction_type,
+                        scheduler=scheduler,
+                        noisy_latents=current,
+                        current_timestep=timestep,
+                        next_timestep=next_timestep_tensor,
+                        clean_prediction=prediction,
+                        next_noise=torch.randn_like(prediction),
+                    )
             return prediction
         return draft_head(block_latents, features, block_index=block_index, num_blocks=num_blocks)
     feature_vector = pool_target_features(target_context, layer_names=layer_names).to(
