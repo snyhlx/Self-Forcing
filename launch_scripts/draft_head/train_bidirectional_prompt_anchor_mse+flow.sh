@@ -36,6 +36,7 @@ DENSE_SCHEDULE_STEPS="${DENSE_SCHEDULE_STEPS:-}"
 TIMESTEP_SHIFT="${TIMESTEP_SHIFT:-5.0}"
 PREDICTION_TYPE="${PREDICTION_TYPE:-flow}"
 TRAINING_MODE="${TRAINING_MODE:-unrolled}"
+ANCHOR_CONDITIONING="${ANCHOR_CONDITIONING:-clean}"
 RANDOM_TIMESTEP_SAMPLING="${RANDOM_TIMESTEP_SAMPLING:-uniform_schedule}"
 LOGIT_NORMAL_MEAN="${LOGIT_NORMAL_MEAN:-0.0}"
 LOGIT_NORMAL_STD="${LOGIT_NORMAL_STD:-1.0}"
@@ -131,12 +132,12 @@ log "Dataset cache: $DATASET_CACHE_DIR index_workers=$DATASET_INDEX_WORKERS wait
 log "Run dir:   $RUN_DIR"
 log "Output:    $OUTPUT_PATH"
 log "GPUs:      $NUM_GPUS visible=$CUDA_VISIBLE_DEVICES"
-log "Anchor:    online_target target=$TARGET_MODEL_NAME seed=$ANCHOR_NOISE_SEED"
+log "Anchor:    conditioning=$ANCHOR_CONDITIONING online_target target=$TARGET_MODEL_NAME seed=$ANCHOR_NOISE_SEED"
 log "Model:     wan hidden=$HIDDEN_CHANNELS layers=$NUM_LAYERS heads=$NUM_HEADS ffn_dim=$FFN_DIM prompt_dim=$PROMPT_DIM temporal_mixer_layers=$TEMPORAL_MIXER_LAYERS temporal_mixer_ffn_dim=$TEMPORAL_MIXER_FFN_DIM gradient_checkpointing=$GRADIENT_CHECKPOINTING"
 log "Parallel:  strategy=$PARALLEL_STRATEGY fsdp_min_num_params=$FSDP_MIN_NUM_PARAMS fsdp_mixed_precision=$FSDP_MIXED_PRECISION"
 log "Attention: backend=$ATTENTION_BACKEND"
 log "Init:      target_blocks=[$INIT_TARGET_BLOCKS]"
-log "Training:  mode=$TRAINING_MODE prediction_type=$PREDICTION_TYPE steps=[$DENOISING_STEP_LIST] dense_schedule_steps=${DENSE_SCHEDULE_STEPS:-off} random_sampling=$RANDOM_TIMESTEP_SAMPLING logit_mean=$LOGIT_NORMAL_MEAN logit_std=$LOGIT_NORMAL_STD unroll_noise=$UNROLL_NOISE_MODE weights=${UNROLL_STEP_WEIGHTS:-auto} teacher_traj_steps=$TEACHER_TRAJECTORY_STEPS teacher_traj_cache=$TEACHER_TRAJECTORY_CACHE_DIR overfit_num=$OVERFIT_NUM_EXAMPLES overfit_start=$OVERFIT_START_INDEX num_workers=$NUM_WORKERS"
+log "Training:  mode=$TRAINING_MODE anchor_conditioning=$ANCHOR_CONDITIONING prediction_type=$PREDICTION_TYPE steps=[$DENOISING_STEP_LIST] dense_schedule_steps=${DENSE_SCHEDULE_STEPS:-off} random_sampling=$RANDOM_TIMESTEP_SAMPLING logit_mean=$LOGIT_NORMAL_MEAN logit_std=$LOGIT_NORMAL_STD unroll_noise=$UNROLL_NOISE_MODE weights=${UNROLL_STEP_WEIGHTS:-auto} teacher_traj_steps=$TEACHER_TRAJECTORY_STEPS teacher_traj_cache=$TEACHER_TRAJECTORY_CACHE_DIR overfit_num=$OVERFIT_NUM_EXAMPLES overfit_start=$OVERFIT_START_INDEX num_workers=$NUM_WORKERS"
 log "Loss:      clean=$CLEAN_LATENT_LOSS_WEIGHT flow=$FLOW_LOSS_WEIGHT detail=$DETAIL_LOSS_WEIGHT temporal_delta=$TEMPORAL_DELTA_WEIGHT boundary=$BOUNDARY_WEIGHT"
 
 RUNNER=("$PYTHON")
@@ -190,6 +191,7 @@ INIT_TARGET_BLOCK_ARRAY=($INIT_TARGET_BLOCKS)
   --timestep_shift "$TIMESTEP_SHIFT" \
   --prediction_type "$PREDICTION_TYPE" \
   --training_mode "$TRAINING_MODE" \
+  --anchor_conditioning "$ANCHOR_CONDITIONING" \
   --random_timestep_sampling "$RANDOM_TIMESTEP_SAMPLING" \
   --logit_normal_mean "$LOGIT_NORMAL_MEAN" \
   --logit_normal_std "$LOGIT_NORMAL_STD" \

@@ -40,6 +40,9 @@ def causal_rope_apply(x: torch.Tensor, grid_sizes: torch.Tensor, freqs: torch.Te
     output = []
     for i, (frames, height, width) in enumerate(grid_sizes.tolist()):
         seq_len = frames * height * width
+        if seq_len == 0:
+            output.append(x[i])
+            continue
         x_i = torch.view_as_complex(x[i, :seq_len].to(torch.float64).reshape(seq_len, n, -1, 2))
         freqs_i = torch.cat(
             [
@@ -864,6 +867,7 @@ class WanDFlashAttention(nn.Module):
         freqs: torch.Tensor,
         current_start_frame: int,
         context_start_frame: int,
+        context_grid_sizes: torch.Tensor | None = None,
     ) -> torch.Tensor:
         batch_size, proposal_tokens = proposal.shape[:2]
         context_tokens = target_context.shape[1]
@@ -882,7 +886,7 @@ class WanDFlashAttention(nn.Module):
         ).type_as(proposal_v)
         context_k = causal_rope_apply(
             context_k,
-            grid_sizes,
+            context_grid_sizes if context_grid_sizes is not None else grid_sizes,
             freqs,
             start_frame=context_start_frame,
         ).type_as(context_v)
@@ -921,6 +925,7 @@ class WanDFlashDraftBlock(nn.Module):
         freqs: torch.Tensor,
         current_start_frame: int,
         context_start_frame: int,
+        context_grid_sizes: torch.Tensor | None = None,
     ) -> torch.Tensor:
         proposal = proposal + self.self_attn(
             self.norm1(proposal),
@@ -929,6 +934,7 @@ class WanDFlashDraftBlock(nn.Module):
             freqs,
             current_start_frame,
             context_start_frame,
+            context_grid_sizes,
         )
         return proposal + self.ffn(self.norm2(proposal))
 

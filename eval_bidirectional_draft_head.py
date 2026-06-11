@@ -16,10 +16,13 @@ from tqdm import tqdm
 from train_bidirectional_draft_head import (
     BidirectionalPromptAnchorDataset,
     BidirectionalPromptAnchorDraftHead,
+    OnlineTeacherTrajectoryCache,
     OnlineTargetAnchorGenerator,
+    WanFullVideoDraftHead,
     amp_context,
     collate_bidirectional_examples,
     compute_bidirectional_losses,
+    compute_teacher_trajectory_losses,
     flow_prediction_to_clean_latent,
     flow_prediction_step,
     make_scheduler,
@@ -43,7 +46,15 @@ def load_bidirectional_checkpoint(path: str | Path, device: torch.device) -> tup
     if "patch_size" in model_config:
         model_config["patch_size"] = tuple(model_config["patch_size"])
     model_config["gradient_checkpointing"] = False
-    model = BidirectionalPromptAnchorDraftHead(**model_config)
+    model_class = model_config.pop("model_class", "BidirectionalPromptAnchorDraftHead")
+    if model_class == "WanFullVideoDraftHead":
+        model_config.pop("temporal_mixer_layers", None)
+        model_config.pop("temporal_mixer_ffn_dim", None)
+        model = WanFullVideoDraftHead(**model_config)
+    elif model_class == "BidirectionalPromptAnchorDraftHead":
+        model = BidirectionalPromptAnchorDraftHead(**model_config)
+    else:
+        raise ValueError(f"Unsupported bidirectional draft-head model_class: {model_class}")
     model.load_state_dict(payload["model_state_dict"], strict=True)
     return model.to(device).eval(), payload
 
@@ -508,6 +519,61 @@ def evaluate_split(
     return result
 
 
+@torch.no_grad()
+def evaluate_teacher_trajectory_split(
+    model: BidirectionalPromptAnchorDraftHead,
+    loader: DataLoader,
+    text_encoder: torch.nn.Module,
+    teacher_trajectory_cache: OnlineTeacherTrajectoryCache,
+    device: torch.device,
+    amp_dtype: str,
+    scheduler,
+    clean_latent_loss_weight: float,
+    flow_loss_weight: float,
+    detail_loss_weight: float,
+    anchor_conditioning: str,
+    max_examples: int,
+) -> dict[str, float]:
+    metric_sums: dict[str, float] = {}
+    total_examples = 0
+    progress = tqdm(loader, desc="teacher-trajectory eval", unit="batch")
+    for batch in progress:
+        dtype = torch.bfloat16 if amp_dtype == "bf16" and device.type == "cuda" else torch.float32
+        anchor = batch["anchor_latents"].to(device=device, dtype=dtype) if anchor_conditioning == "clean" else None
+        prompt_embeds = text_encoder(batch["prompts"])["prompt_embeds"].detach().to(device=device, dtype=dtype)
+        trajectory = teacher_trajectory_cache(batch)
+        with amp_context(device, amp_dtype):
+            _loss, metrics = compute_teacher_trajectory_losses(
+                model,
+                anchor=anchor,
+                prompt_embeds=prompt_embeds,
+                trajectory=trajectory,
+                scheduler=scheduler,
+                clean_latent_loss_weight=clean_latent_loss_weight,
+                flow_loss_weight=flow_loss_weight,
+                detail_loss_weight=detail_loss_weight,
+                anchor_conditioning=anchor_conditioning,
+            )
+        batch_size = int(prompt_embeds.shape[0])
+        total_examples += batch_size
+        for key, value in metrics.items():
+            if isinstance(value, (int, float)):
+                metric_sums[key] = metric_sums.get(key, 0.0) + float(value) * batch_size
+        progress.set_postfix(
+            loss=metric_sums.get("loss", 0.0) / max(1, total_examples),
+            flow_mse=metric_sums.get("teacher_trajectory_flow_mse", 0.0) / max(1, total_examples),
+        )
+        if max_examples > 0 and total_examples >= max_examples:
+            break
+    result = {
+        "examples": float(total_examples),
+        **{key: value / max(1, total_examples) for key, value in sorted(metric_sums.items())},
+    }
+    if "clean_latent_mse" in result:
+        result["clean_latent_rmse"] = math.sqrt(result["clean_latent_mse"])
+    return result
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Evaluate a bidirectional prompt-anchor draft head checkpoint.")
     parser.add_argument("--checkpoint_path", required=True)
@@ -543,8 +609,9 @@ def main() -> None:
     parser.add_argument("--batch_size", type=int, default=1)
     parser.add_argument("--num_workers", type=int, default=0)
     parser.add_argument("--amp_dtype", choices=["none", "bf16", "fp16"], default=None)
-    parser.add_argument("--training_mode", choices=["one_step", "unrolled", "random_timestep"], default=None)
+    parser.add_argument("--training_mode", choices=["one_step", "unrolled", "random_timestep", "teacher_trajectory"], default=None)
     parser.add_argument("--prediction_type", choices=["flow", "clean_latent"], default=None)
+    parser.add_argument("--anchor_conditioning", choices=["clean", "none"], default=None)
     parser.add_argument("--denoising_step_list", nargs="+", type=int, default=None)
     parser.add_argument("--head_sampling_steps", type=int, default=None)
     parser.add_argument("--teacher_sampling_steps", type=int, default=None)
@@ -559,6 +626,9 @@ def main() -> None:
     parser.add_argument("--temporal_delta_weight", type=float, default=None)
     parser.add_argument("--boundary_weight", type=float, default=None)
     parser.add_argument("--timestep_shift", type=float, default=None)
+    parser.add_argument("--teacher_trajectory_cache_dir", default=None)
+    parser.add_argument("--teacher_trajectory_steps", type=int, default=None)
+    parser.add_argument("--teacher_trajectory_solver", choices=["unipc", "dpm++"], default=None)
     parser.add_argument("--max_examples", type=int, default=0)
     args = parser.parse_args()
 
@@ -570,6 +640,7 @@ def main() -> None:
     denoising_step_list = list(_arg_or_checkpoint(args, train_args, "denoising_step_list", [1000, 750, 500, 250, 0]))
     training_mode = str(_arg_or_checkpoint(args, train_args, "training_mode", "unrolled"))
     prediction_type = str(_arg_or_checkpoint(args, train_args, "prediction_type", "clean_latent"))
+    anchor_conditioning = str(_arg_or_checkpoint(args, train_args, "anchor_conditioning", "clean"))
     if args.head_sampling_steps is not None:
         training_mode = "unrolled"
         denoising_step_list = make_descending_timestep_list(args.head_sampling_steps)
@@ -660,7 +731,13 @@ def main() -> None:
         index_workers=args.dataset_index_workers,
         cache_wait_seconds=args.dataset_cache_wait_seconds,
     )
-    train_indices, val_indices = split_indices(len(dataset), val_fraction, seed)
+    overfit_num_examples = int(_arg_or_checkpoint(args, train_args, "overfit_num_examples", 0))
+    overfit_start_index = int(_arg_or_checkpoint(args, train_args, "overfit_start_index", 0))
+    if overfit_num_examples > 0:
+        train_indices = list(range(overfit_start_index, min(len(dataset), overfit_start_index + overfit_num_examples)))
+        val_indices = []
+    else:
+        train_indices, val_indices = split_indices(len(dataset), val_fraction, seed)
     indices = val_indices if args.split == "val" else train_indices
     eval_dataset = Subset(dataset, indices)
     loader = DataLoader(
@@ -680,6 +757,61 @@ def main() -> None:
     from utils.wan_wrapper import WanTextEncoder
 
     text_encoder = WanTextEncoder().to(device=device, dtype=torch.bfloat16).eval().requires_grad_(False)
+    scheduler = make_scheduler(timestep_shift)
+    if training_mode == "teacher_trajectory":
+        teacher_trajectory_cache = OnlineTeacherTrajectoryCache(
+            cache_dir=str(_arg_or_checkpoint(args, train_args, "teacher_trajectory_cache_dir", "/mnt/lanxiangh/data/ff_exec/teacher_trajectory_cache")),
+            manifest_path=manifest_path,
+            model_name=target_model_name,
+            model_root=model_root,
+            config_path=config_path,
+            num_blocks=num_blocks,
+            sampling_steps=int(_arg_or_checkpoint(args, train_args, "teacher_trajectory_steps", 5)),
+            sample_solver=str(_arg_or_checkpoint(args, train_args, "teacher_trajectory_solver", "unipc")),
+            seed=anchor_noise_seed,
+            device=device,
+            dtype=torch.bfloat16 if device.type == "cuda" else torch.float32,
+            text_encoder=text_encoder,
+            trajectory_scope="full" if anchor_conditioning == "none" else "future",
+        )
+        precompute_indices = indices[: args.max_examples] if args.max_examples > 0 else indices
+        teacher_trajectory_cache.precompute(dataset, precompute_indices)
+        teacher_trajectory_cache.unload_pipeline()
+        result = evaluate_teacher_trajectory_split(
+            model=model,
+            loader=loader,
+            text_encoder=text_encoder,
+            teacher_trajectory_cache=teacher_trajectory_cache,
+            device=device,
+            amp_dtype=amp_dtype,
+            scheduler=scheduler,
+            clean_latent_loss_weight=float(_arg_or_checkpoint(args, train_args, "clean_latent_loss_weight", 1.0)),
+            flow_loss_weight=float(_arg_or_checkpoint(args, train_args, "flow_loss_weight", 0.25)),
+            detail_loss_weight=float(_arg_or_checkpoint(args, train_args, "detail_loss_weight", 0.0)),
+            anchor_conditioning=anchor_conditioning,
+            max_examples=args.max_examples,
+        )
+        result.update(
+            {
+                "checkpoint_path": str(Path(args.checkpoint_path).resolve()),
+                "split": args.split,
+                "manifest_path": str(Path(manifest_path).resolve()),
+                "num_dataset_examples": len(dataset),
+                "num_split_examples": len(eval_dataset),
+                "training_mode": training_mode,
+                "anchor_conditioning": anchor_conditioning,
+                "teacher_trajectory_steps": int(_arg_or_checkpoint(args, train_args, "teacher_trajectory_steps", 5)),
+                "teacher_trajectory_solver": str(_arg_or_checkpoint(args, train_args, "teacher_trajectory_solver", "unipc")),
+            }
+        )
+        print(json.dumps(result, indent=2), flush=True)
+        if args.output_path:
+            output_path = Path(args.output_path)
+            output_path.parent.mkdir(parents=True, exist_ok=True)
+            output_path.write_text(json.dumps(result, indent=2), encoding="utf-8")
+            print(f"Wrote metrics: {output_path}", flush=True)
+        return
+
     anchor_generator = OnlineTargetAnchorGenerator(
         model_name=target_model_name,
         checkpoint_path=target_checkpoint_path,
@@ -695,7 +827,6 @@ def main() -> None:
         _arg_or_checkpoint(args, train_args, "unroll_step_weights", None),
         len(denoising_step_list),
     )
-    scheduler = make_scheduler(timestep_shift)
     result = evaluate_split(
         model=model,
         loader=loader,

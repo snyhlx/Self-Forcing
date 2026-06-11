@@ -31,6 +31,12 @@ from sdvg_draft_head import (
     rope_params,
     sinusoidal_embedding_1d,
 )
+from wan.modules.model import (
+    Head as WanHead,
+    WanAttentionBlock,
+    rope_params as wan_rope_params,
+    sinusoidal_embedding_1d as wan_sinusoidal_embedding_1d,
+)
 
 
 def split_indices(num_records: int, val_fraction: float, seed: int) -> tuple[list[int], list[int]]:
@@ -577,6 +583,7 @@ class OnlineTeacherTrajectoryCache:
         device: torch.device,
         dtype: torch.dtype,
         text_encoder: nn.Module,
+        trajectory_scope: str = "future",
     ):
         from pipeline.bidirectional_diffusion_inference import BidirectionalDiffusionInferencePipeline
         from sdvg_inference import ensure_wan_symlinks, load_config
@@ -584,9 +591,13 @@ class OnlineTeacherTrajectoryCache:
         ensure_wan_symlinks(model_root)
         if sampling_steps < 2:
             raise ValueError("--teacher_trajectory_steps must be >= 2")
+        if trajectory_scope not in ("future", "full"):
+            raise ValueError("--anchor_conditioning none requires full teacher trajectories")
+        self.trajectory_scope = trajectory_scope
         self.cache_dir = Path(cache_dir)
         manifest_key = hashlib.sha1(str(Path(manifest_path).resolve()).encode("utf-8")).hexdigest()[:12]
-        self.cache_root = self.cache_dir / "bidirectional_teacher_trajectory_v1" / manifest_key / f"steps{sampling_steps}_{sample_solver}_seed{seed}"
+        cache_version = "bidirectional_teacher_trajectory_full_v1" if trajectory_scope == "full" else "bidirectional_teacher_trajectory_v1"
+        self.cache_root = self.cache_dir / cache_version / manifest_key / f"steps{sampling_steps}_{sample_solver}_seed{seed}"
         self.cache_root.mkdir(parents=True, exist_ok=True)
         config = load_config(config_path)
         model_kwargs = dict(getattr(config, "model_kwargs", {}))
@@ -665,6 +676,9 @@ class OnlineTeacherTrajectoryCache:
             "dataset_index": dataset_index,
             "prompt_index": prompt_index,
             "timesteps": trajectory["timesteps"].to(dtype=torch.float32).contiguous(),
+            "latents": trajectory["latents"].to(dtype=torch.bfloat16).contiguous(),
+            "flows": trajectory["flows"].to(dtype=torch.bfloat16).contiguous(),
+            "target_latents_full": latents.detach().cpu().to(dtype=torch.bfloat16).contiguous(),
             # Store future-only tensors to keep cache compact. Chunk-0 anchor and
             # final future target are already in the base Option-B dataset.
             "future_latents": trajectory["latents"][:, :, 3:].to(dtype=torch.bfloat16).contiguous(),
@@ -824,10 +838,39 @@ class BidirectionalPromptAnchorDraftHead(nn.Module):
             output.append(sample)
         return torch.stack(output).permute(0, 2, 1, 3, 4)
 
-    def _encode_context(self, anchor_latents: torch.Tensor, prompt_embeds: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
-        anchor_tokens, anchor_grid, _ = self._patchify_with_time(anchor_latents, timestep=0)
-        prompt_tokens = self.prompt_proj(self._select_prompt_tokens(prompt_embeds).to(device=anchor_latents.device, dtype=anchor_tokens.dtype))
-        return torch.cat([anchor_tokens, prompt_tokens], dim=1), anchor_grid
+    def _encode_context(
+        self,
+        anchor_latents: torch.Tensor | None,
+        prompt_embeds: torch.Tensor,
+        *,
+        device: torch.device,
+        dtype: torch.dtype,
+        batch_size: int,
+        latent_height: int,
+        latent_width: int,
+    ) -> tuple[torch.Tensor, torch.Tensor]:
+        prompt_tokens = self.prompt_proj(self._select_prompt_tokens(prompt_embeds).to(device=device, dtype=dtype))
+        if anchor_latents is None:
+            context_grid_sizes = torch.tensor(
+                [[0, latent_height // self.patch_size[1], latent_width // self.patch_size[2]]] * batch_size,
+                dtype=torch.long,
+                device=device,
+            )
+            return prompt_tokens, context_grid_sizes
+        anchor_tokens, _anchor_grid, _ = self._patchify_with_time(anchor_latents, timestep=0)
+        context_grid_sizes = torch.tensor(
+            [
+                [
+                    anchor_latents.shape[1] // self.patch_size[0],
+                    latent_height // self.patch_size[1],
+                    latent_width // self.patch_size[2],
+                ]
+            ]
+            * batch_size,
+            dtype=torch.long,
+            device=device,
+        )
+        return torch.cat([anchor_tokens, prompt_tokens], dim=1), context_grid_sizes
 
     def _mix_future_tokens(self, tokens: torch.Tensor, future_frames: int) -> torch.Tensor:
         if self.temporal_mixer_layers <= 0:
@@ -855,32 +898,65 @@ class BidirectionalPromptAnchorDraftHead(nn.Module):
     def forward(
         self,
         *,
-        anchor_latents: torch.Tensor,
+        anchor_latents: torch.Tensor | None,
         future_noise: torch.Tensor,
         prompt_embeds: torch.Tensor,
         timestep: torch.Tensor | int | float | None = None,
     ) -> torch.Tensor:
-        if anchor_latents.ndim != 5 or future_noise.ndim != 5:
-            raise ValueError("anchor_latents and future_noise must have shape [B, T, C, H, W]")
-        if anchor_latents.shape[0] != future_noise.shape[0]:
+        if future_noise.ndim != 5:
+            raise ValueError("future_noise must have shape [B, T, C, H, W]")
+        if anchor_latents is not None and anchor_latents.ndim != 5:
+            raise ValueError("anchor_latents must have shape [B, T, C, H, W]")
+        if anchor_latents is not None and anchor_latents.shape[0] != future_noise.shape[0]:
             raise ValueError("anchor_latents and future_noise batch sizes must match")
-        if anchor_latents.shape[2:] != future_noise.shape[2:]:
+        if anchor_latents is not None and anchor_latents.shape[2:] != future_noise.shape[2:]:
             raise ValueError("anchor_latents and future_noise latent dimensions must match")
-        batch_size, anchor_frames, channels, height, width = anchor_latents.shape
+        batch_size, future_frames, channels, height, width = future_noise.shape
+        anchor_frames = int(anchor_latents.shape[1]) if anchor_latents is not None else 3
         future_frames = future_noise.shape[1]
-        total_frames = anchor_frames + future_frames
+        total_frames = anchor_frames + future_frames if anchor_latents is not None else future_frames
         if channels != self.latent_channels:
             raise ValueError(f"Expected {self.latent_channels} latent channels, got {channels}")
         if total_frames > self.max_frames:
             raise ValueError(f"total_frames={total_frames} exceeds max_frames={self.max_frames}")
 
-        context_tokens, _context_grid = self._encode_context(anchor_latents, prompt_embeds)
+        context_tokens, context_grid_sizes = self._encode_context(
+            anchor_latents,
+            prompt_embeds,
+            device=future_noise.device,
+            dtype=self.patch_embedding.weight.dtype,
+            batch_size=batch_size,
+            latent_height=height,
+            latent_width=width,
+        )
         chunk_frames = anchor_frames
         if future_frames % chunk_frames != 0:
             raise ValueError("future_noise frames must be a multiple of anchor chunk frames")
         future_tokens, future_grid_sizes, future_e_head = self._patchify_with_time(future_noise, timestep=timestep)
         future_tokens = self._mix_future_tokens(future_tokens, future_frames)
         full_grid = future_grid_sizes[0].tolist()
+        freqs = self.freqs.to(device=future_noise.device)
+        if anchor_latents is None:
+            tokens = future_tokens
+            current_start_frame = 0
+            for block in self.blocks:
+                if self.gradient_checkpointing and self.training and torch.is_grad_enabled():
+                    tokens = checkpoint.checkpoint(
+                        block,
+                        tokens,
+                        context_tokens,
+                        future_grid_sizes,
+                        freqs,
+                        current_start_frame,
+                        0,
+                        context_grid_sizes,
+                        use_reentrant=False,
+                    )
+                else:
+                    tokens = block(tokens, context_tokens, future_grid_sizes, freqs, current_start_frame, 0, context_grid_sizes)
+            head_out = self.head(tokens, future_e_head.unsqueeze(2))
+            return self._unpatchify(head_out, future_grid_sizes).to(dtype=future_noise.dtype)
+
         chunk_grid_sizes = torch.tensor(
             [[chunk_frames // self.patch_size[0], full_grid[1], full_grid[2]]] * batch_size,
             dtype=torch.long,
@@ -889,7 +965,6 @@ class BidirectionalPromptAnchorDraftHead(nn.Module):
         frame_seq_len = future_tokens.shape[1] // future_frames
         future_tokens_by_frame = future_tokens.unflatten(1, (future_frames, frame_seq_len))
         outputs = []
-        freqs = self.freqs.to(device=future_noise.device)
         for chunk_offset in range(0, future_frames, chunk_frames):
             block_id = 1 + chunk_offset // chunk_frames
             tokens = future_tokens_by_frame[:, chunk_offset:chunk_offset + chunk_frames].flatten(1, 2)
@@ -905,17 +980,177 @@ class BidirectionalPromptAnchorDraftHead(nn.Module):
                         freqs,
                         current_start_frame,
                         0,
+                        context_grid_sizes,
                         use_reentrant=False,
                     )
                 else:
-                    tokens = block(tokens, context_tokens, chunk_grid_sizes, freqs, current_start_frame, 0)
+                    tokens = block(tokens, context_tokens, chunk_grid_sizes, freqs, current_start_frame, 0, context_grid_sizes)
             head_out = self.head(tokens, e_head.unsqueeze(2))
             outputs.append(self._unpatchify(head_out, chunk_grid_sizes).to(dtype=future_noise.dtype))
         return torch.cat(outputs, dim=1)
 
 
+class WanFullVideoDraftHead(nn.Module):
+    """Shallow Wan-compatible full-video flow head for no-anchor diagnostics."""
+
+    def __init__(
+        self,
+        *,
+        latent_channels: int = 16,
+        hidden_channels: int = 5120,
+        prompt_dim: int = 4096,
+        num_layers: int = 6,
+        num_heads: int = 40,
+        patch_size: tuple[int, int, int] = (1, 2, 2),
+        ffn_dim: int = 13824,
+        freq_dim: int = 256,
+        max_frames: int = 27,
+        gradient_checkpointing: bool = False,
+        eps: float = 1e-6,
+        text_len: int = 512,
+        model_type: str = "t2v",
+        qk_norm: bool = True,
+        cross_attn_norm: bool = True,
+    ):
+        super().__init__()
+        self.latent_channels = int(latent_channels)
+        self.hidden_channels = int(hidden_channels)
+        self.prompt_dim = int(prompt_dim)
+        self.num_layers = int(num_layers)
+        self.num_heads = int(num_heads)
+        self.patch_size = tuple(int(x) for x in patch_size)
+        self.ffn_dim = int(ffn_dim)
+        self.freq_dim = int(freq_dim)
+        self.max_frames = int(max_frames)
+        self.gradient_checkpointing = bool(gradient_checkpointing)
+        self.eps = float(eps)
+        self.text_len = int(text_len)
+        self.model_type = model_type
+        self.qk_norm = bool(qk_norm)
+        self.cross_attn_norm = bool(cross_attn_norm)
+
+        self.patch_embedding = nn.Conv3d(latent_channels, hidden_channels, kernel_size=self.patch_size, stride=self.patch_size)
+        self.text_embedding = nn.Sequential(
+            nn.Linear(prompt_dim, hidden_channels),
+            nn.GELU(approximate="tanh"),
+            nn.Linear(hidden_channels, hidden_channels),
+        )
+        self.time_embedding = nn.Sequential(nn.Linear(freq_dim, hidden_channels), nn.SiLU(), nn.Linear(hidden_channels, hidden_channels))
+        self.time_projection = nn.Sequential(nn.SiLU(), nn.Linear(hidden_channels, hidden_channels * 6))
+        self.blocks = nn.ModuleList(
+            [
+                WanAttentionBlock(
+                    "t2v_cross_attn",
+                    hidden_channels,
+                    ffn_dim,
+                    num_heads,
+                    (-1, -1),
+                    qk_norm,
+                    cross_attn_norm,
+                    eps,
+                )
+                for _ in range(num_layers)
+            ]
+        )
+        self.head = WanHead(hidden_channels, latent_channels, self.patch_size, eps)
+        head_dim = hidden_channels // num_heads
+        self.freqs = torch.cat(
+            [
+                wan_rope_params(1024, head_dim - 4 * (head_dim // 6)),
+                wan_rope_params(1024, 2 * (head_dim // 6)),
+                wan_rope_params(1024, 2 * (head_dim // 6)),
+            ],
+            dim=1,
+        )
+
+    @staticmethod
+    def _select_prompt_tokens(prompt_embeds: torch.Tensor) -> torch.Tensor:
+        mask = prompt_embeds.float().abs().sum(dim=-1) > 0
+        if mask.any():
+            max_len = int(mask.sum(dim=1).max().item())
+            return prompt_embeds[:, :max_len]
+        return prompt_embeds[:, :1]
+
+    def _time_for_batch(self, timestep: torch.Tensor | int | float | None, batch_size: int, device: torch.device) -> torch.Tensor:
+        if timestep is None:
+            return torch.zeros(batch_size, device=device)
+        if isinstance(timestep, (int, float)):
+            return torch.full((batch_size,), float(timestep), device=device)
+        timestep = timestep.to(device=device)
+        if timestep.ndim == 2:
+            return timestep[:, 0].float()
+        return timestep.float().reshape(batch_size)
+
+    def _encode_context(self, prompt_embeds: torch.Tensor, tokens: torch.Tensor) -> torch.Tensor:
+        prompt_tokens = self._select_prompt_tokens(prompt_embeds).to(device=tokens.device, dtype=tokens.dtype)
+        prompt_tokens = self.text_embedding(prompt_tokens)
+        if prompt_tokens.shape[1] > self.text_len:
+            return prompt_tokens[:, : self.text_len]
+        if prompt_tokens.shape[1] == self.text_len:
+            return prompt_tokens
+        padding = prompt_tokens.new_zeros(prompt_tokens.shape[0], self.text_len - prompt_tokens.shape[1], prompt_tokens.shape[2])
+        return torch.cat([prompt_tokens, padding], dim=1)
+
+    def _unpatchify(self, tokens: torch.Tensor, grid_sizes: torch.Tensor) -> torch.Tensor:
+        c = self.latent_channels
+        output = []
+        for sample, grid in zip(tokens, grid_sizes.tolist(), strict=True):
+            sample = sample[: math.prod(grid)].view(*grid, *self.patch_size, c)
+            sample = torch.einsum("fhwpqrc->cfphqwr", sample)
+            sample = sample.reshape(c, *[i * j for i, j in zip(grid, self.patch_size, strict=True)])
+            output.append(sample)
+        return torch.stack(output).permute(0, 2, 1, 3, 4)
+
+    def forward(
+        self,
+        *,
+        anchor_latents: torch.Tensor | None,
+        future_noise: torch.Tensor,
+        prompt_embeds: torch.Tensor,
+        timestep: torch.Tensor | int | float | None = None,
+    ) -> torch.Tensor:
+        if anchor_latents is not None:
+            raise ValueError("WanFullVideoDraftHead is no-anchor only")
+        if future_noise.ndim != 5:
+            raise ValueError("future_noise must have shape [B, T, C, H, W]")
+        batch_size, frames, channels, height, width = future_noise.shape
+        if channels != self.latent_channels:
+            raise ValueError(f"Expected {self.latent_channels} latent channels, got {channels}")
+        if frames > self.max_frames:
+            raise ValueError(f"frames={frames} exceeds max_frames={self.max_frames}")
+
+        dtype = self.patch_embedding.weight.dtype
+        x = self.patch_embedding(future_noise.to(dtype=dtype).permute(0, 2, 1, 3, 4))
+        grid_sizes = torch.tensor([x.shape[-3:]] * batch_size, dtype=torch.long, device=future_noise.device)
+        tokens = x.flatten(2).transpose(1, 2)
+        seq_lens = torch.full((batch_size,), tokens.shape[1], dtype=torch.long, device=future_noise.device)
+        t = self._time_for_batch(timestep, batch_size, future_noise.device)
+        e = self.time_embedding(wan_sinusoidal_embedding_1d(self.freq_dim, t).type_as(tokens))
+        e0 = self.time_projection(e).unflatten(1, (6, self.hidden_channels))
+        context = self._encode_context(prompt_embeds, tokens)
+        freqs = self.freqs.to(device=future_noise.device)
+
+        for block in self.blocks:
+            if self.gradient_checkpointing and self.training and torch.is_grad_enabled():
+                tokens = checkpoint.checkpoint(
+                    block,
+                    tokens,
+                    e0,
+                    seq_lens,
+                    grid_sizes,
+                    freqs,
+                    context,
+                    None,
+                    use_reentrant=False,
+                )
+            else:
+                tokens = block(tokens, e0, seq_lens, grid_sizes, freqs, context, None)
+        head_out = self.head(tokens, e)
+        return self._unpatchify(head_out, grid_sizes).to(dtype=future_noise.dtype)
+
+
 def initialize_bidirectional_wan_head_from_target_blocks(
-    model: BidirectionalPromptAnchorDraftHead,
+    model: nn.Module,
     target_model: nn.Module,
     source_block_indices: tuple[int, ...],
 ) -> dict[str, int]:
@@ -946,6 +1181,8 @@ def initialize_bidirectional_wan_head_from_target_blocks(
             if target_model.patch_embedding.bias is not None and model.patch_embedding.bias is not None:
                 model.patch_embedding.bias.copy_(target_model.patch_embedding.bias)
             copied["patch_embedding"] = 1
+        if isinstance(model, WanFullVideoDraftHead) and hasattr(target_model, "text_embedding"):
+            model.text_embedding.load_state_dict(target_model.text_embedding.state_dict(), strict=True)
         if hasattr(target_model, "time_embedding"):
             try:
                 model.time_embedding.load_state_dict(target_model.time_embedding.state_dict(), strict=True)
@@ -966,6 +1203,21 @@ def initialize_bidirectional_wan_head_from_target_blocks(
             model.freqs = target_model.freqs.detach().cpu().clone()
 
     modules = dict(target_model.named_modules())
+    if isinstance(model, WanFullVideoDraftHead):
+        for draft_block, source_index in zip(model.blocks, source_block_indices, strict=False):
+            source = modules.get(f"blocks.{source_index}")
+            if source is None:
+                copied["skipped"] += 1
+                continue
+            try:
+                draft_block.load_state_dict(source.state_dict(), strict=True)
+                copied["attention"] += 1
+                copied["norm"] += 3
+                copied["ffn"] += 1
+            except RuntimeError:
+                copied["skipped"] += 1
+        return copied
+
     for draft_block, source_index in zip(model.blocks, source_block_indices, strict=False):
         source = modules.get(f"blocks.{source_index}")
         if source is None or not hasattr(source, "self_attn"):
@@ -1247,19 +1499,31 @@ def compute_bidirectional_losses(
 def compute_teacher_trajectory_losses(
     model: nn.Module,
     *,
-    anchor: torch.Tensor,
+    anchor: torch.Tensor | None,
     prompt_embeds: torch.Tensor,
     trajectory: dict[str, torch.Tensor],
     scheduler: FlowMatchScheduler,
     clean_latent_loss_weight: float,
     flow_loss_weight: float,
     detail_loss_weight: float,
+    anchor_conditioning: str = "clean",
 ) -> tuple[torch.Tensor, dict[str, float]]:
-    timesteps = trajectory["timesteps"].to(device=anchor.device)
-    future_latents = trajectory["future_latents"].to(device=anchor.device, dtype=anchor.dtype)
-    future_flows = trajectory["future_flows"].to(device=anchor.device, dtype=anchor.dtype)
-    target = trajectory.get("target_latents")
-    target = target.to(device=anchor.device, dtype=anchor.dtype) if target is not None else None
+    if anchor_conditioning not in ("clean", "none"):
+        raise ValueError("--anchor_conditioning must be 'clean' or 'none'")
+    device = prompt_embeds.device
+    dtype = prompt_embeds.dtype
+    timesteps = trajectory["timesteps"].to(device=device)
+    if anchor_conditioning == "none":
+        future_latents = trajectory["latents"].to(device=device, dtype=dtype)
+        future_flows = trajectory["flows"].to(device=device, dtype=dtype)
+        target = trajectory.get("target_latents_full")
+    else:
+        if anchor is None:
+            raise ValueError("anchor_conditioning='clean' requires anchor latents")
+        future_latents = trajectory["future_latents"].to(device=device, dtype=dtype)
+        future_flows = trajectory["future_flows"].to(device=device, dtype=dtype)
+        target = trajectory.get("target_latents")
+    target = target.to(device=device, dtype=dtype) if target is not None else None
     if future_latents.ndim != 6 or future_flows.ndim != 6:
         raise ValueError("teacher trajectory tensors must have shape [B, S, T, C, H, W]")
     if future_latents.shape != future_flows.shape:
@@ -1276,7 +1540,7 @@ def compute_teacher_trajectory_losses(
         state = future_latents[:, step_index]
         target_flow = future_flows[:, step_index]
         flow_prediction = model(
-            anchor_latents=anchor,
+            anchor_latents=anchor if anchor_conditioning == "clean" else None,
             future_noise=state,
             prompt_embeds=prompt_embeds,
             timestep=timestep,
@@ -1319,23 +1583,39 @@ def save_checkpoint(
     inner = unwrap_model(model)
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
+    model_config = {
+        "model_class": type(inner).__name__,
+        "latent_channels": inner.latent_channels,
+        "hidden_channels": inner.hidden_channels,
+        "prompt_dim": inner.prompt_dim,
+        "num_layers": inner.num_layers,
+        "num_heads": inner.num_heads,
+        "patch_size": inner.patch_size,
+        "ffn_dim": inner.ffn_dim,
+        "freq_dim": inner.freq_dim,
+        "max_frames": inner.max_frames,
+        "gradient_checkpointing": inner.gradient_checkpointing,
+    }
+    if isinstance(inner, BidirectionalPromptAnchorDraftHead):
+        model_config.update(
+            {
+                "temporal_mixer_layers": inner.temporal_mixer_layers,
+                "temporal_mixer_ffn_dim": inner.temporal_mixer_ffn_dim,
+            }
+        )
+    elif isinstance(inner, WanFullVideoDraftHead):
+        model_config.update(
+            {
+                "text_len": inner.text_len,
+                "model_type": inner.model_type,
+                "qk_norm": inner.qk_norm,
+                "cross_attn_norm": inner.cross_attn_norm,
+            }
+        )
     payload = {
         "format": "bidirectional_prompt_anchor_draft_head_v1",
         "model_state_dict": inner.state_dict() if state_dict is None else state_dict,
-        "model_config": {
-            "latent_channels": inner.latent_channels,
-            "hidden_channels": inner.hidden_channels,
-            "prompt_dim": inner.prompt_dim,
-            "num_layers": inner.num_layers,
-            "num_heads": inner.num_heads,
-            "patch_size": inner.patch_size,
-            "ffn_dim": inner.ffn_dim,
-            "freq_dim": inner.freq_dim,
-            "temporal_mixer_layers": inner.temporal_mixer_layers,
-            "temporal_mixer_ffn_dim": inner.temporal_mixer_ffn_dim,
-            "max_frames": inner.max_frames,
-            "gradient_checkpointing": inner.gradient_checkpointing,
-        },
+        "model_config": model_config,
         "train_args": vars(args),
         "metadata": metadata,
     }
@@ -1371,6 +1651,7 @@ def main() -> None:
     parser.add_argument("--timestep_shift", type=float, default=5.0)
     parser.add_argument("--prediction_type", choices=["flow", "clean_latent"], default="flow")
     parser.add_argument("--training_mode", choices=["one_step", "unrolled", "random_timestep", "teacher_trajectory"], default="unrolled")
+    parser.add_argument("--anchor_conditioning", choices=["clean", "none"], default="clean")
     parser.add_argument("--random_timestep_sampling", choices=["uniform_schedule", "logit_normal"], default="uniform_schedule")
     parser.add_argument("--logit_normal_mean", type=float, default=0.0)
     parser.add_argument("--logit_normal_std", type=float, default=1.0)
@@ -1403,6 +1684,8 @@ def main() -> None:
     configure_attention_backend(args.attention_backend)
     if args.dense_schedule_steps:
         args.denoising_step_list = make_descending_timestep_list(args.dense_schedule_steps)
+    if args.anchor_conditioning == "none" and args.training_mode != "teacher_trajectory":
+        raise ValueError("--anchor_conditioning none is currently supported only with --training_mode teacher_trajectory")
 
     if "RANK" in os.environ and "WORLD_SIZE" in os.environ:
         dist.init_process_group(backend="nccl")
@@ -1447,7 +1730,7 @@ def main() -> None:
     sample = dataset[0]
     latent_channels = int(sample["future_noise"].shape[2])
     frames_per_block = int(sample["future_noise"].shape[1] // (args.num_blocks - 1))
-    max_frames = int(frames_per_block + sample["future_noise"].shape[1])
+    max_frames = int(args.num_blocks * frames_per_block)
     log_stage(f"sample shape ready in {time.perf_counter() - sample_t0:.1f}s latent_channels={latent_channels} frames={max_frames}")
     if args.batch_size != 1:
         raise ValueError("online target anchor generation currently requires per-rank --batch_size 1")
@@ -1526,6 +1809,7 @@ def main() -> None:
             device=device,
             dtype=torch.bfloat16,
             text_encoder=text_encoder,
+            trajectory_scope="full" if args.anchor_conditioning == "none" else "future",
         )
         log_stage(f"teacher trajectory cache ready in {time.perf_counter() - trajectory_t0:.1f}s")
         if is_main:
@@ -1553,20 +1837,33 @@ def main() -> None:
     else:
         log_stage("using stored full-video Wan chunk-0 anchors from dataset")
     head_t0 = time.perf_counter()
-    log_stage("building bidirectional Wan draft head")
-    model = BidirectionalPromptAnchorDraftHead(
-        latent_channels=latent_channels,
-        hidden_channels=args.hidden_channels,
-        prompt_dim=args.prompt_dim,
-        num_layers=args.num_layers,
-        num_heads=args.num_heads,
-        ffn_dim=args.ffn_dim,
-        temporal_mixer_layers=args.temporal_mixer_layers,
-        temporal_mixer_ffn_dim=args.temporal_mixer_ffn_dim,
-        max_frames=max_frames,
-        gradient_checkpointing=args.gradient_checkpointing,
-    ).to(device)
-    log_stage(f"bidirectional Wan draft head ready in {time.perf_counter() - head_t0:.1f}s")
+    if args.anchor_conditioning == "none":
+        log_stage("building Wan-compatible full-video no-anchor draft head")
+        model = WanFullVideoDraftHead(
+            latent_channels=latent_channels,
+            hidden_channels=args.hidden_channels,
+            prompt_dim=args.prompt_dim,
+            num_layers=args.num_layers,
+            num_heads=args.num_heads,
+            ffn_dim=args.ffn_dim,
+            max_frames=max_frames,
+            gradient_checkpointing=args.gradient_checkpointing,
+        ).to(device)
+    else:
+        log_stage("building bidirectional Wan draft head")
+        model = BidirectionalPromptAnchorDraftHead(
+            latent_channels=latent_channels,
+            hidden_channels=args.hidden_channels,
+            prompt_dim=args.prompt_dim,
+            num_layers=args.num_layers,
+            num_heads=args.num_heads,
+            ffn_dim=args.ffn_dim,
+            temporal_mixer_layers=args.temporal_mixer_layers,
+            temporal_mixer_ffn_dim=args.temporal_mixer_ffn_dim,
+            max_frames=max_frames,
+            gradient_checkpointing=args.gradient_checkpointing,
+        ).to(device)
+    log_stage(f"draft head ready in {time.perf_counter() - head_t0:.1f}s class={type(model).__name__}")
     init_report = None
     if args.init_target_blocks:
         init_t0 = time.perf_counter()
@@ -1635,6 +1932,7 @@ def main() -> None:
         model.train()
         total_loss = 0.0
         total_mse = 0.0
+        total_metric_sums: dict[str, float] = {}
         total_batches = 0
         iterator = tqdm(train_loader, desc=f"epoch {epoch}", disable=not is_main)
         for batch_idx, batch in enumerate(iterator, start=1):
@@ -1664,6 +1962,7 @@ def main() -> None:
                         clean_latent_loss_weight=args.clean_latent_loss_weight,
                         flow_loss_weight=args.flow_loss_weight,
                         detail_loss_weight=args.detail_loss_weight,
+                        anchor_conditioning=args.anchor_conditioning,
                     )
                 else:
                     loss, metrics = compute_bidirectional_losses(
@@ -1692,9 +1991,17 @@ def main() -> None:
             global_step += 1
             total_loss += metrics["loss"]
             total_mse += metrics["clean_latent_mse"]
+            for key, value in metrics.items():
+                if isinstance(value, (int, float)):
+                    total_metric_sums[key] = total_metric_sums.get(key, 0.0) + float(value)
             total_batches += 1
             if is_main and (batch_idx % args.log_every == 0):
                 running_mse = total_mse / max(1, total_batches)
+                extra_metrics = " ".join(
+                    f"{key}={float(value):.6f}"
+                    for key, value in metrics.items()
+                    if key not in ("loss", "clean_latent_mse") and isinstance(value, (int, float))
+                )
                 iterator.set_postfix(
                     loss=metrics["loss"],
                     rmse=math.sqrt(running_mse),
@@ -1705,6 +2012,7 @@ def main() -> None:
                     f"running_loss={total_loss / max(1, total_batches):.6f} "
                     f"running_clean_latent_rmse={math.sqrt(running_mse):.6f} "
                     f"loss={metrics['loss']:.6f} clean_latent_mse={metrics['clean_latent_mse']:.6f}"
+                    f"{(' ' + extra_metrics) if extra_metrics else ''}"
                 )
 
         epoch_metrics = {
@@ -1713,10 +2021,15 @@ def main() -> None:
             "train_clean_latent_mse": total_mse / max(1, total_batches),
             "train_clean_latent_rmse": math.sqrt(total_mse / max(1, total_batches)),
         }
+        for key, value in sorted(total_metric_sums.items()):
+            if key in ("loss", "clean_latent_mse"):
+                continue
+            epoch_metrics[f"train_{key}"] = value / max(1, total_batches)
         if val_loader is not None:
             model.eval()
             val_loss = 0.0
             val_mse = 0.0
+            val_metric_sums: dict[str, float] = {}
             val_batches = 0
             with torch.no_grad():
                 for batch in val_loader:
@@ -1749,6 +2062,7 @@ def main() -> None:
                                 clean_latent_loss_weight=args.clean_latent_loss_weight,
                                 flow_loss_weight=args.flow_loss_weight,
                                 detail_loss_weight=args.detail_loss_weight,
+                                anchor_conditioning=args.anchor_conditioning,
                             )
                         else:
                             _loss, metrics = compute_bidirectional_losses(
@@ -1774,6 +2088,9 @@ def main() -> None:
                             )
                     val_loss += metrics["loss"]
                     val_mse += metrics["clean_latent_mse"]
+                    for key, value in metrics.items():
+                        if isinstance(value, (int, float)):
+                            val_metric_sums[key] = val_metric_sums.get(key, 0.0) + float(value)
                     val_batches += 1
             epoch_metrics.update(
                 {
@@ -1782,6 +2099,10 @@ def main() -> None:
                     "val_clean_latent_rmse": math.sqrt(val_mse / max(1, val_batches)),
                 }
             )
+            for key, value in sorted(val_metric_sums.items()):
+                if key in ("loss", "clean_latent_mse"):
+                    continue
+                epoch_metrics[f"val_{key}"] = value / max(1, val_batches)
         history.append(epoch_metrics)
         if is_main:
             print(json.dumps(epoch_metrics, indent=2))
