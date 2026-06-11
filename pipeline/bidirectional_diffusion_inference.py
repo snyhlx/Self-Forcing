@@ -37,6 +37,7 @@ class BidirectionalDiffusionInferencePipeline(torch.nn.Module):
         text_prompts: List[str],
         return_latents=False,
         decode_video=True,
+        return_trajectory=False,
     ) -> torch.Tensor:
         """
         Perform inference on the given noise and text prompts.
@@ -68,6 +69,7 @@ class BidirectionalDiffusionInferencePipeline(torch.nn.Module):
         )
 
         sample_scheduler = self._initialize_sample_scheduler(noise)
+        trajectory = {"timesteps": [], "latents": [], "flows": []} if return_trajectory else None
         for _, t in enumerate(tqdm(sample_scheduler.timesteps)):
             latent_model_input = latents
             timestep = t * torch.ones([latents.shape[0], latents.shape[1]], device=noise.device, dtype=torch.float32)
@@ -77,6 +79,10 @@ class BidirectionalDiffusionInferencePipeline(torch.nn.Module):
 
             flow_pred = flow_pred_uncond + self.args.guidance_scale * (
                 flow_pred_cond - flow_pred_uncond)
+            if trajectory is not None:
+                trajectory["timesteps"].append(t.detach().to(device="cpu", dtype=torch.float32))
+                trajectory["latents"].append(latents.detach().to(device="cpu", dtype=torch.bfloat16))
+                trajectory["flows"].append(flow_pred.detach().to(device="cpu", dtype=torch.bfloat16))
 
             temp_x0 = sample_scheduler.step(
                 flow_pred.unsqueeze(0),
@@ -93,6 +99,13 @@ class BidirectionalDiffusionInferencePipeline(torch.nn.Module):
 
         del sample_scheduler
 
+        if trajectory is not None:
+            trajectory["timesteps"] = torch.stack(trajectory["timesteps"])
+            trajectory["latents"] = torch.stack(trajectory["latents"], dim=1)
+            trajectory["flows"] = torch.stack(trajectory["flows"], dim=1)
+            if return_latents:
+                return video, latents, trajectory
+            return video, trajectory
         if return_latents:
             return video, latents
         else:

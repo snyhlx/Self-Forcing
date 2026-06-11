@@ -179,7 +179,7 @@ def generate_videos(
             current = future_noise
             current_noise = future_noise
             prediction = current
-            step_iter = tqdm(denoising_step_list, desc="draft head denoise", leave=False)
+            step_iter = tqdm(denoising_step_list, desc="draft head denoise", leave=True)
             for step_index, current_timestep in enumerate(step_iter):
                 timestep = torch.full(current.shape[:2], int(current_timestep), device=device, dtype=torch.long)
                 model_output = model(anchor_latents=anchor, future_noise=current, prompt_embeds=prompt_embeds, timestep=timestep)
@@ -361,7 +361,7 @@ def generate_manifest_videos(
     else:
         current = future_noise
         prediction = current
-        step_iter = tqdm(denoising_step_list, desc="draft head denoise", leave=False)
+        step_iter = tqdm(denoising_step_list, desc="draft head denoise", leave=True)
         for step_index, current_timestep in enumerate(step_iter):
             timestep = torch.full(current.shape[:2], int(current_timestep), device=device, dtype=torch.long)
             model_output = model(anchor_latents=anchor, future_noise=current, prompt_embeds=prompt_embeds, timestep=timestep)

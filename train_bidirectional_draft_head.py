@@ -436,6 +436,7 @@ class BidirectionalPromptAnchorDataset(Dataset):
             if noise.shape[1] != self.num_blocks * 3:
                 raise ValueError(f"Expected {self.num_blocks * 3} latent frames, got {noise.shape[1]}")
             return {
+                "dataset_index": int(index),
                 "prompt": record["prompt"],
                 "prompt_index": int(record.get("prompt_index", -1)),
                 "anchor_latents": target_latents[:, :3].contiguous(),
@@ -447,6 +448,7 @@ class BidirectionalPromptAnchorDataset(Dataset):
         future_noise = torch.cat([record["block_noise"] for record in ordered], dim=1).contiguous()
         future_target_latents = torch.cat([record["target_latents"] for record in ordered], dim=1).contiguous()
         return {
+            "dataset_index": int(index),
             "prompt": prompt,
             "prompt_index": prompt_index,
             "future_noise": future_noise,
@@ -459,6 +461,7 @@ def collate_bidirectional_examples(records: list[dict[str, Any]]) -> dict[str, A
         raise ValueError("records must not be empty")
     batch = {
         "prompts": [record["prompt"] for record in records],
+        "dataset_index": torch.tensor([int(record["dataset_index"]) for record in records], dtype=torch.long),
         "prompt_index": torch.tensor([int(record["prompt_index"]) for record in records], dtype=torch.long),
         "future_noise": torch.cat([record["future_noise"] for record in records], dim=0),
         "future_target_latents": torch.cat([record["future_target_latents"] for record in records], dim=0),
@@ -554,6 +557,125 @@ class OnlineTargetAnchorGenerator:
                 torch.cuda.manual_seed(self.seed + prompt_index)
             anchor = self._denoise_block(self.pipeline, chunk0_noise, conditional_dict, 0).detach()
         return anchor, conditional_dict["prompt_embeds"].detach()
+
+
+class OnlineTeacherTrajectoryCache:
+    """Generate and cache compact non-causal Wan teacher trajectory targets."""
+
+    def __init__(
+        self,
+        *,
+        cache_dir: str | Path,
+        manifest_path: str | Path,
+        model_name: str,
+        model_root: str,
+        config_path: str,
+        num_blocks: int,
+        sampling_steps: int,
+        sample_solver: str,
+        seed: int,
+        device: torch.device,
+        dtype: torch.dtype,
+        text_encoder: nn.Module,
+    ):
+        from pipeline.bidirectional_diffusion_inference import BidirectionalDiffusionInferencePipeline
+        from sdvg_inference import ensure_wan_symlinks, load_config
+
+        ensure_wan_symlinks(model_root)
+        if sampling_steps < 2:
+            raise ValueError("--teacher_trajectory_steps must be >= 2")
+        self.cache_dir = Path(cache_dir)
+        manifest_key = hashlib.sha1(str(Path(manifest_path).resolve()).encode("utf-8")).hexdigest()[:12]
+        self.cache_root = self.cache_dir / "bidirectional_teacher_trajectory_v1" / manifest_key / f"steps{sampling_steps}_{sample_solver}_seed{seed}"
+        self.cache_root.mkdir(parents=True, exist_ok=True)
+        config = load_config(config_path)
+        model_kwargs = dict(getattr(config, "model_kwargs", {}))
+        model_kwargs["model_name"] = model_name
+        config.model_kwargs = model_kwargs
+        config.num_train_timestep = getattr(config, "num_train_timestep", 1000)
+        config.negative_prompt = getattr(
+            config,
+            "negative_prompt",
+            "色调艳丽，过曝，静态，细节模糊不清，字幕，风格，作品，画作，画面，静止，整体发灰，最差质量，低质量",
+        )
+        config.guidance_scale = getattr(config, "guidance_scale", 5.0)
+        self.pipeline = BidirectionalDiffusionInferencePipeline(
+            config,
+            device=device,
+            text_encoder=text_encoder,
+            vae=torch.nn.Identity(),
+        ).to(device=device, dtype=dtype).eval().requires_grad_(False)
+        self.pipeline.sampling_steps = int(sampling_steps)
+        self.pipeline.sample_solver = sample_solver
+        self.num_blocks = int(num_blocks)
+        self.seed = int(seed)
+        self.device = device
+        self.dtype = dtype
+
+    def _path(self, dataset_index: int, prompt_index: int) -> Path:
+        prompt_part = f"prompt{prompt_index:06d}" if prompt_index >= 0 else "prompt_unknown"
+        return self.cache_root / f"idx{dataset_index:06d}_{prompt_part}.pt"
+
+    def unload_pipeline(self) -> None:
+        self.pipeline = None
+        torch.cuda.empty_cache()
+
+    def precompute(self, dataset: Dataset, indices: list[int]) -> None:
+        progress = tqdm(indices, desc="cache teacher trajectories", unit="sample")
+        for index in progress:
+            sample = dataset[index]
+            batch = collate_bidirectional_examples([sample])
+            self(batch)
+
+    @torch.no_grad()
+    def __call__(self, batch: dict[str, Any]) -> dict[str, torch.Tensor]:
+        if int(batch["future_noise"].shape[0]) != 1:
+            raise ValueError("teacher trajectory cache currently requires per-rank batch_size=1")
+        dataset_index = int(batch["dataset_index"][0].item())
+        prompt_index = int(batch["prompt_index"][0].item())
+        path = self._path(dataset_index, prompt_index)
+        if path.exists():
+            return torch.load(path, map_location="cpu", weights_only=False)
+        if self.pipeline is None:
+            raise FileNotFoundError(f"Teacher trajectory cache missing after precompute: {path}")
+
+        future_noise = batch["future_noise"]
+        _, future_frames, channels, height, width = future_noise.shape
+        if future_frames % (self.num_blocks - 1) != 0:
+            raise ValueError("future_noise frame count must be divisible by num_blocks - 1")
+        frames = future_frames // (self.num_blocks - 1)
+        total_frames = self.num_blocks * frames
+        seed_index = prompt_index if prompt_index >= 0 else dataset_index
+        generator = torch.Generator(device=self.device).manual_seed(self.seed + seed_index)
+        noise = torch.randn(
+            [1, total_frames, channels, height, width],
+            device=self.device,
+            dtype=self.dtype,
+            generator=generator,
+        )
+        _video, latents, trajectory = self.pipeline.inference(
+            noise=noise,
+            text_prompts=batch["prompts"],
+            return_latents=True,
+            decode_video=False,
+            return_trajectory=True,
+        )
+        payload = {
+            "format": "bidirectional_teacher_trajectory_v1",
+            "dataset_index": dataset_index,
+            "prompt_index": prompt_index,
+            "timesteps": trajectory["timesteps"].to(dtype=torch.float32).contiguous(),
+            # Store future-only tensors to keep cache compact. Chunk-0 anchor and
+            # final future target are already in the base Option-B dataset.
+            "future_latents": trajectory["latents"][:, :, 3:].to(dtype=torch.bfloat16).contiguous(),
+            "future_flows": trajectory["flows"][:, :, 3:].to(dtype=torch.bfloat16).contiguous(),
+            "target_latents": latents.detach().cpu()[:, 3:].to(dtype=torch.bfloat16).contiguous(),
+        }
+        tmp_path = path.with_suffix(f".{os.getpid()}.tmp")
+        torch.save(payload, tmp_path)
+        tmp_path.replace(path)
+        torch.cuda.empty_cache()
+        return payload
 
 
 class BidirectionalPromptAnchorDraftHead(nn.Module):
@@ -1122,6 +1244,70 @@ def compute_bidirectional_losses(
     return total_loss, metrics
 
 
+def compute_teacher_trajectory_losses(
+    model: nn.Module,
+    *,
+    anchor: torch.Tensor,
+    prompt_embeds: torch.Tensor,
+    trajectory: dict[str, torch.Tensor],
+    scheduler: FlowMatchScheduler,
+    clean_latent_loss_weight: float,
+    flow_loss_weight: float,
+    detail_loss_weight: float,
+) -> tuple[torch.Tensor, dict[str, float]]:
+    timesteps = trajectory["timesteps"].to(device=anchor.device)
+    future_latents = trajectory["future_latents"].to(device=anchor.device, dtype=anchor.dtype)
+    future_flows = trajectory["future_flows"].to(device=anchor.device, dtype=anchor.dtype)
+    target = trajectory.get("target_latents")
+    target = target.to(device=anchor.device, dtype=anchor.dtype) if target is not None else None
+    if future_latents.ndim != 6 or future_flows.ndim != 6:
+        raise ValueError("teacher trajectory tensors must have shape [B, S, T, C, H, W]")
+    if future_latents.shape != future_flows.shape:
+        raise ValueError("teacher trajectory future_latents/future_flows shape mismatch")
+
+    batch_size, num_steps, future_frames = future_latents.shape[:3]
+    components: list[torch.Tensor] = []
+    flow_losses = []
+    clean_losses = []
+    detail_losses = []
+    for step_index in range(num_steps):
+        timestep_value = timesteps[step_index].round().long()
+        timestep = timestep_value.reshape(1, 1).expand(batch_size, future_frames)
+        state = future_latents[:, step_index]
+        target_flow = future_flows[:, step_index]
+        flow_prediction = model(
+            anchor_latents=anchor,
+            future_noise=state,
+            prompt_embeds=prompt_embeds,
+            timestep=timestep,
+        )
+        flow_loss = F.mse_loss(flow_prediction.float(), target_flow.float())
+        flow_losses.append(flow_loss.detach())
+        if flow_loss_weight > 0:
+            components.append(flow_loss * flow_loss_weight / max(num_steps, 1))
+        if target is not None and (clean_latent_loss_weight > 0 or detail_loss_weight > 0):
+            clean_prediction = flow_prediction_to_clean_latent(scheduler, flow_prediction, state, timestep)
+            clean_loss = F.mse_loss(clean_prediction.float(), target.float())
+            clean_losses.append(clean_loss.detach())
+            if clean_latent_loss_weight > 0:
+                components.append(clean_loss * clean_latent_loss_weight / max(num_steps, 1))
+            if detail_loss_weight > 0:
+                detail_loss = spatial_detail_loss(clean_prediction, target)
+                detail_losses.append(detail_loss.detach())
+                components.append(detail_loss * detail_loss_weight / max(num_steps, 1))
+    if not components:
+        raise ValueError("At least one teacher trajectory loss component must be enabled")
+    total_loss = sum(components)
+    metrics = {
+        "loss": float(total_loss.detach().cpu().item()),
+        "teacher_trajectory_flow_mse": float(torch.stack(flow_losses).mean().detach().cpu().item()),
+        "clean_latent_mse": float(torch.stack(clean_losses).mean().detach().cpu().item()) if clean_losses else 0.0,
+    }
+    if detail_losses:
+        metrics["teacher_trajectory_detail_loss"] = float(torch.stack(detail_losses).mean().detach().cpu().item())
+    return total_loss, metrics
+
+
 def save_checkpoint(
     model: nn.Module,
     path: str | Path,
@@ -1184,7 +1370,7 @@ def main() -> None:
     parser.add_argument("--dense_schedule_steps", type=int, default=0)
     parser.add_argument("--timestep_shift", type=float, default=5.0)
     parser.add_argument("--prediction_type", choices=["flow", "clean_latent"], default="flow")
-    parser.add_argument("--training_mode", choices=["one_step", "unrolled", "random_timestep"], default="unrolled")
+    parser.add_argument("--training_mode", choices=["one_step", "unrolled", "random_timestep", "teacher_trajectory"], default="unrolled")
     parser.add_argument("--random_timestep_sampling", choices=["uniform_schedule", "logit_normal"], default="uniform_schedule")
     parser.add_argument("--logit_normal_mean", type=float, default=0.0)
     parser.add_argument("--logit_normal_std", type=float, default=1.0)
@@ -1202,6 +1388,9 @@ def main() -> None:
     parser.add_argument("--detail_loss_weight", type=float, default=0.0)
     parser.add_argument("--temporal_delta_weight", type=float, default=0.0)
     parser.add_argument("--boundary_weight", type=float, default=0.0)
+    parser.add_argument("--teacher_trajectory_cache_dir", default="/mnt/lanxiangh/data/ff_exec/teacher_trajectory_cache")
+    parser.add_argument("--teacher_trajectory_steps", type=int, default=5)
+    parser.add_argument("--teacher_trajectory_solver", choices=["unipc", "dpm++"], default="unipc")
     parser.add_argument("--amp_dtype", choices=["none", "bf16", "fp16"], default="bf16")
     parser.add_argument("--log_every", type=int, default=1)
     parser.add_argument("--seed", type=int, default=0)
@@ -1315,6 +1504,36 @@ def main() -> None:
     text_encoder = WanTextEncoder().to(device=device, dtype=torch.bfloat16).eval().requires_grad_(False)
     log_stage(f"Wan text encoder ready in {time.perf_counter() - text_t0:.1f}s")
     use_stored_anchor = dataset.format == "bidirectional_wan_full_video_v1"
+    teacher_trajectory_cache = None
+    if args.training_mode == "teacher_trajectory":
+        if not use_stored_anchor:
+            raise ValueError("--training_mode teacher_trajectory currently requires Option-B full-video dataset with stored anchors")
+        trajectory_t0 = time.perf_counter()
+        log_stage(
+            f"loading online teacher trajectory cache steps={args.teacher_trajectory_steps} "
+            f"dir={args.teacher_trajectory_cache_dir}"
+        )
+        teacher_trajectory_cache = OnlineTeacherTrajectoryCache(
+            cache_dir=args.teacher_trajectory_cache_dir,
+            manifest_path=args.manifest_path,
+            model_name=args.target_model_name,
+            model_root=args.model_root,
+            config_path=args.config_path,
+            num_blocks=args.num_blocks,
+            sampling_steps=args.teacher_trajectory_steps,
+            sample_solver=args.teacher_trajectory_solver,
+            seed=args.anchor_noise_seed,
+            device=device,
+            dtype=torch.bfloat16,
+            text_encoder=text_encoder,
+        )
+        log_stage(f"teacher trajectory cache ready in {time.perf_counter() - trajectory_t0:.1f}s")
+        if is_main:
+            teacher_trajectory_cache.precompute(dataset, train_indices)
+        if is_distributed:
+            dist.barrier()
+        teacher_trajectory_cache.unload_pipeline()
+        log_stage("teacher trajectory cache precomputed and teacher pipeline unloaded")
     anchor_generator = None
     if not use_stored_anchor:
         anchor_t0 = time.perf_counter()
@@ -1431,29 +1650,43 @@ def main() -> None:
                 prompt_embeds = prompt_embeds.to(device=device, dtype=anchor.dtype)
                 future_noise = batch["future_noise"].to(device=device, dtype=anchor.dtype)
                 target = batch["future_target_latents"].to(device=device, dtype=anchor.dtype)
+                trajectory = teacher_trajectory_cache(batch) if teacher_trajectory_cache is not None else None
             optimizer.zero_grad(set_to_none=True)
             with amp_context(device, args.amp_dtype):
-                loss, metrics = compute_bidirectional_losses(
-                    model,
-                    anchor=anchor,
-                    initial_noise=future_noise,
-                    target=target,
-                    prompt_embeds=prompt_embeds,
-                    scheduler=scheduler,
-                    training_mode=args.training_mode,
-                    denoising_step_list=args.denoising_step_list,
-                    prediction_type=args.prediction_type,
-                    random_timestep_sampling=args.random_timestep_sampling,
-                    logit_normal_mean=args.logit_normal_mean,
-                    logit_normal_std=args.logit_normal_std,
-                    unroll_step_weights=unroll_step_weights,
-                    unroll_noise_mode=args.unroll_noise_mode,
-                    clean_latent_loss_weight=args.clean_latent_loss_weight,
-                    flow_loss_weight=args.flow_loss_weight,
-                    detail_loss_weight=args.detail_loss_weight,
-                    temporal_delta_weight=args.temporal_delta_weight,
-                    boundary_weight=args.boundary_weight,
-                )
+                if args.training_mode == "teacher_trajectory":
+                    assert trajectory is not None
+                    loss, metrics = compute_teacher_trajectory_losses(
+                        model,
+                        anchor=anchor,
+                        prompt_embeds=prompt_embeds,
+                        trajectory=trajectory,
+                        scheduler=scheduler,
+                        clean_latent_loss_weight=args.clean_latent_loss_weight,
+                        flow_loss_weight=args.flow_loss_weight,
+                        detail_loss_weight=args.detail_loss_weight,
+                    )
+                else:
+                    loss, metrics = compute_bidirectional_losses(
+                        model,
+                        anchor=anchor,
+                        initial_noise=future_noise,
+                        target=target,
+                        prompt_embeds=prompt_embeds,
+                        scheduler=scheduler,
+                        training_mode=args.training_mode,
+                        denoising_step_list=args.denoising_step_list,
+                        prediction_type=args.prediction_type,
+                        random_timestep_sampling=args.random_timestep_sampling,
+                        logit_normal_mean=args.logit_normal_mean,
+                        logit_normal_std=args.logit_normal_std,
+                        unroll_step_weights=unroll_step_weights,
+                        unroll_noise_mode=args.unroll_noise_mode,
+                        clean_latent_loss_weight=args.clean_latent_loss_weight,
+                        flow_loss_weight=args.flow_loss_weight,
+                        detail_loss_weight=args.detail_loss_weight,
+                        temporal_delta_weight=args.temporal_delta_weight,
+                        boundary_weight=args.boundary_weight,
+                    )
             loss.backward()
             optimizer.step()
             global_step += 1
@@ -1503,28 +1736,42 @@ def main() -> None:
                     prompt_embeds = prompt_embeds.to(device=device, dtype=anchor.dtype)
                     future_noise = batch["future_noise"].to(device=device, dtype=anchor.dtype)
                     target = batch["future_target_latents"].to(device=device, dtype=anchor.dtype)
+                    trajectory = teacher_trajectory_cache(batch) if teacher_trajectory_cache is not None else None
                     with amp_context(device, args.amp_dtype):
-                        _loss, metrics = compute_bidirectional_losses(
-                            model,
-                            anchor=anchor,
-                            initial_noise=future_noise,
-                            target=target,
-                            prompt_embeds=prompt_embeds,
-                            scheduler=scheduler,
-                            training_mode=args.training_mode,
-                            denoising_step_list=args.denoising_step_list,
-                            prediction_type=args.prediction_type,
-                            random_timestep_sampling=args.random_timestep_sampling,
-                            logit_normal_mean=args.logit_normal_mean,
-                            logit_normal_std=args.logit_normal_std,
-                            unroll_step_weights=unroll_step_weights,
-                            unroll_noise_mode=args.unroll_noise_mode,
-                            clean_latent_loss_weight=args.clean_latent_loss_weight,
-                            flow_loss_weight=args.flow_loss_weight,
-                            detail_loss_weight=args.detail_loss_weight,
-                            temporal_delta_weight=args.temporal_delta_weight,
-                            boundary_weight=args.boundary_weight,
-                        )
+                        if args.training_mode == "teacher_trajectory":
+                            assert trajectory is not None
+                            _loss, metrics = compute_teacher_trajectory_losses(
+                                model,
+                                anchor=anchor,
+                                prompt_embeds=prompt_embeds,
+                                trajectory=trajectory,
+                                scheduler=scheduler,
+                                clean_latent_loss_weight=args.clean_latent_loss_weight,
+                                flow_loss_weight=args.flow_loss_weight,
+                                detail_loss_weight=args.detail_loss_weight,
+                            )
+                        else:
+                            _loss, metrics = compute_bidirectional_losses(
+                                model,
+                                anchor=anchor,
+                                initial_noise=future_noise,
+                                target=target,
+                                prompt_embeds=prompt_embeds,
+                                scheduler=scheduler,
+                                training_mode=args.training_mode,
+                                denoising_step_list=args.denoising_step_list,
+                                prediction_type=args.prediction_type,
+                                random_timestep_sampling=args.random_timestep_sampling,
+                                logit_normal_mean=args.logit_normal_mean,
+                                logit_normal_std=args.logit_normal_std,
+                                unroll_step_weights=unroll_step_weights,
+                                unroll_noise_mode=args.unroll_noise_mode,
+                                clean_latent_loss_weight=args.clean_latent_loss_weight,
+                                flow_loss_weight=args.flow_loss_weight,
+                                detail_loss_weight=args.detail_loss_weight,
+                                temporal_delta_weight=args.temporal_delta_weight,
+                                boundary_weight=args.boundary_weight,
+                            )
                     val_loss += metrics["loss"]
                     val_mse += metrics["clean_latent_mse"]
                     val_batches += 1

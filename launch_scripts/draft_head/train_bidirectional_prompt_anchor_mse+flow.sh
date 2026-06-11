@@ -41,6 +41,9 @@ LOGIT_NORMAL_MEAN="${LOGIT_NORMAL_MEAN:-0.0}"
 LOGIT_NORMAL_STD="${LOGIT_NORMAL_STD:-1.0}"
 UNROLL_STEP_WEIGHTS="${UNROLL_STEP_WEIGHTS:-}"
 UNROLL_NOISE_MODE="${UNROLL_NOISE_MODE:-fixed}"
+TEACHER_TRAJECTORY_CACHE_DIR="${TEACHER_TRAJECTORY_CACHE_DIR:-/mnt/lanxiangh/data/ff_exec/teacher_trajectory_cache}"
+TEACHER_TRAJECTORY_STEPS="${TEACHER_TRAJECTORY_STEPS:-5}"
+TEACHER_TRAJECTORY_SOLVER="${TEACHER_TRAJECTORY_SOLVER:-unipc}"
 EPOCHS="${EPOCHS:-3}"
 BATCH_SIZE="${BATCH_SIZE:-1}"
 NUM_WORKERS="${NUM_WORKERS:-4}"
@@ -133,7 +136,7 @@ log "Model:     wan hidden=$HIDDEN_CHANNELS layers=$NUM_LAYERS heads=$NUM_HEADS 
 log "Parallel:  strategy=$PARALLEL_STRATEGY fsdp_min_num_params=$FSDP_MIN_NUM_PARAMS fsdp_mixed_precision=$FSDP_MIXED_PRECISION"
 log "Attention: backend=$ATTENTION_BACKEND"
 log "Init:      target_blocks=[$INIT_TARGET_BLOCKS]"
-log "Training:  mode=$TRAINING_MODE prediction_type=$PREDICTION_TYPE steps=[$DENOISING_STEP_LIST] dense_schedule_steps=${DENSE_SCHEDULE_STEPS:-off} random_sampling=$RANDOM_TIMESTEP_SAMPLING logit_mean=$LOGIT_NORMAL_MEAN logit_std=$LOGIT_NORMAL_STD unroll_noise=$UNROLL_NOISE_MODE weights=${UNROLL_STEP_WEIGHTS:-auto} overfit_num=$OVERFIT_NUM_EXAMPLES overfit_start=$OVERFIT_START_INDEX num_workers=$NUM_WORKERS"
+log "Training:  mode=$TRAINING_MODE prediction_type=$PREDICTION_TYPE steps=[$DENOISING_STEP_LIST] dense_schedule_steps=${DENSE_SCHEDULE_STEPS:-off} random_sampling=$RANDOM_TIMESTEP_SAMPLING logit_mean=$LOGIT_NORMAL_MEAN logit_std=$LOGIT_NORMAL_STD unroll_noise=$UNROLL_NOISE_MODE weights=${UNROLL_STEP_WEIGHTS:-auto} teacher_traj_steps=$TEACHER_TRAJECTORY_STEPS teacher_traj_cache=$TEACHER_TRAJECTORY_CACHE_DIR overfit_num=$OVERFIT_NUM_EXAMPLES overfit_start=$OVERFIT_START_INDEX num_workers=$NUM_WORKERS"
 log "Loss:      clean=$CLEAN_LATENT_LOSS_WEIGHT flow=$FLOW_LOSS_WEIGHT detail=$DETAIL_LOSS_WEIGHT temporal_delta=$TEMPORAL_DELTA_WEIGHT boundary=$BOUNDARY_WEIGHT"
 
 RUNNER=("$PYTHON")
@@ -191,6 +194,9 @@ INIT_TARGET_BLOCK_ARRAY=($INIT_TARGET_BLOCKS)
   --logit_normal_mean "$LOGIT_NORMAL_MEAN" \
   --logit_normal_std "$LOGIT_NORMAL_STD" \
   --unroll_noise_mode "$UNROLL_NOISE_MODE" \
+  --teacher_trajectory_cache_dir "$TEACHER_TRAJECTORY_CACHE_DIR" \
+  --teacher_trajectory_steps "$TEACHER_TRAJECTORY_STEPS" \
+  --teacher_trajectory_solver "$TEACHER_TRAJECTORY_SOLVER" \
   "${UNROLL_WEIGHT_ARGS[@]}" \
   --epochs "$EPOCHS" \
   --batch_size "$BATCH_SIZE" \
