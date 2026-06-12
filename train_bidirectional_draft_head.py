@@ -1635,6 +1635,7 @@ def main() -> None:
     parser.add_argument("--config_path", default="configs/self_forcing_dmd.yaml")
     parser.add_argument("--target_model_name", default="Wan2.1-T2V-14B")
     parser.add_argument("--target_checkpoint_path", default="/mnt/lanxiangh/models/realtime-video/checkpoints/krea-realtime-video-14b.safetensors")
+    parser.add_argument("--init_model_name", default=None)
     parser.add_argument("--anchor_noise_seed", type=int, default=42)
     parser.add_argument("--num_blocks", type=int, default=9)
     parser.add_argument("--hidden_channels", type=int, default=5120)
@@ -1867,7 +1868,8 @@ def main() -> None:
     init_report = None
     if args.init_target_blocks:
         init_t0 = time.perf_counter()
-        log_stage(f"initializing draft head from target blocks {args.init_target_blocks}")
+        init_model_name = args.init_model_name or args.target_model_name
+        log_stage(f"initializing draft head from {init_model_name} blocks {args.init_target_blocks}")
         if use_stored_anchor:
             from sdvg_inference import load_config
             from utils.wan_wrapper import WanDiffusionWrapper
@@ -1876,7 +1878,7 @@ def main() -> None:
             model_kwargs = dict(getattr(init_config, "model_kwargs", {}))
             model_kwargs.pop("model_name", None)
             target_init_model = WanDiffusionWrapper(
-                model_name=args.target_model_name,
+                model_name=init_model_name,
                 **model_kwargs,
                 is_causal=False,
             ).to(device=device, dtype=torch.bfloat16).eval().requires_grad_(False)

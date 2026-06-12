@@ -431,6 +431,7 @@ def generate_manifest_videos(
     anchor = record["anchor_latents"].to(device=device, dtype=dtype)
     future_noise = record["future_noise"].to(device=device, dtype=dtype)
     target_future = record["future_target_latents"].to(device=device, dtype=dtype)
+    target_latents = torch.cat([anchor, target_future], dim=1)
     prompt_embeds = text_encoder([prompt])["prompt_embeds"].detach().to(device=device, dtype=dtype)
     if anchor_conditioning == "none":
         if dataset.format != "bidirectional_wan_full_video_v1":
@@ -438,7 +439,6 @@ def generate_manifest_videos(
         raw_record = dataset._load_record(dataset.index[dataset_index])
         model_input = raw_record["noise"].to(device=device, dtype=dtype)
         model_anchor = None
-        target_latents = torch.cat([anchor, target_future], dim=1)
     else:
         model_input = future_noise
         model_anchor = anchor

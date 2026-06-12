@@ -17,6 +17,7 @@ MODEL_ROOT="${MODEL_ROOT:-/mnt/lanxiangh/models}"
 CONFIG_PATH="${CONFIG_PATH:-$PROJECT_ROOT/configs/self_forcing_dmd.yaml}"
 TARGET_MODEL_NAME="${TARGET_MODEL_NAME:-Wan2.1-T2V-14B}"
 TARGET_CHECKPOINT_PATH="${TARGET_CHECKPOINT_PATH:-$MODEL_ROOT/wan_models/$TARGET_MODEL_NAME/diffusion_pytorch_model.safetensors.index.json}"
+INIT_MODEL_NAME="${INIT_MODEL_NAME:-}"
 ANCHOR_NOISE_SEED="${ANCHOR_NOISE_SEED:-42}"
 NUM_BLOCKS="${NUM_BLOCKS:-9}"
 HIDDEN_CHANNELS="${HIDDEN_CHANNELS:-5120}"
@@ -136,7 +137,7 @@ log "Anchor:    conditioning=$ANCHOR_CONDITIONING online_target target=$TARGET_M
 log "Model:     wan hidden=$HIDDEN_CHANNELS layers=$NUM_LAYERS heads=$NUM_HEADS ffn_dim=$FFN_DIM prompt_dim=$PROMPT_DIM temporal_mixer_layers=$TEMPORAL_MIXER_LAYERS temporal_mixer_ffn_dim=$TEMPORAL_MIXER_FFN_DIM gradient_checkpointing=$GRADIENT_CHECKPOINTING"
 log "Parallel:  strategy=$PARALLEL_STRATEGY fsdp_min_num_params=$FSDP_MIN_NUM_PARAMS fsdp_mixed_precision=$FSDP_MIXED_PRECISION"
 log "Attention: backend=$ATTENTION_BACKEND"
-log "Init:      target_blocks=[$INIT_TARGET_BLOCKS]"
+log "Init:      model=${INIT_MODEL_NAME:-$TARGET_MODEL_NAME} target_blocks=[$INIT_TARGET_BLOCKS]"
 log "Training:  mode=$TRAINING_MODE anchor_conditioning=$ANCHOR_CONDITIONING prediction_type=$PREDICTION_TYPE steps=[$DENOISING_STEP_LIST] dense_schedule_steps=${DENSE_SCHEDULE_STEPS:-off} random_sampling=$RANDOM_TIMESTEP_SAMPLING logit_mean=$LOGIT_NORMAL_MEAN logit_std=$LOGIT_NORMAL_STD unroll_noise=$UNROLL_NOISE_MODE weights=${UNROLL_STEP_WEIGHTS:-auto} teacher_traj_steps=$TEACHER_TRAJECTORY_STEPS teacher_traj_cache=$TEACHER_TRAJECTORY_CACHE_DIR overfit_num=$OVERFIT_NUM_EXAMPLES overfit_start=$OVERFIT_START_INDEX num_workers=$NUM_WORKERS"
 log "Loss:      clean=$CLEAN_LATENT_LOSS_WEIGHT flow=$FLOW_LOSS_WEIGHT detail=$DETAIL_LOSS_WEIGHT temporal_delta=$TEMPORAL_DELTA_WEIGHT boundary=$BOUNDARY_WEIGHT"
 
@@ -159,6 +160,10 @@ MEMORY_ARGS=()
 if [[ "$GRADIENT_CHECKPOINTING" == "1" || "$GRADIENT_CHECKPOINTING" == "true" ]]; then
   MEMORY_ARGS+=(--gradient_checkpointing)
 fi
+INIT_MODEL_ARGS=()
+if [[ -n "$INIT_MODEL_NAME" ]]; then
+  INIT_MODEL_ARGS+=(--init_model_name "$INIT_MODEL_NAME")
+fi
 INIT_TARGET_BLOCK_ARRAY=($INIT_TARGET_BLOCKS)
 
 "${RUNNER[@]}" train_bidirectional_draft_head.py \
@@ -171,6 +176,7 @@ INIT_TARGET_BLOCK_ARRAY=($INIT_TARGET_BLOCKS)
   --config_path "$CONFIG_PATH" \
   --target_model_name "$TARGET_MODEL_NAME" \
   --target_checkpoint_path "$TARGET_CHECKPOINT_PATH" \
+  "${INIT_MODEL_ARGS[@]}" \
   --anchor_noise_seed "$ANCHOR_NOISE_SEED" \
   --num_blocks "$NUM_BLOCKS" \
   --hidden_channels "$HIDDEN_CHANNELS" \
