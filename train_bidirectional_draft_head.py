@@ -584,6 +584,8 @@ class OnlineTeacherTrajectoryCache:
         dtype: torch.dtype,
         text_encoder: nn.Module,
         trajectory_scope: str = "future",
+        trajectory_shift: float | None = None,
+        trajectory_dataset_key: str | None = None,
     ):
         from pipeline.bidirectional_diffusion_inference import BidirectionalDiffusionInferencePipeline
         from sdvg_inference import ensure_wan_symlinks, load_config
@@ -595,10 +597,16 @@ class OnlineTeacherTrajectoryCache:
             raise ValueError("--anchor_conditioning none requires full teacher trajectories")
         self.trajectory_scope = trajectory_scope
         self.cache_dir = Path(cache_dir)
+        self.trajectory_shift = trajectory_shift
+        self.trajectory_dataset_key = trajectory_dataset_key or self._manifest_dataset_key(manifest_path)
         manifest_key = hashlib.sha1(str(Path(manifest_path).resolve()).encode("utf-8")).hexdigest()[:12]
         cache_version = "bidirectional_teacher_trajectory_full_v1" if trajectory_scope == "full" else "bidirectional_teacher_trajectory_v1"
-        self.cache_root = self.cache_dir / cache_version / manifest_key / f"steps{sampling_steps}_{sample_solver}_seed{seed}"
-        self.cache_root.mkdir(parents=True, exist_ok=True)
+        cache_leaf = self._cache_leaf(sampling_steps, sample_solver, seed, trajectory_shift)
+        self.cache_roots = self._candidate_cache_roots(cache_version, manifest_key, cache_leaf)
+        self.cache_root = self.cache_roots[0]
+        self.cache_root.parent.mkdir(parents=True, exist_ok=True)
+        if not self.cache_root.exists():
+            self.cache_root.mkdir()
         config = load_config(config_path)
         model_kwargs = dict(getattr(config, "model_kwargs", {}))
         model_kwargs["model_name"] = model_name
@@ -618,14 +626,104 @@ class OnlineTeacherTrajectoryCache:
         ).to(device=device, dtype=dtype).eval().requires_grad_(False)
         self.pipeline.sampling_steps = int(sampling_steps)
         self.pipeline.sample_solver = sample_solver
+        if trajectory_shift is not None:
+            self.pipeline.shift = float(trajectory_shift)
         self.num_blocks = int(num_blocks)
         self.seed = int(seed)
         self.device = device
         self.dtype = dtype
 
+    @staticmethod
+    def _format_shift_for_path(shift: float) -> str:
+        shift_text = f"{shift:.1f}" if float(shift).is_integer() else f"{shift:g}"
+        return shift_text.replace(".", "p").replace("-", "m")
+
+    @classmethod
+    def _cache_leaf(
+        cls,
+        sampling_steps: int,
+        sample_solver: str,
+        seed: int,
+        trajectory_shift: float | None,
+    ) -> str:
+        # Historical shift-8 caches were written without shift in the path.
+        if trajectory_shift is None or math.isclose(float(trajectory_shift), 8.0):
+            return f"steps{sampling_steps}_{sample_solver}_seed{seed}"
+        shift_tag = cls._format_shift_for_path(float(trajectory_shift))
+        return f"steps{sampling_steps}_{sample_solver}_shift{shift_tag}_seed{seed}"
+
+    @staticmethod
+    def _slug_token(value: Any) -> str:
+        text = str(value).strip().lower()
+        replacements = {
+            "wan2.1-t2v-14b": "wan21_t2v_14b",
+            "wan2.1-t2v-1.3b": "wan21_t2v_13b",
+            ".": "p",
+            "-": "_",
+            "/": "_",
+            " ": "_",
+        }
+        for old, new in replacements.items():
+            text = text.replace(old, new)
+        return "_".join(part for part in text.split("_") if part)
+
+    @classmethod
+    def _manifest_dataset_key(cls, manifest_path: str | Path) -> str | None:
+        try:
+            manifest = json.loads(Path(manifest_path).read_text(encoding="utf-8"))
+        except Exception:
+            return None
+        metadata = manifest.get("metadata") or {}
+        model = metadata.get("target_model_name")
+        sampling_steps = metadata.get("sampling_steps")
+        sample_solver = metadata.get("sample_solver")
+        guidance_scale = metadata.get("guidance_scale")
+        if model is None or sampling_steps is None or sample_solver is None:
+            return None
+        model_slug = cls._slug_token(model)
+        solver_slug = cls._slug_token(sample_solver)
+        key = f"{model_slug}_{int(sampling_steps)}step_{solver_slug}"
+        if guidance_scale is not None:
+            key += f"_gs{cls._format_shift_for_path(float(guidance_scale))}"
+        return f"{key}_clean_latents"
+
+    def _scope_key(self) -> str:
+        return "full_video_noanchor" if self.trajectory_scope == "full" else "chunk0_conditioned_future"
+
+    def _candidate_cache_roots(self, cache_version: str, manifest_key: str, cache_leaf: str) -> list[Path]:
+        roots = []
+        if self.trajectory_dataset_key:
+            roots.append(self.cache_dir / self.trajectory_dataset_key / self._scope_key() / cache_leaf)
+        roots.append(self.cache_dir / cache_version / manifest_key / cache_leaf)
+        if self.trajectory_scope == "full":
+            # Some older full-video caches were produced before scope-specific
+            # directories existed and live under the future-only version name.
+            roots.append(self.cache_dir / "bidirectional_teacher_trajectory_v1" / manifest_key / cache_leaf)
+        else:
+            roots.append(
+                self.cache_dir
+                / "bidirectional_teacher_trajectory_conditioned_on_50steps_latent_v1"
+                / manifest_key
+                / cache_leaf
+            )
+        deduped: list[Path] = []
+        for root in roots:
+            if root not in deduped:
+                deduped.append(root)
+        return deduped
+
     def _path(self, dataset_index: int, prompt_index: int) -> Path:
         prompt_part = f"prompt{prompt_index:06d}" if prompt_index >= 0 else "prompt_unknown"
         return self.cache_root / f"idx{dataset_index:06d}_{prompt_part}.pt"
+
+    def _candidate_paths(self, dataset_index: int, prompt_index: int) -> list[Path]:
+        prompt_part = f"prompt{prompt_index:06d}" if prompt_index >= 0 else "prompt_unknown"
+        return [root / f"idx{dataset_index:06d}_{prompt_part}.pt" for root in self.cache_roots]
+
+    def _payload_matches_scope(self, payload: dict[str, Any]) -> bool:
+        if self.trajectory_scope == "full":
+            return all(key in payload for key in ("latents", "flows", "target_latents_full"))
+        return all(key in payload for key in ("future_latents", "future_flows", "target_latents"))
 
     def unload_pipeline(self) -> None:
         self.pipeline = None
@@ -645,8 +743,11 @@ class OnlineTeacherTrajectoryCache:
         dataset_index = int(batch["dataset_index"][0].item())
         prompt_index = int(batch["prompt_index"][0].item())
         path = self._path(dataset_index, prompt_index)
-        if path.exists():
-            return torch.load(path, map_location="cpu", weights_only=False)
+        for candidate_path in self._candidate_paths(dataset_index, prompt_index):
+            if candidate_path.exists():
+                payload = torch.load(candidate_path, map_location="cpu", weights_only=False)
+                if self._payload_matches_scope(payload):
+                    return payload
         if self.pipeline is None:
             raise FileNotFoundError(f"Teacher trajectory cache missing after precompute: {path}")
 
@@ -1673,6 +1774,8 @@ def main() -> None:
     parser.add_argument("--teacher_trajectory_cache_dir", default="/mnt/lanxiangh/data/ff_exec/teacher_trajectory_cache")
     parser.add_argument("--teacher_trajectory_steps", type=int, default=5)
     parser.add_argument("--teacher_trajectory_solver", choices=["unipc", "dpm++"], default="unipc")
+    parser.add_argument("--teacher_trajectory_shift", type=float, default=None)
+    parser.add_argument("--teacher_trajectory_dataset_key", default=None)
     parser.add_argument("--amp_dtype", choices=["none", "bf16", "fp16"], default="bf16")
     parser.add_argument("--log_every", type=int, default=1)
     parser.add_argument("--seed", type=int, default=0)
@@ -1795,6 +1898,8 @@ def main() -> None:
         trajectory_t0 = time.perf_counter()
         log_stage(
             f"loading online teacher trajectory cache steps={args.teacher_trajectory_steps} "
+            f"solver={args.teacher_trajectory_solver} shift={args.teacher_trajectory_shift or 'legacy'} "
+            f"dataset_key={args.teacher_trajectory_dataset_key or 'auto'} "
             f"dir={args.teacher_trajectory_cache_dir}"
         )
         teacher_trajectory_cache = OnlineTeacherTrajectoryCache(
@@ -1811,6 +1916,8 @@ def main() -> None:
             dtype=torch.bfloat16,
             text_encoder=text_encoder,
             trajectory_scope="full" if args.anchor_conditioning == "none" else "future",
+            trajectory_shift=args.teacher_trajectory_shift,
+            trajectory_dataset_key=args.teacher_trajectory_dataset_key,
         )
         log_stage(f"teacher trajectory cache ready in {time.perf_counter() - trajectory_t0:.1f}s")
         if is_main:

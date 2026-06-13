@@ -727,6 +727,8 @@ def main() -> None:
     parser.add_argument("--teacher_trajectory_cache_dir", default=None)
     parser.add_argument("--teacher_trajectory_steps", type=int, default=None)
     parser.add_argument("--teacher_trajectory_solver", choices=["unipc", "dpm++"], default=None)
+    parser.add_argument("--teacher_trajectory_shift", type=float, default=None)
+    parser.add_argument("--teacher_trajectory_dataset_key", default=None)
     parser.add_argument("--overfit_num_examples", type=int, default=None)
     parser.add_argument("--overfit_start_index", type=int, default=None)
     parser.add_argument("--max_examples", type=int, default=0)
@@ -879,6 +881,8 @@ def main() -> None:
             dtype=torch.bfloat16 if device.type == "cuda" else torch.float32,
             text_encoder=text_encoder,
             trajectory_scope="full" if anchor_conditioning == "none" else "future",
+            trajectory_shift=_arg_or_checkpoint(args, train_args, "teacher_trajectory_shift", None),
+            trajectory_dataset_key=_arg_or_checkpoint(args, train_args, "teacher_trajectory_dataset_key", None),
         )
         precompute_indices = indices[: args.max_examples] if args.max_examples > 0 else indices
         teacher_trajectory_cache.precompute(dataset, precompute_indices)
@@ -908,6 +912,8 @@ def main() -> None:
                 "anchor_conditioning": anchor_conditioning,
                 "teacher_trajectory_steps": int(_arg_or_checkpoint(args, train_args, "teacher_trajectory_steps", 5)),
                 "teacher_trajectory_solver": str(_arg_or_checkpoint(args, train_args, "teacher_trajectory_solver", "unipc")),
+                "teacher_trajectory_shift": _arg_or_checkpoint(args, train_args, "teacher_trajectory_shift", None),
+                "teacher_trajectory_dataset_key": _arg_or_checkpoint(args, train_args, "teacher_trajectory_dataset_key", None),
             }
         )
         print(json.dumps(result, indent=2), flush=True)

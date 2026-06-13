@@ -59,6 +59,9 @@ def main() -> None:
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--trajectory_steps", type=int, default=5)
     parser.add_argument("--trajectory_solver", choices=["unipc", "dpm++"], default="unipc")
+    parser.add_argument("--trajectory_shift", type=float, default=None)
+    parser.add_argument("--trajectory_scope", choices=["future", "full"], default="future")
+    parser.add_argument("--trajectory_dataset_key", default=None)
     parser.add_argument("--split", choices=["all", "train", "val"], default="all")
     parser.add_argument("--split_index_start", type=int, default=0)
     parser.add_argument("--max_examples", type=int, default=0)
@@ -117,6 +120,9 @@ def main() -> None:
         device=device,
         dtype=dtype,
         text_encoder=text_encoder,
+        trajectory_scope=args.trajectory_scope,
+        trajectory_shift=args.trajectory_shift,
+        trajectory_dataset_key=args.trajectory_dataset_key,
     )
 
     pbar = tqdm(indices, desc=f"teacher trajectory shard {args.shard_index}/{args.num_shards}", unit="sample")
@@ -136,6 +142,10 @@ def main() -> None:
                         "dataset_index": int(dataset_index),
                         "cache_root": str(cache.cache_root),
                         "trajectory_steps": args.trajectory_steps,
+                        "trajectory_solver": args.trajectory_solver,
+                        "trajectory_shift": args.trajectory_shift,
+                        "trajectory_scope": args.trajectory_scope,
+                        "trajectory_dataset_key": args.trajectory_dataset_key,
                         "shard_index": args.shard_index,
                         "num_shards": args.num_shards,
                     },

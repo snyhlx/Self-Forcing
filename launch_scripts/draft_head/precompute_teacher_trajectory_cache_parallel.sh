@@ -17,6 +17,9 @@ NUM_BLOCKS="${NUM_BLOCKS:-9}"
 SEED="${SEED:-42}"
 TRAJECTORY_STEPS="${TEACHER_TRAJECTORY_STEPS:-5}"
 TRAJECTORY_SOLVER="${TEACHER_TRAJECTORY_SOLVER:-unipc}"
+TRAJECTORY_SHIFT="${TEACHER_TRAJECTORY_SHIFT:-}"
+TRAJECTORY_SCOPE="${TEACHER_TRAJECTORY_SCOPE:-future}"
+TRAJECTORY_DATASET_KEY="${TEACHER_TRAJECTORY_DATASET_KEY:-}"
 SPLIT="${SPLIT:-all}"
 SPLIT_INDEX_START="${SPLIT_INDEX_START:-0}"
 MAX_EXAMPLES="${MAX_EXAMPLES:-0}"
@@ -54,8 +57,17 @@ log "Precomputing teacher trajectory cache"
 log "Manifest: $MANIFEST_PATH"
 log "Cache:    $CACHE_DIR"
 log "Split:    $SPLIT start=$SPLIT_INDEX_START max=$MAX_EXAMPLES"
-log "Steps:    $TRAJECTORY_STEPS solver=$TRAJECTORY_SOLVER"
+log "Steps:    $TRAJECTORY_STEPS solver=$TRAJECTORY_SOLVER shift=${TRAJECTORY_SHIFT:-legacy} scope=$TRAJECTORY_SCOPE dataset_key=${TRAJECTORY_DATASET_KEY:-auto}"
 log "GPUs:     $CUDA_DEVICES num=$NUM_GPUS"
+
+TRAJECTORY_SHIFT_ARGS=()
+if [[ -n "$TRAJECTORY_SHIFT" ]]; then
+  TRAJECTORY_SHIFT_ARGS+=(--trajectory_shift "$TRAJECTORY_SHIFT")
+fi
+TRAJECTORY_DATASET_ARGS=()
+if [[ -n "$TRAJECTORY_DATASET_KEY" ]]; then
+  TRAJECTORY_DATASET_ARGS+=(--trajectory_dataset_key "$TRAJECTORY_DATASET_KEY")
+fi
 
 pids=()
 for rank in $(seq 0 $((NUM_GPUS - 1))); do
@@ -78,6 +90,9 @@ for rank in $(seq 0 $((NUM_GPUS - 1))); do
       --seed "$SEED" \
       --trajectory_steps "$TRAJECTORY_STEPS" \
       --trajectory_solver "$TRAJECTORY_SOLVER" \
+      "${TRAJECTORY_SHIFT_ARGS[@]}" \
+      --trajectory_scope "$TRAJECTORY_SCOPE" \
+      "${TRAJECTORY_DATASET_ARGS[@]}" \
       --split "$SPLIT" \
       --split_index_start "$SPLIT_INDEX_START" \
       --max_examples "$MAX_EXAMPLES" \

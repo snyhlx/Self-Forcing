@@ -46,6 +46,8 @@ UNROLL_NOISE_MODE="${UNROLL_NOISE_MODE:-fixed}"
 TEACHER_TRAJECTORY_CACHE_DIR="${TEACHER_TRAJECTORY_CACHE_DIR:-/mnt/lanxiangh/data/ff_exec/teacher_trajectory_cache}"
 TEACHER_TRAJECTORY_STEPS="${TEACHER_TRAJECTORY_STEPS:-5}"
 TEACHER_TRAJECTORY_SOLVER="${TEACHER_TRAJECTORY_SOLVER:-unipc}"
+TEACHER_TRAJECTORY_SHIFT="${TEACHER_TRAJECTORY_SHIFT:-}"
+TEACHER_TRAJECTORY_DATASET_KEY="${TEACHER_TRAJECTORY_DATASET_KEY:-}"
 EPOCHS="${EPOCHS:-3}"
 BATCH_SIZE="${BATCH_SIZE:-1}"
 NUM_WORKERS="${NUM_WORKERS:-4}"
@@ -138,7 +140,7 @@ log "Model:     wan hidden=$HIDDEN_CHANNELS layers=$NUM_LAYERS heads=$NUM_HEADS 
 log "Parallel:  strategy=$PARALLEL_STRATEGY fsdp_min_num_params=$FSDP_MIN_NUM_PARAMS fsdp_mixed_precision=$FSDP_MIXED_PRECISION"
 log "Attention: backend=$ATTENTION_BACKEND"
 log "Init:      model=${INIT_MODEL_NAME:-$TARGET_MODEL_NAME} target_blocks=[$INIT_TARGET_BLOCKS]"
-log "Training:  mode=$TRAINING_MODE anchor_conditioning=$ANCHOR_CONDITIONING prediction_type=$PREDICTION_TYPE steps=[$DENOISING_STEP_LIST] dense_schedule_steps=${DENSE_SCHEDULE_STEPS:-off} random_sampling=$RANDOM_TIMESTEP_SAMPLING logit_mean=$LOGIT_NORMAL_MEAN logit_std=$LOGIT_NORMAL_STD unroll_noise=$UNROLL_NOISE_MODE weights=${UNROLL_STEP_WEIGHTS:-auto} teacher_traj_steps=$TEACHER_TRAJECTORY_STEPS teacher_traj_cache=$TEACHER_TRAJECTORY_CACHE_DIR overfit_num=$OVERFIT_NUM_EXAMPLES overfit_start=$OVERFIT_START_INDEX num_workers=$NUM_WORKERS"
+log "Training:  mode=$TRAINING_MODE anchor_conditioning=$ANCHOR_CONDITIONING prediction_type=$PREDICTION_TYPE steps=[$DENOISING_STEP_LIST] dense_schedule_steps=${DENSE_SCHEDULE_STEPS:-off} random_sampling=$RANDOM_TIMESTEP_SAMPLING logit_mean=$LOGIT_NORMAL_MEAN logit_std=$LOGIT_NORMAL_STD unroll_noise=$UNROLL_NOISE_MODE weights=${UNROLL_STEP_WEIGHTS:-auto} teacher_traj_steps=$TEACHER_TRAJECTORY_STEPS teacher_traj_solver=$TEACHER_TRAJECTORY_SOLVER teacher_traj_shift=${TEACHER_TRAJECTORY_SHIFT:-legacy} teacher_traj_dataset_key=${TEACHER_TRAJECTORY_DATASET_KEY:-auto} teacher_traj_cache=$TEACHER_TRAJECTORY_CACHE_DIR overfit_num=$OVERFIT_NUM_EXAMPLES overfit_start=$OVERFIT_START_INDEX num_workers=$NUM_WORKERS"
 log "Loss:      clean=$CLEAN_LATENT_LOSS_WEIGHT flow=$FLOW_LOSS_WEIGHT detail=$DETAIL_LOSS_WEIGHT temporal_delta=$TEMPORAL_DELTA_WEIGHT boundary=$BOUNDARY_WEIGHT"
 
 RUNNER=("$PYTHON")
@@ -165,6 +167,14 @@ if [[ -n "$INIT_MODEL_NAME" ]]; then
   INIT_MODEL_ARGS+=(--init_model_name "$INIT_MODEL_NAME")
 fi
 INIT_TARGET_BLOCK_ARRAY=($INIT_TARGET_BLOCKS)
+TEACHER_TRAJECTORY_SHIFT_ARGS=()
+if [[ -n "$TEACHER_TRAJECTORY_SHIFT" ]]; then
+  TEACHER_TRAJECTORY_SHIFT_ARGS+=(--teacher_trajectory_shift "$TEACHER_TRAJECTORY_SHIFT")
+fi
+TEACHER_TRAJECTORY_DATASET_ARGS=()
+if [[ -n "$TEACHER_TRAJECTORY_DATASET_KEY" ]]; then
+  TEACHER_TRAJECTORY_DATASET_ARGS+=(--teacher_trajectory_dataset_key "$TEACHER_TRAJECTORY_DATASET_KEY")
+fi
 
 "${RUNNER[@]}" train_bidirectional_draft_head.py \
   --manifest_path "$MANIFEST_PATH" \
@@ -205,6 +215,8 @@ INIT_TARGET_BLOCK_ARRAY=($INIT_TARGET_BLOCKS)
   --teacher_trajectory_cache_dir "$TEACHER_TRAJECTORY_CACHE_DIR" \
   --teacher_trajectory_steps "$TEACHER_TRAJECTORY_STEPS" \
   --teacher_trajectory_solver "$TEACHER_TRAJECTORY_SOLVER" \
+  "${TEACHER_TRAJECTORY_SHIFT_ARGS[@]}" \
+  "${TEACHER_TRAJECTORY_DATASET_ARGS[@]}" \
   "${UNROLL_WEIGHT_ARGS[@]}" \
   --epochs "$EPOCHS" \
   --batch_size "$BATCH_SIZE" \
