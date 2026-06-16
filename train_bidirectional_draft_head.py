@@ -221,6 +221,244 @@ def parse_unroll_step_weights(weights: list[float] | None, num_steps: int) -> li
     return [float(weight) for weight in weights]
 
 
+def shifted_uniform_timesteps(
+    *,
+    batch_size: int,
+    frames: int,
+    shift: float,
+    min_timestep: float,
+    max_timestep: float,
+    device: torch.device,
+) -> torch.Tensor:
+    """Sample rCM-style D timesteps from uniform RF time followed by timeshift."""
+    if shift <= 0:
+        raise ValueError("DMD timestep shift must be positive")
+    if max_timestep <= min_timestep:
+        raise ValueError("DMD max timestep must be greater than min timestep")
+    unit = torch.rand(batch_size, 1, device=device, dtype=torch.float32)
+    shifted = shift * unit / (1 + (shift - 1) * unit)
+    timestep = (shifted * 1000.0).clamp(min_timestep, max_timestep)
+    return timestep.expand(batch_size, frames)
+
+
+def rcm_dmd_gradient_target(
+    generator_x0: torch.Tensor,
+    fake_score_x0: torch.Tensor,
+    teacher_x0: torch.Tensor,
+    *,
+    eps: float = 1e-5,
+) -> tuple[torch.Tensor, torch.Tensor]:
+    """Return the detached rCM DMD target and normalized fake-minus-teacher gradient."""
+    if generator_x0.shape != fake_score_x0.shape or generator_x0.shape != teacher_x0.shape:
+        raise ValueError("DMD generator, fake-score, and teacher predictions must share shape")
+    reduce_dims = tuple(range(1, generator_x0.ndim))
+    weight_factor = (generator_x0.detach().double() - teacher_x0.detach().double()).abs().mean(
+        dim=reduce_dims,
+        keepdim=True,
+    ).clamp_min(eps)
+    grad = (fake_score_x0.detach().double() - teacher_x0.detach().double()) / weight_factor
+    grad = torch.nan_to_num(grad).to(dtype=generator_x0.dtype)
+    return (generator_x0 - grad).detach(), grad
+
+
+def rcm_dmd_surrogate_loss(
+    generator_x0: torch.Tensor,
+    fake_score_x0: torch.Tensor,
+    teacher_x0: torch.Tensor,
+) -> tuple[torch.Tensor, dict[str, float]]:
+    """rCM student DMD loss: apply the fake-score minus teacher score to G(x)."""
+    target, grad = rcm_dmd_gradient_target(generator_x0, fake_score_x0, teacher_x0)
+    per_element = (generator_x0.float() - target.float()).square()
+    nan_sample = torch.isnan(per_element).flatten(start_dim=1).any(dim=1)
+    if nan_sample.any():
+        per_element = per_element.clone()
+        per_element[nan_sample] = 0
+    loss = per_element.flatten(start_dim=1).sum(dim=1).mean()
+    return loss, {
+        "dmd_gradient_norm": float(grad.detach().abs().mean().cpu().item()),
+    }
+
+
+def rcm_fake_score_loss(
+    fake_score_x0: torch.Tensor,
+    generator_x0: torch.Tensor,
+    sigma: torch.Tensor,
+) -> torch.Tensor:
+    """Train the fake-score net to predict x0 on student-generated samples."""
+    if fake_score_x0.shape != generator_x0.shape:
+        raise ValueError("fake-score prediction and generator target must share shape")
+    while sigma.ndim < fake_score_x0.ndim:
+        sigma = sigma.unsqueeze(-1)
+    per_element = (fake_score_x0.float() - generator_x0.detach().float()).square() / sigma.float().square().clamp_min(1e-6)
+    nan_sample = torch.isnan(per_element).flatten(start_dim=1).any(dim=1)
+    if nan_sample.any():
+        per_element = per_element.clone()
+        per_element[nan_sample] = 0
+    return per_element.flatten(start_dim=1).sum(dim=1).mean()
+
+
+class RCMStyleDraftHeadDMD:
+    """rCM-style DMD owner with a frozen bidirectional teacher and trainable fake-score net."""
+
+    def __init__(
+        self,
+        *,
+        model_name: str,
+        teacher_checkpoint_path: str | None,
+        fake_score_checkpoint_path: str | None,
+        model_root: str,
+        config_path: str,
+        text_encoder: nn.Module,
+        device: torch.device,
+        dtype: torch.dtype,
+        guidance_scale: float,
+        timestep_shift: float,
+        min_timestep: float,
+        max_timestep: float,
+        score_scope: str,
+        fake_score_lr: float,
+        fake_score_weight_decay: float,
+        negative_prompt: str,
+    ):
+        if score_scope not in ("future", "full"):
+            raise ValueError("--dmd_score_scope must be 'future' or 'full'")
+        from sdvg_inference import ensure_wan_symlinks, load_checkpoint_into_generator, load_config
+        from utils.wan_wrapper import WanDiffusionWrapper
+
+        ensure_wan_symlinks(model_root)
+        config = load_config(config_path)
+        model_kwargs = dict(getattr(config, "model_kwargs", {}))
+        model_kwargs.pop("model_name", None)
+        self.teacher = WanDiffusionWrapper(model_name=model_name, **model_kwargs, is_causal=False)
+        self.fake_score = WanDiffusionWrapper(model_name=model_name, **model_kwargs, is_causal=False)
+        if teacher_checkpoint_path and not teacher_checkpoint_path.endswith(".index.json"):
+            load_checkpoint_into_generator(self.teacher, teacher_checkpoint_path, use_ema=False)
+        self.teacher = self.teacher.to(device=device, dtype=dtype).eval().requires_grad_(False)
+        if fake_score_checkpoint_path:
+            load_checkpoint_into_generator(self.fake_score, fake_score_checkpoint_path, use_ema=False)
+        else:
+            self.fake_score.load_state_dict(self.teacher.state_dict(), strict=True)
+        self.fake_score = self.fake_score.to(device=device, dtype=dtype).train().requires_grad_(True)
+        self.optimizer = torch.optim.AdamW(self.fake_score.parameters(), lr=fake_score_lr, weight_decay=fake_score_weight_decay)
+        self.scheduler = self.teacher.get_scheduler()
+        self.scheduler.timesteps = self.scheduler.timesteps.to(device)
+        self.text_encoder = text_encoder
+        self.device = device
+        self.dtype = dtype
+        self.guidance_scale = float(guidance_scale)
+        self.timestep_shift = float(timestep_shift)
+        self.min_timestep = float(min_timestep)
+        self.max_timestep = float(max_timestep)
+        self.score_scope = score_scope
+        self.negative_prompt = negative_prompt
+        self._negative_cache: dict[int, torch.Tensor] = {}
+
+    @staticmethod
+    def is_student_phase(step: int, *, warmup_steps: int, student_update_freq: int) -> bool:
+        if student_update_freq <= 0:
+            raise ValueError("--dmd_student_update_freq must be positive")
+        return step <= warmup_steps or (step - warmup_steps) % student_update_freq == 0
+
+    def _negative_prompt_embeds(self, batch_size: int) -> torch.Tensor:
+        if batch_size not in self._negative_cache:
+            with torch.no_grad():
+                encoded = self.text_encoder([self.negative_prompt] * batch_size)["prompt_embeds"]
+            self._negative_cache[batch_size] = encoded.detach().to(device=self.device, dtype=self.dtype)
+        return self._negative_cache[batch_size]
+
+    def _score_clean_and_slice(
+        self,
+        generator_x0: torch.Tensor,
+        anchor: torch.Tensor | None,
+    ) -> tuple[torch.Tensor, slice]:
+        if self.score_scope == "full" and anchor is not None:
+            anchor = anchor.detach().to(device=generator_x0.device, dtype=generator_x0.dtype)
+            return torch.cat([anchor, generator_x0], dim=1), slice(anchor.shape[1], None)
+        return generator_x0, slice(None)
+
+    def _sample_noisy_score_input(self, clean_x0: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
+        batch_size, frames = clean_x0.shape[:2]
+        timestep = shifted_uniform_timesteps(
+            batch_size=batch_size,
+            frames=frames,
+            shift=self.timestep_shift,
+            min_timestep=self.min_timestep,
+            max_timestep=self.max_timestep,
+            device=clean_x0.device,
+        )
+        noise = torch.randn_like(clean_x0)
+        noisy = self.scheduler.add_noise(
+            clean_x0.detach().flatten(0, 1),
+            noise.flatten(0, 1),
+            timestep.flatten(0, 1),
+        ).unflatten(0, clean_x0.shape[:2])
+        sigma = sigma_for_timestep(
+            self.scheduler,
+            timestep,
+            device=clean_x0.device,
+            dtype=clean_x0.dtype,
+        )
+        return noisy.to(dtype=self.dtype), timestep, sigma
+
+    def _predict_x0(self, model: nn.Module, noisy: torch.Tensor, prompt_embeds: torch.Tensor, timestep: torch.Tensor) -> torch.Tensor:
+        _, pred_x0 = model(
+            noisy_image_or_video=noisy.to(device=self.device, dtype=self.dtype),
+            conditional_dict={"prompt_embeds": prompt_embeds.to(device=self.device, dtype=self.dtype)},
+            timestep=timestep.to(device=self.device),
+        )
+        return pred_x0
+
+    def _teacher_cfg_x0(self, noisy: torch.Tensor, prompt_embeds: torch.Tensor, timestep: torch.Tensor) -> torch.Tensor:
+        cond_x0 = self._predict_x0(self.teacher, noisy, prompt_embeds, timestep)
+        if self.guidance_scale <= 1.0:
+            return cond_x0
+        uncond_x0 = self._predict_x0(self.teacher, noisy, self._negative_prompt_embeds(noisy.shape[0]), timestep)
+        return uncond_x0 + self.guidance_scale * (cond_x0 - uncond_x0)
+
+    def student_loss(
+        self,
+        generator_x0: torch.Tensor,
+        *,
+        anchor: torch.Tensor | None,
+        prompt_embeds: torch.Tensor,
+    ) -> tuple[torch.Tensor, dict[str, float]]:
+        clean_score_x0, future_slice = self._score_clean_and_slice(generator_x0, anchor)
+        noisy, timestep, _sigma = self._sample_noisy_score_input(clean_score_x0)
+        self.teacher.eval()
+        self.fake_score.eval()
+        with torch.no_grad():
+            fake_x0 = self._predict_x0(self.fake_score, noisy, prompt_embeds, timestep)
+            teacher_x0 = self._teacher_cfg_x0(noisy, prompt_embeds, timestep)
+        loss, metrics = rcm_dmd_surrogate_loss(generator_x0, fake_x0[:, future_slice], teacher_x0[:, future_slice])
+        metrics["dmd_timestep"] = float(timestep.detach().mean().cpu().item())
+        return loss, metrics
+
+    def fake_score_loss(
+        self,
+        generator_x0: torch.Tensor,
+        *,
+        anchor: torch.Tensor | None,
+        prompt_embeds: torch.Tensor,
+    ) -> tuple[torch.Tensor, dict[str, float]]:
+        clean_score_x0, _future_slice = self._score_clean_and_slice(generator_x0.detach(), anchor)
+        noisy, timestep, sigma = self._sample_noisy_score_input(clean_score_x0)
+        self.fake_score.train()
+        fake_x0 = self._predict_x0(self.fake_score, noisy, prompt_embeds.detach(), timestep)
+        loss = rcm_fake_score_loss(fake_x0, clean_score_x0.detach(), sigma)
+        return loss, {
+            "dmd_fake_score_loss": float(loss.detach().cpu().item()),
+            "dmd_fake_score_timestep": float(timestep.detach().mean().cpu().item()),
+        }
+
+    def average_fake_score_gradients(self, world_size: int) -> None:
+        if world_size <= 1:
+            return
+        for parameter in self.fake_score.parameters():
+            if parameter.grad is not None:
+                dist.all_reduce(parameter.grad, op=dist.ReduceOp.SUM)
+                parameter.grad.div_(world_size)
+
+
 def _index_bidirectional_shard(
     shard_path: str,
     expected_records: int,
@@ -1370,6 +1608,9 @@ def sequence_losses(
     detail_loss_weight: float,
     temporal_delta_weight: float,
     boundary_weight: float,
+    dmd: RCMStyleDraftHeadDMD | None = None,
+    dmd_loss_weight: float = 0.0,
+    prompt_embeds: torch.Tensor | None = None,
 ) -> tuple[torch.Tensor, dict[str, float]]:
     if prediction_type == "flow":
         flow_prediction = model_output
@@ -1404,6 +1645,13 @@ def sequence_losses(
         boundary_loss = F.mse_loss(pred_boundary, target_boundary)
         loss = loss + boundary_loss * boundary_weight
         metrics["boundary_loss"] = float(boundary_loss.detach().cpu().item())
+    if dmd is not None and dmd_loss_weight > 0:
+        if prompt_embeds is None:
+            raise ValueError("prompt_embeds is required when DMD is enabled")
+        dmd_component, dmd_metrics = dmd.student_loss(clean_prediction, anchor=anchor, prompt_embeds=prompt_embeds)
+        loss = loss + dmd_component * dmd_loss_weight
+        metrics["dmd_loss"] = float((dmd_component * dmd_loss_weight).detach().cpu().item())
+        metrics.update(dmd_metrics)
     metrics["loss"] = float(loss.detach().cpu().item())
     return loss, metrics
 
@@ -1429,6 +1677,8 @@ def compute_bidirectional_losses(
     detail_loss_weight: float,
     temporal_delta_weight: float,
     boundary_weight: float,
+    dmd: RCMStyleDraftHeadDMD | None = None,
+    dmd_loss_weight: float = 0.0,
 ) -> tuple[torch.Tensor, dict[str, float]]:
     if training_mode not in ("one_step", "unrolled", "random_timestep"):
         raise ValueError("--training_mode must be 'one_step', 'unrolled', or 'random_timestep'")
@@ -1457,6 +1707,9 @@ def compute_bidirectional_losses(
             detail_loss_weight=detail_loss_weight,
             temporal_delta_weight=temporal_delta_weight,
             boundary_weight=boundary_weight,
+            dmd=dmd,
+            dmd_loss_weight=dmd_loss_weight,
+            prompt_embeds=prompt_embeds,
         )
 
     if training_mode == "random_timestep":
@@ -1492,6 +1745,9 @@ def compute_bidirectional_losses(
             detail_loss_weight=detail_loss_weight,
             temporal_delta_weight=temporal_delta_weight,
             boundary_weight=boundary_weight,
+            dmd=dmd,
+            dmd_loss_weight=dmd_loss_weight,
+            prompt_embeds=prompt_embeds,
         )
         metrics["sampled_timestep_mean"] = float(sampled_timesteps.float().mean().detach().cpu().item())
         metrics["sampled_timestep_min"] = float(sampled_timesteps.float().min().detach().cpu().item())
@@ -1577,6 +1833,10 @@ def compute_bidirectional_losses(
         components.append(boundary_loss * boundary_weight)
     else:
         boundary_loss = None
+    dmd_metrics: dict[str, float] = {}
+    if dmd is not None and dmd_loss_weight > 0:
+        dmd_component, dmd_metrics = dmd.student_loss(prediction, anchor=anchor, prompt_embeds=prompt_embeds)
+        components.append(dmd_component * dmd_loss_weight)
     if not components:
         raise ValueError("At least one loss component must be enabled")
     total_loss = sum(components)
@@ -1594,7 +1854,99 @@ def compute_bidirectional_losses(
         metrics["temporal_delta_loss"] = float(temporal_delta_loss.detach().cpu().item())
     if boundary_loss is not None:
         metrics["boundary_loss"] = float(boundary_loss.detach().cpu().item())
+    if dmd_metrics:
+        metrics["dmd_loss"] = float((dmd_component * dmd_loss_weight).detach().cpu().item())
+        metrics.update(dmd_metrics)
     return total_loss, metrics
+
+
+def predict_bidirectional_clean_rollout(
+    model: nn.Module,
+    *,
+    anchor: torch.Tensor,
+    initial_noise: torch.Tensor,
+    target: torch.Tensor,
+    prompt_embeds: torch.Tensor,
+    scheduler: FlowMatchScheduler,
+    training_mode: str,
+    denoising_step_list: list[int],
+    prediction_type: str,
+    random_timestep_sampling: str,
+    logit_normal_mean: float,
+    logit_normal_std: float,
+    unroll_noise_mode: str,
+) -> torch.Tensor:
+    """Generate the clean draft-head prediction used as G(x) for fake-score updates."""
+    if training_mode not in ("one_step", "unrolled", "random_timestep"):
+        raise ValueError("--training_mode must be 'one_step', 'unrolled', or 'random_timestep'")
+    if prediction_type not in ("flow", "clean_latent"):
+        raise ValueError("--prediction_type must be 'flow' or 'clean_latent'")
+    if unroll_noise_mode not in ("fixed", "fresh"):
+        raise ValueError("--unroll_noise_mode must be 'fixed' or 'fresh'")
+    batch_size, frames = target.shape[:2]
+    if training_mode == "one_step":
+        timestep = timestep_batch(denoising_step_list[0], batch_size, frames, device=target.device)
+        model_output = model(anchor_latents=anchor, future_noise=initial_noise, prompt_embeds=prompt_embeds, timestep=timestep)
+        if prediction_type == "flow":
+            return flow_prediction_to_clean_latent(scheduler, model_output, initial_noise, timestep)
+        return model_output
+
+    if training_mode == "random_timestep":
+        candidate_timesteps = [int(timestep) for timestep in denoising_step_list if int(timestep) > 0]
+        if not candidate_timesteps:
+            raise ValueError("random_timestep requires at least one positive timestep")
+        sampled_timesteps = sample_random_timesteps(
+            batch_size=batch_size,
+            candidate_timesteps=candidate_timesteps,
+            sampling=random_timestep_sampling,
+            logit_normal_mean=logit_normal_mean,
+            logit_normal_std=logit_normal_std,
+            device=target.device,
+        )
+        timestep = sampled_timesteps[:, None].expand(batch_size, frames)
+        noisy_latents = scheduler.add_noise(
+            target.flatten(0, 1),
+            initial_noise.flatten(0, 1),
+            timestep.flatten(0, 1),
+        ).unflatten(0, target.shape[:2])
+        model_output = model(anchor_latents=anchor, future_noise=noisy_latents, prompt_embeds=prompt_embeds, timestep=timestep)
+        if prediction_type == "flow":
+            return flow_prediction_to_clean_latent(scheduler, model_output, noisy_latents, timestep)
+        return model_output
+
+    current = initial_noise
+    current_noise = initial_noise
+    prediction = current
+    for index, current_timestep in enumerate(denoising_step_list):
+        timestep = timestep_batch(current_timestep, batch_size, frames, device=target.device)
+        model_output = model(anchor_latents=anchor, future_noise=current, prompt_embeds=prompt_embeds, timestep=timestep)
+        if prediction_type == "flow":
+            prediction = flow_prediction_to_clean_latent(scheduler, model_output, current, timestep)
+            flow_prediction = model_output
+        else:
+            prediction = model_output
+            flow_prediction = clean_latent_to_flow_prediction(scheduler, prediction, current, timestep)
+        if index < len(denoising_step_list) - 1:
+            next_timestep = denoising_step_list[index + 1]
+            next_noise = torch.randn_like(target) if unroll_noise_mode == "fresh" else initial_noise
+            next_timestep_tensor = timestep_batch(next_timestep, batch_size, frames, device=target.device)
+            if prediction_type == "flow":
+                current = flow_prediction_step(
+                    scheduler,
+                    flow_prediction,
+                    current,
+                    timestep,
+                    next_timestep_tensor,
+                )
+            else:
+                current = scheduler.add_noise(
+                    prediction.flatten(0, 1),
+                    next_noise.flatten(0, 1),
+                    next_timestep_tensor.flatten(0, 1),
+                ).unflatten(0, prediction.shape[:2])
+            current_noise = next_noise
+    _ = current_noise
+    return prediction
 
 
 def compute_teacher_trajectory_losses(
@@ -1771,6 +2123,20 @@ def main() -> None:
     parser.add_argument("--detail_loss_weight", type=float, default=0.0)
     parser.add_argument("--temporal_delta_weight", type=float, default=0.0)
     parser.add_argument("--boundary_weight", type=float, default=0.0)
+    parser.add_argument("--dmd_loss_weight", type=float, default=0.0)
+    parser.add_argument("--dmd_fake_score_loss_weight", type=float, default=1.0)
+    parser.add_argument("--dmd_warmup_steps", type=int, default=0)
+    parser.add_argument("--dmd_student_update_freq", type=int, default=5)
+    parser.add_argument("--dmd_fake_score_lr", type=float, default=1e-7)
+    parser.add_argument("--dmd_fake_score_weight_decay", type=float, default=0.01)
+    parser.add_argument("--dmd_model_name", default=None)
+    parser.add_argument("--dmd_teacher_checkpoint_path", default="")
+    parser.add_argument("--dmd_fake_score_checkpoint_path", default="")
+    parser.add_argument("--dmd_guidance_scale", type=float, default=5.0)
+    parser.add_argument("--dmd_timestep_shift", type=float, default=5.0)
+    parser.add_argument("--dmd_min_timestep", type=float, default=20.0)
+    parser.add_argument("--dmd_max_timestep", type=float, default=980.0)
+    parser.add_argument("--dmd_score_scope", choices=["future", "full"], default="full")
     parser.add_argument("--teacher_trajectory_cache_dir", default="/mnt/lanxiangh/data/ff_exec/teacher_trajectory_cache")
     parser.add_argument("--teacher_trajectory_steps", type=int, default=5)
     parser.add_argument("--teacher_trajectory_solver", choices=["unipc", "dpm++"], default="unipc")
@@ -1786,10 +2152,20 @@ def main() -> None:
     parser.add_argument("--attention_backend", choices=["auto", "no_cudnn", "math"], default="auto")
     args = parser.parse_args()
     configure_attention_backend(args.attention_backend)
+    if args.dmd_loss_weight < 0 or args.dmd_fake_score_loss_weight < 0:
+        raise ValueError("DMD loss weights must be non-negative")
+    if args.dmd_warmup_steps < 0:
+        raise ValueError("--dmd_warmup_steps must be non-negative")
+    if args.dmd_student_update_freq <= 0:
+        raise ValueError("--dmd_student_update_freq must be positive")
+    if args.dmd_max_timestep <= args.dmd_min_timestep:
+        raise ValueError("--dmd_max_timestep must be greater than --dmd_min_timestep")
     if args.dense_schedule_steps:
         args.denoising_step_list = make_descending_timestep_list(args.dense_schedule_steps)
     if args.anchor_conditioning == "none" and args.training_mode != "teacher_trajectory":
         raise ValueError("--anchor_conditioning none is currently supported only with --training_mode teacher_trajectory")
+    if args.dmd_loss_weight > 0 and args.training_mode == "teacher_trajectory":
+        raise ValueError("rCM-style DMD is currently wired for one_step/unrolled/random_timestep, not teacher_trajectory")
 
     if "RANK" in os.environ and "WORLD_SIZE" in os.environ:
         dist.init_process_group(backend="nccl")
@@ -1943,7 +2319,10 @@ def main() -> None:
         )
         log_stage(f"online target Wan anchor generator ready in {time.perf_counter() - anchor_t0:.1f}s")
     else:
-        log_stage("using stored full-video Wan chunk-0 anchors from dataset")
+        if args.anchor_conditioning == "none":
+            log_stage("dataset has stored full-video/chunk-0 tensors; no-anchor model will not condition on chunk 0")
+        else:
+            log_stage("using stored full-video Wan chunk-0 anchors as model conditioning")
     head_t0 = time.perf_counter()
     if args.anchor_conditioning == "none":
         log_stage("building Wan-compatible full-video no-anchor draft head")
@@ -2021,6 +2400,41 @@ def main() -> None:
     log_stage("creating AdamW optimizer")
     optimizer = torch.optim.AdamW(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
     log_stage(f"optimizer ready in {time.perf_counter() - optim_t0:.1f}s")
+    dmd: RCMStyleDraftHeadDMD | None = None
+    if args.dmd_loss_weight > 0:
+        from sdvg_inference import load_config
+
+        dmd_t0 = time.perf_counter()
+        log_stage("loading rCM-style DMD teacher and fake-score networks")
+        dmd_config = load_config(args.config_path)
+        negative_prompt = getattr(
+            dmd_config,
+            "negative_prompt",
+            "色调艳丽，过曝，静态，细节模糊不清，字幕，风格，作品，画作，画面，静止，整体发灰，最差质量，低质量",
+        )
+        dmd = RCMStyleDraftHeadDMD(
+            model_name=args.dmd_model_name or args.target_model_name,
+            teacher_checkpoint_path=args.dmd_teacher_checkpoint_path or None,
+            fake_score_checkpoint_path=args.dmd_fake_score_checkpoint_path or None,
+            model_root=args.model_root,
+            config_path=args.config_path,
+            text_encoder=text_encoder,
+            device=device,
+            dtype=torch.bfloat16 if args.amp_dtype == "bf16" and device.type == "cuda" else torch.float32,
+            guidance_scale=args.dmd_guidance_scale,
+            timestep_shift=args.dmd_timestep_shift,
+            min_timestep=args.dmd_min_timestep,
+            max_timestep=args.dmd_max_timestep,
+            score_scope=args.dmd_score_scope,
+            fake_score_lr=args.dmd_fake_score_lr,
+            fake_score_weight_decay=args.dmd_fake_score_weight_decay,
+            negative_prompt=negative_prompt,
+        )
+        log_stage(
+            f"rCM-style DMD ready in {time.perf_counter() - dmd_t0:.1f}s "
+            f"weight={args.dmd_loss_weight} fake_lr={args.dmd_fake_score_lr} "
+            f"student_update_freq={args.dmd_student_update_freq} scope={args.dmd_score_scope}"
+        )
 
     if is_main:
         print(
@@ -2030,7 +2444,7 @@ def main() -> None:
             f"heads={args.num_heads} ffn_dim={args.ffn_dim} "
             f"temporal_mixer_layers={args.temporal_mixer_layers} "
             f"temporal_mixer_ffn_dim={args.temporal_mixer_ffn_dim} world_size={world_size} "
-            f"parallel={args.parallel_strategy if is_distributed else 'none'}"
+            f"dmd_weight={args.dmd_loss_weight} parallel={args.parallel_strategy if is_distributed else 'none'}"
         )
 
     history = []
@@ -2058,23 +2472,21 @@ def main() -> None:
                 future_noise = batch["future_noise"].to(device=device, dtype=anchor.dtype)
                 target = batch["future_target_latents"].to(device=device, dtype=anchor.dtype)
                 trajectory = teacher_trajectory_cache(batch) if teacher_trajectory_cache is not None else None
-            optimizer.zero_grad(set_to_none=True)
-            with amp_context(device, args.amp_dtype):
-                if args.training_mode == "teacher_trajectory":
-                    assert trajectory is not None
-                    loss, metrics = compute_teacher_trajectory_losses(
-                        model,
-                        anchor=anchor,
-                        prompt_embeds=prompt_embeds,
-                        trajectory=trajectory,
-                        scheduler=scheduler,
-                        clean_latent_loss_weight=args.clean_latent_loss_weight,
-                        flow_loss_weight=args.flow_loss_weight,
-                        detail_loss_weight=args.detail_loss_weight,
-                        anchor_conditioning=args.anchor_conditioning,
-                    )
-                else:
-                    loss, metrics = compute_bidirectional_losses(
+            next_step = global_step + 1
+            dmd_fake_phase = (
+                dmd is not None
+                and not RCMStyleDraftHeadDMD.is_student_phase(
+                    next_step,
+                    warmup_steps=args.dmd_warmup_steps,
+                    student_update_freq=args.dmd_student_update_freq,
+                )
+            )
+            if dmd_fake_phase:
+                assert dmd is not None
+                dmd.optimizer.zero_grad(set_to_none=True)
+                model.eval()
+                with torch.no_grad(), amp_context(device, args.amp_dtype):
+                    generator_prediction = predict_bidirectional_clean_rollout(
                         model,
                         anchor=anchor,
                         initial_noise=future_noise,
@@ -2087,16 +2499,71 @@ def main() -> None:
                         random_timestep_sampling=args.random_timestep_sampling,
                         logit_normal_mean=args.logit_normal_mean,
                         logit_normal_std=args.logit_normal_std,
-                        unroll_step_weights=unroll_step_weights,
                         unroll_noise_mode=args.unroll_noise_mode,
-                        clean_latent_loss_weight=args.clean_latent_loss_weight,
-                        flow_loss_weight=args.flow_loss_weight,
-                        detail_loss_weight=args.detail_loss_weight,
-                        temporal_delta_weight=args.temporal_delta_weight,
-                        boundary_weight=args.boundary_weight,
                     )
-            loss.backward()
-            optimizer.step()
+                with amp_context(device, args.amp_dtype):
+                    fake_loss, fake_metrics = dmd.fake_score_loss(
+                        generator_prediction.detach(),
+                        anchor=anchor,
+                        prompt_embeds=prompt_embeds,
+                    )
+                    loss = fake_loss * args.dmd_fake_score_loss_weight
+                loss.backward()
+                dmd.average_fake_score_gradients(world_size)
+                dmd.optimizer.step()
+                model.train()
+                clean_mse = F.mse_loss(generator_prediction.float(), target.float())
+                metrics = {
+                    "loss": float(loss.detach().cpu().item()),
+                    "clean_latent_mse": float(clean_mse.detach().cpu().item()),
+                    "dmd_fake_score_loss": float(loss.detach().cpu().item()),
+                    "dmd_phase_fake_score": 1.0,
+                }
+                metrics.update(fake_metrics)
+            else:
+                optimizer.zero_grad(set_to_none=True)
+                with amp_context(device, args.amp_dtype):
+                    if args.training_mode == "teacher_trajectory":
+                        assert trajectory is not None
+                        loss, metrics = compute_teacher_trajectory_losses(
+                            model,
+                            anchor=anchor,
+                            prompt_embeds=prompt_embeds,
+                            trajectory=trajectory,
+                            scheduler=scheduler,
+                            clean_latent_loss_weight=args.clean_latent_loss_weight,
+                            flow_loss_weight=args.flow_loss_weight,
+                            detail_loss_weight=args.detail_loss_weight,
+                            anchor_conditioning=args.anchor_conditioning,
+                        )
+                    else:
+                        loss, metrics = compute_bidirectional_losses(
+                            model,
+                            anchor=anchor,
+                            initial_noise=future_noise,
+                            target=target,
+                            prompt_embeds=prompt_embeds,
+                            scheduler=scheduler,
+                            training_mode=args.training_mode,
+                            denoising_step_list=args.denoising_step_list,
+                            prediction_type=args.prediction_type,
+                            random_timestep_sampling=args.random_timestep_sampling,
+                            logit_normal_mean=args.logit_normal_mean,
+                            logit_normal_std=args.logit_normal_std,
+                            unroll_step_weights=unroll_step_weights,
+                            unroll_noise_mode=args.unroll_noise_mode,
+                            clean_latent_loss_weight=args.clean_latent_loss_weight,
+                            flow_loss_weight=args.flow_loss_weight,
+                            detail_loss_weight=args.detail_loss_weight,
+                            temporal_delta_weight=args.temporal_delta_weight,
+                            boundary_weight=args.boundary_weight,
+                            dmd=dmd,
+                            dmd_loss_weight=args.dmd_loss_weight,
+                        )
+                loss.backward()
+                optimizer.step()
+                if dmd is not None:
+                    metrics["dmd_phase_student"] = 1.0
             global_step += 1
             total_loss += metrics["loss"]
             total_mse += metrics["clean_latent_mse"]

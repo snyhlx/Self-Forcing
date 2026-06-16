@@ -81,15 +81,44 @@ def draft_output_to_clean_latent(
     raise ValueError("--prediction_type must be 'flow' or 'clean_latent'")
 
 
+def draft_head_forward_with_cfg(
+    *,
+    model: torch.nn.Module,
+    anchor_latents: torch.Tensor | None,
+    future_noise: torch.Tensor,
+    prompt_embeds: torch.Tensor,
+    negative_prompt_embeds: torch.Tensor | None,
+    timestep: torch.Tensor,
+    cfg_scale: float,
+) -> torch.Tensor:
+    cond = model(
+        anchor_latents=anchor_latents,
+        future_noise=future_noise,
+        prompt_embeds=prompt_embeds,
+        timestep=timestep,
+    )
+    if negative_prompt_embeds is None or math.isclose(float(cfg_scale), 1.0):
+        return cond
+    uncond = model(
+        anchor_latents=anchor_latents,
+        future_noise=future_noise,
+        prompt_embeds=negative_prompt_embeds,
+        timestep=timestep,
+    )
+    return uncond + float(cfg_scale) * (cond - uncond)
+
+
 @torch.no_grad()
 def unipc_head_sample(
     *,
     model: torch.nn.Module,
     initial_latents: torch.Tensor,
     prompt_embeds: torch.Tensor,
+    negative_prompt_embeds: torch.Tensor | None,
     anchor_latents: torch.Tensor | None,
     num_steps: int,
     shift: float,
+    cfg_scale: float,
 ) -> tuple[torch.Tensor, list[int]]:
     if num_steps < 2:
         raise ValueError("--head_sampling_steps must be >= 2 for --head_solver unipc")
@@ -103,11 +132,14 @@ def unipc_head_sample(
     used_timesteps: list[int] = []
     for t in tqdm(sample_scheduler.timesteps, desc="draft head unipc", leave=True):
         timestep = t * torch.ones(current.shape[:2], device=current.device, dtype=torch.float32)
-        flow_prediction = model(
+        flow_prediction = draft_head_forward_with_cfg(
+            model=model,
             anchor_latents=anchor_latents,
             future_noise=current,
             prompt_embeds=prompt_embeds,
+            negative_prompt_embeds=negative_prompt_embeds,
             timestep=timestep,
+            cfg_scale=cfg_scale,
         )
         current = sample_scheduler.step(
             flow_prediction.unsqueeze(0),
@@ -140,6 +172,7 @@ def generate_videos(
     anchor_conditioning: str,
     head_solver: str,
     head_solver_shift: float,
+    head_cfg_scale: float,
     teacher_sampling_steps: int | None,
     unroll_noise_mode: str,
     timestep_shift: float,
@@ -161,6 +194,8 @@ def generate_videos(
         raise ValueError("--head_solver must be 'euler' or 'unipc'")
     if head_solver == "unipc" and prediction_type != "flow":
         raise ValueError("--head_solver unipc requires --prediction_type flow")
+    if head_cfg_scale < 0:
+        raise ValueError("--head_cfg_scale must be non-negative")
     if num_blocks <= 1:
         raise ValueError("num_blocks must be greater than 1")
 
@@ -222,6 +257,9 @@ def generate_videos(
         )
         anchor = teacher_latents[:, :3].detach()
         prompt_embeds = target_pipeline.text_encoder([prompt])["prompt_embeds"].detach().to(device=device, dtype=dtype)
+        negative_prompt_embeds = None
+        if not math.isclose(float(head_cfg_scale), 1.0):
+            negative_prompt_embeds = target_pipeline.text_encoder([config.negative_prompt])["prompt_embeds"].detach().to(device=device, dtype=dtype)
         future_noise = noise[:, 3:]
         model_input = noise if anchor_conditioning == "none" else future_noise
         model_anchor = None if anchor_conditioning == "none" else anchor
@@ -232,14 +270,24 @@ def generate_videos(
                 model=model,
                 initial_latents=model_input,
                 prompt_embeds=prompt_embeds,
+                negative_prompt_embeds=negative_prompt_embeds,
                 anchor_latents=model_anchor,
                 num_steps=len(denoising_step_list),
                 shift=head_solver_shift,
+                cfg_scale=head_cfg_scale,
             )
             prediction = output_prediction
         elif training_mode == "one_step":
             timestep = torch.full(model_input.shape[:2], int(denoising_step_list[0]), device=device, dtype=torch.long)
-            model_output = model(anchor_latents=model_anchor, future_noise=model_input, prompt_embeds=prompt_embeds, timestep=timestep)
+            model_output = draft_head_forward_with_cfg(
+                model=model,
+                anchor_latents=model_anchor,
+                future_noise=model_input,
+                prompt_embeds=prompt_embeds,
+                negative_prompt_embeds=negative_prompt_embeds,
+                timestep=timestep,
+                cfg_scale=head_cfg_scale,
+            )
             prediction = draft_output_to_clean_latent(
                 model_output=model_output,
                 prediction_type=prediction_type,
@@ -254,7 +302,15 @@ def generate_videos(
             step_iter = tqdm(denoising_step_list, desc="draft head denoise", leave=True)
             for step_index, current_timestep in enumerate(step_iter):
                 timestep = torch.full(current.shape[:2], int(current_timestep), device=device, dtype=torch.long)
-                model_output = model(anchor_latents=model_anchor, future_noise=current, prompt_embeds=prompt_embeds, timestep=timestep)
+                model_output = draft_head_forward_with_cfg(
+                    model=model,
+                    anchor_latents=model_anchor,
+                    future_noise=current,
+                    prompt_embeds=prompt_embeds,
+                    negative_prompt_embeds=negative_prompt_embeds,
+                    timestep=timestep,
+                    cfg_scale=head_cfg_scale,
+                )
                 prediction = draft_output_to_clean_latent(
                     model_output=model_output,
                     prediction_type=prediction_type,
@@ -331,6 +387,7 @@ def generate_videos(
         "anchor_conditioning": anchor_conditioning,
         "head_solver": head_solver,
         "head_solver_shift": float(head_solver_shift),
+        "head_cfg_scale": float(head_cfg_scale),
         "teacher_sampling_steps": int(target_pipeline.sampling_steps),
         "denoising_step_list": list(actual_denoising_step_list) if summaries else list(denoising_step_list),
         "unroll_noise_mode": unroll_noise_mode,
@@ -366,14 +423,20 @@ def generate_manifest_videos(
     anchor_conditioning: str,
     head_solver: str,
     head_solver_shift: float,
+    head_cfg_scale: float,
     unroll_noise_mode: str,
     timestep_shift: float,
     dataset_cache_dir: str,
     dataset_index_workers: int,
     dataset_cache_wait_seconds: int,
+    save_stored_target_video: bool,
+    save_alt_drafter_video: bool,
+    alt_drafter_model_name: str,
+    alt_drafter_sampling_steps: int | None,
+    alt_drafter_shift: float | None,
     device: torch.device,
 ) -> dict[str, Any]:
-    from sdvg_inference import ensure_wan_symlinks, write_video
+    from sdvg_inference import ensure_wan_symlinks, load_config, write_video
     from utils.wan_wrapper import WanTextEncoder, WanVAEWrapper
 
     if training_mode not in ("one_step", "unrolled"):
@@ -384,6 +447,8 @@ def generate_manifest_videos(
         raise ValueError("--head_solver must be 'euler' or 'unipc'")
     if head_solver == "unipc" and prediction_type != "flow":
         raise ValueError("--head_solver unipc requires --prediction_type flow")
+    if head_cfg_scale < 0:
+        raise ValueError("--head_cfg_scale must be non-negative")
     output_dir = Path(output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
     os.chdir(Path(__file__).parent)
@@ -433,6 +498,16 @@ def generate_manifest_videos(
     target_future = record["future_target_latents"].to(device=device, dtype=dtype)
     target_latents = torch.cat([anchor, target_future], dim=1)
     prompt_embeds = text_encoder([prompt])["prompt_embeds"].detach().to(device=device, dtype=dtype)
+    negative_prompt_embeds = None
+    if not math.isclose(float(head_cfg_scale), 1.0):
+        config = load_config(config_path)
+        negative_prompt = getattr(
+            config,
+            "negative_prompt",
+            "色调艳丽，过曝，静态，细节模糊不清，字幕，风格，作品，画作，画面，静止，整体发灰，最差质量，低质量",
+        )
+        negative_prompt_embeds = text_encoder([negative_prompt])["prompt_embeds"].detach().to(device=device, dtype=dtype)
+    raw_record = None
     if anchor_conditioning == "none":
         if dataset.format != "bidirectional_wan_full_video_v1":
             raise ValueError("--anchor_conditioning none video generation requires the full-video Option-B manifest")
@@ -449,13 +524,23 @@ def generate_manifest_videos(
             model=model,
             initial_latents=model_input,
             prompt_embeds=prompt_embeds,
+            negative_prompt_embeds=negative_prompt_embeds,
             anchor_latents=model_anchor,
             num_steps=len(denoising_step_list),
             shift=head_solver_shift,
+            cfg_scale=head_cfg_scale,
         )
     elif training_mode == "one_step":
         timestep = torch.full(model_input.shape[:2], int(denoising_step_list[0]), device=device, dtype=torch.long)
-        model_output = model(anchor_latents=model_anchor, future_noise=model_input, prompt_embeds=prompt_embeds, timestep=timestep)
+        model_output = draft_head_forward_with_cfg(
+            model=model,
+            anchor_latents=model_anchor,
+            future_noise=model_input,
+            prompt_embeds=prompt_embeds,
+            negative_prompt_embeds=negative_prompt_embeds,
+            timestep=timestep,
+            cfg_scale=head_cfg_scale,
+        )
         prediction = draft_output_to_clean_latent(
             model_output=model_output,
             prediction_type=prediction_type,
@@ -469,7 +554,15 @@ def generate_manifest_videos(
         step_iter = tqdm(denoising_step_list, desc="draft head denoise", leave=True)
         for step_index, current_timestep in enumerate(step_iter):
             timestep = torch.full(current.shape[:2], int(current_timestep), device=device, dtype=torch.long)
-            model_output = model(anchor_latents=model_anchor, future_noise=current, prompt_embeds=prompt_embeds, timestep=timestep)
+            model_output = draft_head_forward_with_cfg(
+                model=model,
+                anchor_latents=model_anchor,
+                future_noise=current,
+                prompt_embeds=prompt_embeds,
+                negative_prompt_embeds=negative_prompt_embeds,
+                timestep=timestep,
+                cfg_scale=head_cfg_scale,
+            )
             prediction = draft_output_to_clean_latent(
                 model_output=model_output,
                 prediction_type=prediction_type,
@@ -497,16 +590,72 @@ def generate_manifest_videos(
                     ).unflatten(0, prediction.shape[:2])
 
     output_stem = f"train_prompt_{record_prompt_index:04d}_idx_{dataset_index:05d}"
-    target_video = vae.decode_to_pixel(target_latents, use_cache=False)
-    target_video = (target_video * 0.5 + 0.5).clamp(0, 1)
     target_path = output_dir / f"{output_stem}_stored_target_teacher.mp4"
-    write_video(target_path, 255.0 * rearrange(target_video, "b t c h w -> b t h w c")[0], fps=fps)
+    runs = []
+    if save_stored_target_video:
+        target_video = vae.decode_to_pixel(target_latents, use_cache=False)
+        target_video = (target_video * 0.5 + 0.5).clamp(0, 1)
+        write_video(target_path, 255.0 * rearrange(target_video, "b t c h w -> b t h w c")[0], fps=fps)
+        runs.append({"mode": "stored_target_teacher", "video_path": str(target_path)})
 
     draft_latents = prediction if anchor_conditioning == "none" else torch.cat([anchor, prediction], dim=1)
     draft_video = vae.decode_to_pixel(draft_latents, use_cache=False)
     draft_video = (draft_video * 0.5 + 0.5).clamp(0, 1)
     draft_path = output_dir / f"{output_stem}_bidirectional_draft_head.mp4"
     write_video(draft_path, 255.0 * rearrange(draft_video, "b t c h w -> b t h w c")[0], fps=fps)
+
+    runs.append({"mode": "bidirectional_draft_head", "video_path": str(draft_path)})
+    if save_alt_drafter_video:
+        if dataset.format != "bidirectional_wan_full_video_v1":
+            raise ValueError("--save_alt_drafter_video requires the full-video Option-B manifest")
+        if raw_record is None:
+            raw_record = dataset._load_record(dataset.index[dataset_index])
+        from pipeline.bidirectional_diffusion_inference import BidirectionalDiffusionInferencePipeline
+
+        drafter_steps = int(alt_drafter_sampling_steps or len(actual_denoising_step_list))
+        if drafter_steps < 2:
+            raise ValueError("--alt_drafter_sampling_steps must be >= 2")
+        drafter_config = load_config(config_path)
+        drafter_config.num_frame_per_block = 3
+        drafter_config.num_train_timestep = getattr(drafter_config, "num_train_timestep", 1000)
+        drafter_config.negative_prompt = getattr(
+            drafter_config,
+            "negative_prompt",
+            "色调艳丽，过曝，静态，细节模糊不清，字幕，风格，作品，画作，画面，静止，整体发灰，最差质量，低质量",
+        )
+        drafter_config.guidance_scale = getattr(drafter_config, "guidance_scale", 5.0)
+        model_kwargs = dict(getattr(drafter_config, "model_kwargs", {}))
+        model_kwargs["model_name"] = alt_drafter_model_name
+        drafter_config.model_kwargs = model_kwargs
+        drafter_pipeline = BidirectionalDiffusionInferencePipeline(
+            drafter_config,
+            device=device,
+            text_encoder=text_encoder,
+            vae=vae,
+        ).to(device=device, dtype=dtype).eval().requires_grad_(False)
+        drafter_pipeline.sampling_steps = drafter_steps
+        drafter_pipeline.sample_solver = "unipc"
+        if alt_drafter_shift is not None:
+            drafter_pipeline.shift = float(alt_drafter_shift)
+        drafter_video, _drafter_latents = drafter_pipeline.inference(
+            noise=raw_record["noise"].to(device=device, dtype=dtype),
+            text_prompts=[prompt],
+            return_latents=True,
+            decode_video=True,
+        )
+        drafter_path = output_dir / f"{output_stem}_wan13b_drafter_unipc{drafter_steps}.mp4"
+        write_video(drafter_path, 255.0 * rearrange(drafter_video, "b t c h w -> b t h w c")[0], fps=fps)
+        runs.append(
+            {
+                "mode": "wan13b_drafter",
+                "model_name": alt_drafter_model_name,
+                "sampling_steps": drafter_steps,
+                "shift": float(drafter_pipeline.shift),
+                "video_path": str(drafter_path),
+            }
+        )
+        del drafter_pipeline
+        torch.cuda.empty_cache()
 
     profile = {
         "checkpoint_path": str(Path(checkpoint_path).resolve()),
@@ -519,12 +668,11 @@ def generate_manifest_videos(
         "anchor_conditioning": anchor_conditioning,
         "head_solver": head_solver,
         "head_solver_shift": float(head_solver_shift),
+        "head_cfg_scale": float(head_cfg_scale),
         "denoising_step_list": list(actual_denoising_step_list),
         "unroll_noise_mode": unroll_noise_mode,
-        "runs": [
-            {"mode": "stored_target_teacher", "video_path": str(target_path)},
-            {"mode": "bidirectional_draft_head", "video_path": str(draft_path)},
-        ],
+        "save_stored_target_video": bool(save_stored_target_video),
+        "runs": runs,
     }
     profile_path = output_dir / "profile.json"
     profile_path.write_text(json.dumps(profile, indent=2), encoding="utf-8")
@@ -690,6 +838,11 @@ def main() -> None:
     parser.add_argument("--target_refine_timestep", type=int, default=0)
     parser.add_argument("--save_raw_video", action="store_true")
     parser.add_argument("--save_target_video", action="store_true")
+    parser.add_argument("--save_stored_target_video", action=argparse.BooleanOptionalAction, default=True)
+    parser.add_argument("--save_alt_drafter_video", action="store_true")
+    parser.add_argument("--alt_drafter_model_name", default="Wan2.1-T2V-1.3B")
+    parser.add_argument("--alt_drafter_sampling_steps", type=int, default=None)
+    parser.add_argument("--alt_drafter_shift", type=float, default=None)
     parser.add_argument("--model_root", default=None)
     parser.add_argument("--config_path", default=None)
     parser.add_argument("--target_model_name", default=None)
@@ -712,6 +865,7 @@ def main() -> None:
     parser.add_argument("--head_sampling_steps", type=int, default=None)
     parser.add_argument("--head_solver", choices=["euler", "unipc"], default="euler")
     parser.add_argument("--head_solver_shift", type=float, default=8.0)
+    parser.add_argument("--head_cfg_scale", type=float, default=1.0)
     parser.add_argument("--teacher_sampling_steps", type=int, default=None)
     parser.add_argument("--random_timestep_sampling", choices=["uniform_schedule", "logit_normal"], default=None)
     parser.add_argument("--logit_normal_mean", type=float, default=None)
@@ -785,11 +939,17 @@ def main() -> None:
                 anchor_conditioning=anchor_conditioning,
                 head_solver=args.head_solver,
                 head_solver_shift=args.head_solver_shift,
+                head_cfg_scale=args.head_cfg_scale,
                 unroll_noise_mode=unroll_noise_mode,
                 timestep_shift=timestep_shift,
                 dataset_cache_dir=args.dataset_cache_dir,
                 dataset_index_workers=args.dataset_index_workers,
                 dataset_cache_wait_seconds=args.dataset_cache_wait_seconds,
+                save_stored_target_video=args.save_stored_target_video,
+                save_alt_drafter_video=args.save_alt_drafter_video,
+                alt_drafter_model_name=args.alt_drafter_model_name,
+                alt_drafter_sampling_steps=args.alt_drafter_sampling_steps,
+                alt_drafter_shift=args.alt_drafter_shift if args.alt_drafter_shift is not None else args.head_solver_shift,
                 device=device,
             )
             print(json.dumps(profile, indent=2), flush=True)
@@ -815,6 +975,7 @@ def main() -> None:
             anchor_conditioning=anchor_conditioning,
             head_solver=args.head_solver,
             head_solver_shift=args.head_solver_shift,
+            head_cfg_scale=args.head_cfg_scale,
             teacher_sampling_steps=args.teacher_sampling_steps,
             unroll_noise_mode=unroll_noise_mode,
             timestep_shift=timestep_shift,

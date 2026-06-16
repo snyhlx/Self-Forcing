@@ -27,6 +27,11 @@ AMP_DTYPE="${AMP_DTYPE:-bf16}"
 TARGET_REFINE_TIMESTEP="${TARGET_REFINE_TIMESTEP:-0}"
 SAVE_RAW_VIDEO="${SAVE_RAW_VIDEO:-0}"
 SAVE_TARGET_VIDEO="${SAVE_TARGET_VIDEO:-0}"
+SAVE_STORED_TARGET_VIDEO="${SAVE_STORED_TARGET_VIDEO:-1}"
+SAVE_ALT_DRAFTER_VIDEO="${SAVE_ALT_DRAFTER_VIDEO:-0}"
+ALT_DRAFTER_MODEL_NAME="${ALT_DRAFTER_MODEL_NAME:-Wan2.1-T2V-1.3B}"
+ALT_DRAFTER_SAMPLING_STEPS="${ALT_DRAFTER_SAMPLING_STEPS:-}"
+ALT_DRAFTER_SHIFT="${ALT_DRAFTER_SHIFT:-}"
 TRAINING_MODE="${TRAINING_MODE:-}"
 PREDICTION_TYPE="${PREDICTION_TYPE:-}"
 ANCHOR_CONDITIONING="${ANCHOR_CONDITIONING:-}"
@@ -35,6 +40,7 @@ DENOISING_STEP_LIST="${DENOISING_STEP_LIST:-}"
 HEAD_SAMPLING_STEPS="${HEAD_SAMPLING_STEPS:-}"
 HEAD_SOLVER="${HEAD_SOLVER:-}"
 HEAD_SOLVER_SHIFT="${HEAD_SOLVER_SHIFT:-}"
+HEAD_CFG_SCALE="${HEAD_CFG_SCALE:-1.0}"
 TEACHER_SAMPLING_STEPS="${TEACHER_SAMPLING_STEPS:-}"
 VIDEO_MANIFEST_PATH="${VIDEO_MANIFEST_PATH:-}"
 VIDEO_DATASET_INDEX="${VIDEO_DATASET_INDEX:-}"
@@ -66,6 +72,12 @@ if [[ "$TARGET_CHECKPOINT_PATH" == *"realtime-video"* || "$TARGET_CHECKPOINT_PAT
   echo "  $TARGET_CHECKPOINT_PATH" >&2
   echo "Option B should use original/non-causal Wan teacher weights under wan_models/$TARGET_MODEL_NAME." >&2
   exit 1
+fi
+if [[ "$SAVE_ALT_DRAFTER_VIDEO" == "1" || "$SAVE_ALT_DRAFTER_VIDEO" == "true" ]]; then
+  if [[ ! -e "$MODEL_ROOT/wan_models/$ALT_DRAFTER_MODEL_NAME" ]]; then
+    echo "ERROR: alt drafter model path missing: $MODEL_ROOT/wan_models/$ALT_DRAFTER_MODEL_NAME" >&2
+    exit 1
+  fi
 fi
 export CUDA_VISIBLE_DEVICES="$CUDA_DEVICE"
 
@@ -101,6 +113,9 @@ fi
 if [[ -n "$HEAD_SOLVER_SHIFT" ]]; then
   OPTIONAL_ARGS+=(--head_solver_shift "$HEAD_SOLVER_SHIFT")
 fi
+if [[ -n "$HEAD_CFG_SCALE" ]]; then
+  OPTIONAL_ARGS+=(--head_cfg_scale "$HEAD_CFG_SCALE")
+fi
 if [[ -n "$TEACHER_SAMPLING_STEPS" ]]; then
   OPTIONAL_ARGS+=(--teacher_sampling_steps "$TEACHER_SAMPLING_STEPS")
 fi
@@ -125,6 +140,18 @@ fi
 if [[ "$SAVE_TARGET_VIDEO" == "1" || "$SAVE_TARGET_VIDEO" == "true" ]]; then
   OPTIONAL_ARGS+=(--save_target_video)
 fi
+if [[ "$SAVE_STORED_TARGET_VIDEO" == "0" || "$SAVE_STORED_TARGET_VIDEO" == "false" ]]; then
+  OPTIONAL_ARGS+=(--no-save_stored_target_video)
+fi
+if [[ "$SAVE_ALT_DRAFTER_VIDEO" == "1" || "$SAVE_ALT_DRAFTER_VIDEO" == "true" ]]; then
+  OPTIONAL_ARGS+=(--save_alt_drafter_video --alt_drafter_model_name "$ALT_DRAFTER_MODEL_NAME")
+fi
+if [[ -n "$ALT_DRAFTER_SAMPLING_STEPS" ]]; then
+  OPTIONAL_ARGS+=(--alt_drafter_sampling_steps "$ALT_DRAFTER_SAMPLING_STEPS")
+fi
+if [[ -n "$ALT_DRAFTER_SHIFT" ]]; then
+  OPTIONAL_ARGS+=(--alt_drafter_shift "$ALT_DRAFTER_SHIFT")
+fi
 
 log "Bidirectional prompt-anchor video diagnostic"
 log "Checkpoint: $DRAFT_HEAD_CHECKPOINT_PATH"
@@ -136,8 +163,9 @@ log "Prediction: ${PREDICTION_TYPE:-checkpoint/default}"
 log "Anchor conditioning: ${ANCHOR_CONDITIONING:-checkpoint/default}"
 log "Head steps: ${HEAD_SAMPLING_STEPS:-checkpoint/default}"
 log "Head solver: ${HEAD_SOLVER:-euler} shift=${HEAD_SOLVER_SHIFT:-8.0}"
+log "Head CFG:   scale=$HEAD_CFG_SCALE"
 log "Teacher steps: ${TEACHER_SAMPLING_STEPS:-default}"
-log "Refine:     target_timestep=$TARGET_REFINE_TIMESTEP save_raw=$SAVE_RAW_VIDEO save_target=$SAVE_TARGET_VIDEO"
+log "Refine:     target_timestep=$TARGET_REFINE_TIMESTEP save_raw=$SAVE_RAW_VIDEO save_target=$SAVE_TARGET_VIDEO save_stored_target=$SAVE_STORED_TARGET_VIDEO save_alt_drafter=$SAVE_ALT_DRAFTER_VIDEO alt_drafter_model=$ALT_DRAFTER_MODEL_NAME alt_drafter_steps=${ALT_DRAFTER_SAMPLING_STEPS:-head_steps} alt_drafter_shift=${ALT_DRAFTER_SHIFT:-head_shift}"
 
 "$PYTHON" eval_bidirectional_draft_head.py \
   --checkpoint_path "$DRAFT_HEAD_CHECKPOINT_PATH" \
