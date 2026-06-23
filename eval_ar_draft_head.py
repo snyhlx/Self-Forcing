@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import random
 import subprocess
 import sys
 from pathlib import Path
@@ -26,20 +27,24 @@ def prompt_args(args: argparse.Namespace, *, prompt_override: str | None = None)
     return ["--prompt", args.prompt]
 
 
+def split_indices(num_records: int, val_fraction: float, seed: int) -> tuple[list[int], list[int]]:
+    indices = list(range(num_records))
+    random.Random(seed).shuffle(indices)
+    if val_fraction <= 0:
+        return sorted(indices), []
+    val_count = max(1, int(round(num_records * val_fraction)))
+    val_count = min(val_count, num_records - 1)
+    return sorted(indices[val_count:]), sorted(indices[:val_count])
+
+
 def select_manifest_prompt(args: argparse.Namespace) -> dict[str, Any] | None:
     if not args.video_manifest_path:
         return None
     if args.prompt_file:
         raise ValueError("--prompt_file and --video_manifest_path are mutually exclusive")
-    from train_bidirectional_draft_head import BidirectionalPromptAnchorDataset, split_indices
+    from sdvg_draft_head import DraftHeadRecordDataset
 
-    dataset = BidirectionalPromptAnchorDataset(
-        args.video_manifest_path,
-        num_blocks=args.num_blocks,
-        cache_dir=args.dataset_cache_dir,
-        index_workers=args.dataset_index_workers,
-        cache_wait_seconds=args.dataset_cache_wait_seconds,
-    )
+    dataset = DraftHeadRecordDataset(args.video_manifest_path)
     dataset_index = args.video_dataset_index
     if args.video_prompt_index is not None:
         matched_index = None
@@ -71,6 +76,7 @@ def select_manifest_prompt(args: argparse.Namespace) -> dict[str, Any] | None:
         "manifest_path": str(Path(args.video_manifest_path).resolve()),
         "dataset_index": int(dataset_index),
         "prompt_index": int(record["prompt_index"]),
+        "block_index": int(record.get("block_index", -1)),
         "prompt": str(record["prompt"]),
         "split": args.video_split,
         "split_index": int(args.video_split_index),
