@@ -8,8 +8,12 @@ import sys
 from pathlib import Path
 from typing import Any
 
+from tqdm import tqdm
 
-def prompt_args(args: argparse.Namespace) -> list[str]:
+
+def prompt_args(args: argparse.Namespace, *, prompt_override: str | None = None) -> list[str]:
+    if prompt_override is not None:
+        return ["--prompt", prompt_override]
     if args.prompt_file:
         return [
             "--prompt_file",
@@ -22,7 +26,65 @@ def prompt_args(args: argparse.Namespace) -> list[str]:
     return ["--prompt", args.prompt]
 
 
-def run_sdvg(args: argparse.Namespace, *, mode: str, output_dir: Path, seed: int) -> dict[str, Any]:
+def select_manifest_prompt(args: argparse.Namespace) -> dict[str, Any] | None:
+    if not args.video_manifest_path:
+        return None
+    if args.prompt_file:
+        raise ValueError("--prompt_file and --video_manifest_path are mutually exclusive")
+    from train_bidirectional_draft_head import BidirectionalPromptAnchorDataset, split_indices
+
+    dataset = BidirectionalPromptAnchorDataset(
+        args.video_manifest_path,
+        num_blocks=args.num_blocks,
+        cache_dir=args.dataset_cache_dir,
+        index_workers=args.dataset_index_workers,
+        cache_wait_seconds=args.dataset_cache_wait_seconds,
+    )
+    dataset_index = args.video_dataset_index
+    if args.video_prompt_index is not None:
+        matched_index = None
+        for index in range(len(dataset)):
+            if int(dataset[index]["prompt_index"]) == int(args.video_prompt_index):
+                matched_index = index
+                break
+        if matched_index is None:
+            raise ValueError(f"video_prompt_index={args.video_prompt_index} not found in {args.video_manifest_path}")
+        dataset_index = matched_index
+    if dataset_index is None:
+        if args.video_split == "all":
+            dataset_index = args.video_split_index
+        else:
+            train_indices, val_indices = split_indices(len(dataset), args.val_fraction, args.seed)
+            indices = train_indices if args.video_split == "train" else val_indices
+            if not indices:
+                raise ValueError(f"Requested split {args.video_split!r} is empty")
+            if not 0 <= args.video_split_index < len(indices):
+                raise ValueError(
+                    f"video_split_index={args.video_split_index} out of range for "
+                    f"{args.video_split} split length {len(indices)}"
+                )
+            dataset_index = indices[args.video_split_index]
+    if not 0 <= dataset_index < len(dataset):
+        raise ValueError(f"video_dataset_index={dataset_index} out of range for dataset length {len(dataset)}")
+    record = dataset[dataset_index]
+    return {
+        "manifest_path": str(Path(args.video_manifest_path).resolve()),
+        "dataset_index": int(dataset_index),
+        "prompt_index": int(record["prompt_index"]),
+        "prompt": str(record["prompt"]),
+        "split": args.video_split,
+        "split_index": int(args.video_split_index),
+    }
+
+
+def run_sdvg(
+    args: argparse.Namespace,
+    *,
+    mode: str,
+    output_dir: Path,
+    seed: int,
+    prompt_override: str | None = None,
+) -> dict[str, Any]:
     command = [
         sys.executable,
         "sdvg_inference.py",
@@ -50,7 +112,7 @@ def run_sdvg(args: argparse.Namespace, *, mode: str, output_dir: Path, seed: int
         str(seed),
         "--fps",
         str(args.fps),
-        *prompt_args(args),
+        *prompt_args(args, prompt_override=prompt_override),
     ]
     if args.no_force_target_first_block:
         command.append("--no_force_target_first_block")
@@ -62,7 +124,10 @@ def run_sdvg(args: argparse.Namespace, *, mode: str, output_dir: Path, seed: int
     output_dir.mkdir(parents=True, exist_ok=True)
     log_path = output_dir / "eval.log"
     with log_path.open("w", encoding="utf-8") as log_file:
-        subprocess.run(command, cwd=Path(__file__).parent, check=True, stdout=log_file, stderr=subprocess.STDOUT)
+        try:
+            subprocess.run(command, cwd=Path(__file__).parent, check=True, stdout=log_file, stderr=subprocess.STDOUT)
+        except subprocess.CalledProcessError as exc:
+            raise RuntimeError(f"{mode} generation failed; see log: {log_path}") from exc
     profile_path = output_dir / "profile.json"
     profile = json.loads(profile_path.read_text(encoding="utf-8"))
     return {
@@ -89,6 +154,15 @@ def main() -> None:
     parser.add_argument("--prompt_file", default=None)
     parser.add_argument("--start_index", type=int, default=0)
     parser.add_argument("--max_prompts", type=int, default=1)
+    parser.add_argument("--video_manifest_path", default=None)
+    parser.add_argument("--video_dataset_index", type=int, default=None)
+    parser.add_argument("--video_prompt_index", type=int, default=None)
+    parser.add_argument("--video_split", choices=["all", "train", "val"], default="all")
+    parser.add_argument("--video_split_index", type=int, default=0)
+    parser.add_argument("--val_fraction", type=float, default=0.05)
+    parser.add_argument("--dataset_cache_dir", default="/mnt/lanxiangh/data/cache/specgen")
+    parser.add_argument("--dataset_index_workers", type=int, default=8)
+    parser.add_argument("--dataset_cache_wait_seconds", type=int, default=3600)
     parser.add_argument("--num_blocks", type=int, default=7)
     parser.add_argument("--denoising_step_list", default="999 969 922 841 666")
     parser.add_argument("--seed", type=int, default=42)
@@ -102,25 +176,29 @@ def main() -> None:
 
     if args.target_reference_count < 0:
         raise ValueError("--target_reference_count must be >= 0")
+    if args.video_dataset_index is not None and args.video_dataset_index < 0:
+        raise ValueError("--video_dataset_index must be >= 0")
+    if args.video_prompt_index is not None and args.video_prompt_index < 0:
+        raise ValueError("--video_prompt_index must be >= 0")
+    if args.video_split_index < 0:
+        raise ValueError("--video_split_index must be >= 0")
 
     output_dir = Path(args.output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
     summaries = []
+    manifest_selection = select_manifest_prompt(args)
+    prompt_override = manifest_selection["prompt"] if manifest_selection is not None else None
 
-    summaries.append(run_sdvg(args, mode="draft_head", output_dir=output_dir / "draft_head", seed=args.seed))
+    jobs = [("draft_head", output_dir / "draft_head", args.seed)]
     for ref_index in range(args.target_reference_count):
         ref_seed = args.seed + ref_index * args.target_reference_seed_stride
-        summaries.append(
-            run_sdvg(
-                args,
-                mode="target_only",
-                output_dir=output_dir / f"target_ref_{ref_index:02d}",
-                seed=ref_seed,
-            )
-        )
+        jobs.append(("target_only", output_dir / f"target_ref_{ref_index:02d}", ref_seed))
+    for mode, run_output_dir, seed in tqdm(jobs, desc="AR eval runs", unit="run"):
+        summaries.append(run_sdvg(args, mode=mode, output_dir=run_output_dir, seed=seed, prompt_override=prompt_override))
 
     summary = {
         "args": vars(args),
+        "manifest_selection": manifest_selection,
         "runs": summaries,
     }
     summary_path = output_dir / "profile.json"
