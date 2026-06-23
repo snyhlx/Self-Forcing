@@ -18,6 +18,7 @@ from tqdm import tqdm
 from pipeline import CausalInferencePipeline
 from sdvg_draft_head import (
     DraftHeadDatasetWriter,
+    CausalWanARDraftHead,
     FeatureCaptureConfig,
     KVCacheInjectedLatentDraftHead,
     KVInjectedLatentDraftHead,
@@ -29,6 +30,7 @@ from sdvg_draft_head import (
     pool_target_features,
 )
 from sdvg_latent_verifier import LatentBlockVerifier, verifier_features
+from train_bidirectional_draft_head import BidirectionalPromptAnchorDraftHead
 from utils.dataset import TextDataset
 from utils.misc import set_seed
 from utils.wan_wrapper import WanDiffusionWrapper, WanTextEncoder, WanVAEWrapper
@@ -157,7 +159,14 @@ def load_checkpoint_into_generator(generator: WanDiffusionWrapper, checkpoint_pa
         return
 
     state_dict = torch.load(checkpoint_path, map_location="cpu")
-    key = "generator_ema" if use_ema and "generator_ema" in state_dict else "generator"
+    if use_ema and "generator_ema" in state_dict:
+        key = "generator_ema"
+    elif "generator" in state_dict:
+        key = "generator"
+    elif "generator_ema" in state_dict:
+        key = "generator_ema"
+    else:
+        raise KeyError(f"Checkpoint {checkpoint_path} has no generator or generator_ema weights")
     generator.load_state_dict(state_dict[key], strict=True)
 
 
@@ -433,7 +442,113 @@ def denoise_block_with_draft_head(
     scheduler: Any | None = None,
     denoising_step_list: list[int] | None = None,
     prediction_type: str = "clean_latent",
+    context_latents: torch.Tensor | None = None,
+    conditional_dict: dict | None = None,
+    causal_kv_cache: list[dict] | None = None,
+    causal_crossattn_cache: list[dict] | None = None,
+    causal_current_start: int | None = None,
 ) -> torch.Tensor:
+    if isinstance(draft_head, BidirectionalPromptAnchorDraftHead):
+        if conditional_dict is None or "prompt_embeds" not in conditional_dict:
+            raise ValueError("ar_bidirectional draft head requires conditional_dict with prompt_embeds")
+        if scheduler is None or denoising_step_list is None:
+            raise ValueError("ar_bidirectional draft head requires scheduler and denoising_step_list")
+        current = block_latents
+        prediction = block_latents
+        batch_size, current_num_frames = block_latents.shape[:2]
+        anchor_latents = context_latents
+        if anchor_latents is not None:
+            anchor_latents = anchor_latents.to(device=block_latents.device, dtype=block_latents.dtype)
+            if anchor_latents.shape[1] != current_num_frames:
+                anchor_latents = anchor_latents[:, -current_num_frames:]
+        prompt_embeds = conditional_dict["prompt_embeds"].to(device=block_latents.device, dtype=block_latents.dtype)
+        for step_index, current_timestep in enumerate(denoising_step_list):
+            timestep = torch.ones(
+                [batch_size, current_num_frames],
+                device=block_latents.device,
+                dtype=torch.int64,
+            ) * current_timestep
+            model_output = draft_head(
+                anchor_latents=anchor_latents,
+                future_noise=current,
+                prompt_embeds=prompt_embeds,
+                timestep=timestep,
+            )
+            prediction = draft_output_to_clean_latent(
+                model_output,
+                prediction_type=prediction_type,
+                scheduler=scheduler,
+                noisy_latents=current,
+                timestep=timestep,
+            )
+            if step_index < len(denoising_step_list) - 1:
+                next_timestep = denoising_step_list[step_index + 1]
+                next_timestep_tensor = next_timestep * torch.ones(
+                    [batch_size, current_num_frames],
+                    device=block_latents.device,
+                    dtype=torch.long,
+                )
+                current = draft_flow_step(
+                    model_output,
+                    prediction_type=prediction_type,
+                    scheduler=scheduler,
+                    noisy_latents=current,
+                    current_timestep=timestep,
+                    next_timestep=next_timestep_tensor,
+                    clean_prediction=prediction,
+                    next_noise=torch.randn_like(prediction),
+                )
+        return prediction
+    if isinstance(draft_head, CausalWanARDraftHead):
+        if conditional_dict is None or "prompt_embeds" not in conditional_dict:
+            raise ValueError("causal_wan_ar draft head requires conditional_dict with prompt_embeds")
+        if scheduler is None or denoising_step_list is None:
+            raise ValueError("causal_wan_ar draft head requires scheduler and denoising_step_list")
+        if causal_kv_cache is None or causal_crossattn_cache is None or causal_current_start is None:
+            raise ValueError("causal_wan_ar draft head requires causal KV cache context")
+        current = block_latents
+        prediction = block_latents
+        batch_size, current_num_frames = block_latents.shape[:2]
+        prompt_embeds = conditional_dict["prompt_embeds"].to(device=block_latents.device, dtype=block_latents.dtype)
+        for step_index, current_timestep in enumerate(denoising_step_list):
+            timestep = torch.ones(
+                [batch_size, current_num_frames],
+                device=block_latents.device,
+                dtype=torch.int64,
+            ) * current_timestep
+            model_output = draft_head(
+                noisy_latents=current,
+                prompt_embeds=prompt_embeds,
+                timestep=timestep,
+                kv_cache=causal_kv_cache,
+                crossattn_cache=causal_crossattn_cache,
+                current_start=causal_current_start,
+            )
+            prediction = draft_output_to_clean_latent(
+                model_output,
+                prediction_type=prediction_type,
+                scheduler=scheduler,
+                noisy_latents=current,
+                timestep=timestep,
+            )
+            if step_index < len(denoising_step_list) - 1:
+                next_timestep = denoising_step_list[step_index + 1]
+                next_timestep_tensor = next_timestep * torch.ones(
+                    [batch_size, current_num_frames],
+                    device=block_latents.device,
+                    dtype=torch.long,
+                )
+                current = draft_flow_step(
+                    model_output,
+                    prediction_type=prediction_type,
+                    scheduler=scheduler,
+                    noisy_latents=current,
+                    current_timestep=timestep,
+                    next_timestep=next_timestep_tensor,
+                    clean_prediction=prediction,
+                    next_noise=torch.randn_like(prediction),
+                )
+        return prediction
     if isinstance(draft_head, KVCacheInjectedLatentDraftHead):
         kv_cache = {
             name: {
@@ -823,20 +938,26 @@ def run_mode(
         elif mode == "draft_head" and not use_target:
             if draft_head_model is None:
                 raise ValueError("draft_head mode requires --draft_head_checkpoint_path")
-            if latest_target_context is None:
+            if latest_target_context is None and not isinstance(draft_head_model, (BidirectionalPromptAnchorDraftHead, CausalWanARDraftHead)):
                 raise RuntimeError("draft_head mode has no target context; block 0 must be target-generated")
 
             t0 = sync_time()
+            context_latents = output[:, :start] if start > 0 else None
             draft_head_latents = denoise_block_with_draft_head(
                 draft_head_model,
                 block_noise,
-                latest_target_context,
+                latest_target_context or {},
                 draft_head_capture_layers,
                 block_index,
                 num_blocks,
                 scheduler=target_pipeline.scheduler,
                 denoising_step_list=list(target_pipeline.denoising_step_list),
                 prediction_type=draft_head_prediction_type,
+                context_latents=context_latents,
+                conditional_dict=target_cond,
+                causal_kv_cache=target_pipeline.kv_cache1,
+                causal_crossattn_cache=target_pipeline.crossattn_cache,
+                causal_current_start=start * target_pipeline.frame_seq_length,
             )
             profile.draft_ms = (sync_time() - t0) * 1000.0
 
@@ -1048,6 +1169,13 @@ def load_prompts(prompt: str, prompt_file: str | None, start_index: int, max_pro
     return prompts
 
 
+def parse_timestep_list(value: str) -> list[int]:
+    timesteps = [int(item) for item in value.replace(",", " ").split() if item.strip()]
+    if not timesteps:
+        raise ValueError("--denoising_step_list must contain at least one timestep")
+    return timesteps
+
+
 def add_aggregate_metrics(summaries: list[dict]) -> dict:
     by_mode: dict[str, list[dict]] = {}
     for summary in summaries:
@@ -1120,6 +1248,7 @@ def main():
     )
     parser.add_argument("--tau", type=float, default=-0.7)
     parser.add_argument("--num_blocks", type=int, default=3)
+    parser.add_argument("--denoising_step_list", default="1000 750 500 250 0")
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--fps", type=int, default=16)
     parser.add_argument("--use_ema", action="store_true", default=True)
@@ -1221,7 +1350,7 @@ def main():
     device = torch.device("cuda")
     dtype = torch.bfloat16
 
-    config.denoising_step_list = [1000, 750, 500, 250, 0]
+    config.denoising_step_list = parse_timestep_list(args.denoising_step_list)
     config.warp_denoising_step = False
     config.num_frame_per_block = 3
 
@@ -1270,7 +1399,10 @@ def main():
         draft_head_model, draft_head_metadata = load_draft_head_checkpoint(args.draft_head_checkpoint_path)
         draft_head_prediction_type = str(draft_head_metadata.get("metadata", {}).get("prediction_type", "clean_latent"))
         print("Draft head prediction_type:", draft_head_prediction_type)
-        if isinstance(draft_head_model, KVCacheInjectedLatentDraftHead):
+        no_capture_draft_head = isinstance(draft_head_model, (BidirectionalPromptAnchorDraftHead, CausalWanARDraftHead))
+        if no_capture_draft_head:
+            draft_head_capture_layers = ()
+        elif isinstance(draft_head_model, KVCacheInjectedLatentDraftHead):
             draft_head_context_source = "kv_cache"
         elif args.draft_head_context_source == "kv_cache":
             raise ValueError("--draft_head_context_source kv_cache requires a kv_cache_attention draft-head checkpoint")
@@ -1280,7 +1412,8 @@ def main():
                 "--draft_head_capture_layers must match checkpoint layer_names "
                 f"{checkpoint_layers}, got {draft_head_capture_layers}"
             )
-        draft_head_capture_layers = checkpoint_layers
+        if not no_capture_draft_head:
+            draft_head_capture_layers = checkpoint_layers
         draft_head_model.to(device=device, dtype=dtype).eval().requires_grad_(False)
 
     router = Router(

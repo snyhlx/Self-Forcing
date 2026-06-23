@@ -63,9 +63,13 @@ def wrap_model_for_training(
         dtype = torch.bfloat16 if fsdp_mixed_precision == "bf16" else torch.float16
         mixed_precision = MixedPrecision(param_dtype=dtype, reduce_dtype=dtype, buffer_dtype=dtype)
 
+    auto_wrap_policy = None
+    if fsdp_min_num_params > 0:
+        auto_wrap_policy = partial(size_based_auto_wrap_policy, min_num_params=fsdp_min_num_params)
+
     return FSDP(
         model,
-        auto_wrap_policy=partial(size_based_auto_wrap_policy, min_num_params=fsdp_min_num_params),
+        auto_wrap_policy=auto_wrap_policy,
         sharding_strategy=ShardingStrategy.FULL_SHARD,
         mixed_precision=mixed_precision,
         device_id=torch.device("cuda", local_rank),
@@ -77,11 +81,24 @@ def fsdp_rank0_state_dict(model: nn.Module) -> dict[str, torch.Tensor] | None:
     """Collect a full CPU state dict on rank 0 for FSDP; returns None on other ranks."""
     if not is_fsdp_model(model):
         return unwrap_model(model).state_dict()
-    config = FullStateDictConfig(offload_to_cpu=True, rank0_only=True)
-    with FSDP.state_dict_type(model, StateDictType.FULL_STATE_DICT, config):
-        state_dict = model.state_dict()
-    if dist.is_available() and dist.is_initialized() and dist.get_rank() != 0:
-        return None
+    is_rank0 = not (dist.is_available() and dist.is_initialized()) or dist.get_rank() == 0
+
+    # FULL_STATE_DICT hooks can trip PyTorch's nested-FSDP root-state assertion
+    # for some auto-wrapped/use_orig_params models. summon_full_params gathers
+    # the same full parameters without walking the FSDP state_dict hook stack.
+    with FSDP.summon_full_params(
+        model,
+        recurse=True,
+        writeback=False,
+        rank0_only=True,
+        offload_to_cpu=True,
+    ):
+        if not is_rank0:
+            return None
+        state_dict = {
+            key: value.detach().cpu().clone()
+            for key, value in unwrap_model(model).state_dict().items()
+        }
     return state_dict
 
 

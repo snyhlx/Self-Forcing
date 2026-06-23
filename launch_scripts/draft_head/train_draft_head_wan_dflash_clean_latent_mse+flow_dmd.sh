@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-# Train a Wan-token DFlash-style draft head with clean-latent + FlowMatch + DMD loss.
+# Train a Wan-token AR bidirectional-style draft head with clean-latent + FlowMatch + DMD loss.
 #
-# This wrapper keeps the Wan-DFlash target-initialized recipe and enables a
-# conservative DMD term by default. Override any exported variable at launch.
+# This wrapper keeps the AR draft-head recipe and enables a conservative DMD
+# term by default. Override any exported variable at launch.
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

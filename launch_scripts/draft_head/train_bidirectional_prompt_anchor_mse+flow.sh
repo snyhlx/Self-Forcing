@@ -18,6 +18,7 @@ CONFIG_PATH="${CONFIG_PATH:-$PROJECT_ROOT/configs/self_forcing_dmd.yaml}"
 TARGET_MODEL_NAME="${TARGET_MODEL_NAME:-Wan2.1-T2V-14B}"
 TARGET_CHECKPOINT_PATH="${TARGET_CHECKPOINT_PATH:-$MODEL_ROOT/wan_models/$TARGET_MODEL_NAME/diffusion_pytorch_model.safetensors.index.json}"
 INIT_MODEL_NAME="${INIT_MODEL_NAME:-}"
+INIT_DRAFT_HEAD_CHECKPOINT_PATH="${INIT_DRAFT_HEAD_CHECKPOINT_PATH:-}"
 ANCHOR_NOISE_SEED="${ANCHOR_NOISE_SEED:-42}"
 NUM_BLOCKS="${NUM_BLOCKS:-9}"
 HIDDEN_CHANNELS="${HIDDEN_CHANNELS:-5120}"
@@ -43,6 +44,11 @@ LOGIT_NORMAL_MEAN="${LOGIT_NORMAL_MEAN:-0.0}"
 LOGIT_NORMAL_STD="${LOGIT_NORMAL_STD:-1.0}"
 UNROLL_STEP_WEIGHTS="${UNROLL_STEP_WEIGHTS:-}"
 UNROLL_NOISE_MODE="${UNROLL_NOISE_MODE:-fixed}"
+ROLLOUT_SOLVER="${ROLLOUT_SOLVER:-euler}"
+ROLLOUT_STEPS="${ROLLOUT_STEPS:-0}"
+ROLLOUT_SCHEDULE="${ROLLOUT_SCHEDULE:-}"
+ROLLOUT_SIGMA_MAX="${ROLLOUT_SIGMA_MAX:-1600}"
+ROLLOUT_SOLVER_SHIFT="${ROLLOUT_SOLVER_SHIFT:-8.0}"
 TEACHER_TRAJECTORY_CACHE_DIR="${TEACHER_TRAJECTORY_CACHE_DIR:-/mnt/lanxiangh/data/ff_exec/teacher_trajectory_cache}"
 TEACHER_TRAJECTORY_STEPS="${TEACHER_TRAJECTORY_STEPS:-5}"
 TEACHER_TRAJECTORY_SOLVER="${TEACHER_TRAJECTORY_SOLVER:-unipc}"
@@ -67,14 +73,17 @@ DMD_WARMUP_STEPS="${DMD_WARMUP_STEPS:-0}"
 DMD_STUDENT_UPDATE_FREQ="${DMD_STUDENT_UPDATE_FREQ:-5}"
 DMD_FAKE_SCORE_LR="${DMD_FAKE_SCORE_LR:-1e-7}"
 DMD_FAKE_SCORE_WEIGHT_DECAY="${DMD_FAKE_SCORE_WEIGHT_DECAY:-0.01}"
+DMD_FAKE_SCORE_GRADIENT_CHECKPOINTING="${DMD_FAKE_SCORE_GRADIENT_CHECKPOINTING:-1}"
 DMD_MODEL_NAME="${DMD_MODEL_NAME:-$TARGET_MODEL_NAME}"
+DMD_TEACHER_MODEL_NAME="${DMD_TEACHER_MODEL_NAME:-$DMD_MODEL_NAME}"
+DMD_FAKE_SCORE_MODEL_NAME="${DMD_FAKE_SCORE_MODEL_NAME:-$DMD_MODEL_NAME}"
 DMD_TEACHER_CHECKPOINT_PATH="${DMD_TEACHER_CHECKPOINT_PATH:-}"
 DMD_FAKE_SCORE_CHECKPOINT_PATH="${DMD_FAKE_SCORE_CHECKPOINT_PATH:-}"
 DMD_GUIDANCE_SCALE="${DMD_GUIDANCE_SCALE:-5.0}"
 DMD_TIMESTEP_SHIFT="${DMD_TIMESTEP_SHIFT:-5.0}"
 DMD_MIN_TIMESTEP="${DMD_MIN_TIMESTEP:-20}"
 DMD_MAX_TIMESTEP="${DMD_MAX_TIMESTEP:-980}"
-DMD_SCORE_SCOPE="${DMD_SCORE_SCOPE:-full}"
+DMD_SCORE_SCOPE="${DMD_SCORE_SCOPE:-future}"
 AMP_DTYPE="${AMP_DTYPE:-bf16}"
 NUM_GPUS="${NUM_GPUS:-4}"
 ATTENTION_BACKEND="${ATTENTION_BACKEND:-math}"
@@ -127,7 +136,21 @@ BOUNDARY_TAG="$(tag_slug "$BOUNDARY_WEIGHT")"
 FLOW_TAG="$(tag_slug "$FLOW_LOSS_WEIGHT")"
 DETAIL_TAG="$(tag_slug "$DETAIL_LOSS_WEIGHT")"
 DMD_TAG="$(tag_slug "$DMD_LOSS_WEIGHT")"
-STEP_TAG="$(tag_slug "$DENOISING_STEP_LIST")"
+if [[ "$ROLLOUT_SOLVER" == "unipc" && "$ROLLOUT_STEPS" != "0" ]]; then
+  STEP_TAG="unipc${ROLLOUT_STEPS}_shift$(tag_slug "$ROLLOUT_SOLVER_SHIFT")"
+elif [[ "$ROLLOUT_SOLVER" == "rcm" ]]; then
+  EFFECTIVE_ROLLOUT_STEPS="$ROLLOUT_STEPS"
+  if [[ "$EFFECTIVE_ROLLOUT_STEPS" == "0" ]]; then
+    EFFECTIVE_ROLLOUT_STEPS="5"
+  fi
+  if [[ -n "$ROLLOUT_SCHEDULE" ]]; then
+    STEP_TAG="rcm$(tag_slug "$ROLLOUT_SCHEDULE")"
+  else
+    STEP_TAG="rcm${EFFECTIVE_ROLLOUT_STEPS}_sigmamax$(tag_slug "$ROLLOUT_SIGMA_MAX")"
+  fi
+else
+  STEP_TAG="$(tag_slug "$DENOISING_STEP_LIST")"
+fi
 DENSE_TAG="${DENSE_SCHEDULE_STEPS:-manual}"
 OVERFIT_TAG="${OVERFIT_NUM_EXAMPLES:-0}"
 RUN_TIMESTAMP="${RUN_TIMESTAMP:-$(date +%Y%m%d_%H%M%S)}"
@@ -154,10 +177,10 @@ log "Anchor:    conditioning=$ANCHOR_CONDITIONING online_target target=$TARGET_M
 log "Model:     wan hidden=$HIDDEN_CHANNELS layers=$NUM_LAYERS heads=$NUM_HEADS ffn_dim=$FFN_DIM prompt_dim=$PROMPT_DIM temporal_mixer_layers=$TEMPORAL_MIXER_LAYERS temporal_mixer_ffn_dim=$TEMPORAL_MIXER_FFN_DIM gradient_checkpointing=$GRADIENT_CHECKPOINTING"
 log "Parallel:  strategy=$PARALLEL_STRATEGY fsdp_min_num_params=$FSDP_MIN_NUM_PARAMS fsdp_mixed_precision=$FSDP_MIXED_PRECISION"
 log "Attention: backend=$ATTENTION_BACKEND"
-log "Init:      model=${INIT_MODEL_NAME:-$TARGET_MODEL_NAME} target_blocks=[$INIT_TARGET_BLOCKS]"
-log "Training:  mode=$TRAINING_MODE anchor_conditioning=$ANCHOR_CONDITIONING prediction_type=$PREDICTION_TYPE steps=[$DENOISING_STEP_LIST] dense_schedule_steps=${DENSE_SCHEDULE_STEPS:-off} random_sampling=$RANDOM_TIMESTEP_SAMPLING logit_mean=$LOGIT_NORMAL_MEAN logit_std=$LOGIT_NORMAL_STD unroll_noise=$UNROLL_NOISE_MODE weights=${UNROLL_STEP_WEIGHTS:-auto} teacher_traj_steps=$TEACHER_TRAJECTORY_STEPS teacher_traj_solver=$TEACHER_TRAJECTORY_SOLVER teacher_traj_shift=${TEACHER_TRAJECTORY_SHIFT:-legacy} teacher_traj_dataset_key=${TEACHER_TRAJECTORY_DATASET_KEY:-auto} teacher_traj_cache=$TEACHER_TRAJECTORY_CACHE_DIR overfit_num=$OVERFIT_NUM_EXAMPLES overfit_start=$OVERFIT_START_INDEX num_workers=$NUM_WORKERS"
+log "Init:      model=${INIT_MODEL_NAME:-$TARGET_MODEL_NAME} target_blocks=[$INIT_TARGET_BLOCKS] draft_head_ckpt=${INIT_DRAFT_HEAD_CHECKPOINT_PATH:-none}"
+log "Training:  mode=$TRAINING_MODE anchor_conditioning=$ANCHOR_CONDITIONING prediction_type=$PREDICTION_TYPE euler_steps=[$DENOISING_STEP_LIST] dense_schedule_steps=${DENSE_SCHEDULE_STEPS:-off} random_sampling=$RANDOM_TIMESTEP_SAMPLING logit_mean=$LOGIT_NORMAL_MEAN logit_std=$LOGIT_NORMAL_STD unroll_noise=$UNROLL_NOISE_MODE rollout_solver=$ROLLOUT_SOLVER rollout_steps=$ROLLOUT_STEPS rollout_schedule=${ROLLOUT_SCHEDULE:-default} rollout_sigma_max=$ROLLOUT_SIGMA_MAX rollout_shift=$ROLLOUT_SOLVER_SHIFT weights=${UNROLL_STEP_WEIGHTS:-auto} teacher_traj_steps=$TEACHER_TRAJECTORY_STEPS teacher_traj_solver=$TEACHER_TRAJECTORY_SOLVER teacher_traj_shift=${TEACHER_TRAJECTORY_SHIFT:-legacy} teacher_traj_dataset_key=${TEACHER_TRAJECTORY_DATASET_KEY:-auto} teacher_traj_cache=$TEACHER_TRAJECTORY_CACHE_DIR overfit_num=$OVERFIT_NUM_EXAMPLES overfit_start=$OVERFIT_START_INDEX num_workers=$NUM_WORKERS"
 log "Loss:      clean=$CLEAN_LATENT_LOSS_WEIGHT flow=$FLOW_LOSS_WEIGHT detail=$DETAIL_LOSS_WEIGHT temporal_delta=$TEMPORAL_DELTA_WEIGHT boundary=$BOUNDARY_WEIGHT dmd=$DMD_LOSS_WEIGHT dmd_fake=$DMD_FAKE_SCORE_LOSS_WEIGHT"
-log "DMD:       model=$DMD_MODEL_NAME teacher_ckpt=${DMD_TEACHER_CHECKPOINT_PATH:-pretrained-dir} fake_ckpt=${DMD_FAKE_SCORE_CHECKPOINT_PATH:-teacher-init} guidance=$DMD_GUIDANCE_SCALE shift=$DMD_TIMESTEP_SHIFT t=[$DMD_MIN_TIMESTEP,$DMD_MAX_TIMESTEP] scope=$DMD_SCORE_SCOPE warmup=$DMD_WARMUP_STEPS student_update_freq=$DMD_STUDENT_UPDATE_FREQ fake_lr=$DMD_FAKE_SCORE_LR"
+log "DMD:       teacher_model=$DMD_TEACHER_MODEL_NAME fake_score_model=$DMD_FAKE_SCORE_MODEL_NAME teacher_ckpt=${DMD_TEACHER_CHECKPOINT_PATH:-pretrained-dir} fake_ckpt=${DMD_FAKE_SCORE_CHECKPOINT_PATH:-teacher/pretrained-init} guidance=$DMD_GUIDANCE_SCALE shift=$DMD_TIMESTEP_SHIFT t=[$DMD_MIN_TIMESTEP,$DMD_MAX_TIMESTEP] scope=$DMD_SCORE_SCOPE warmup=$DMD_WARMUP_STEPS student_update_freq=$DMD_STUDENT_UPDATE_FREQ fake_lr=$DMD_FAKE_SCORE_LR fake_gc=$DMD_FAKE_SCORE_GRADIENT_CHECKPOINTING"
 
 RUNNER=("$PYTHON")
 if [[ "$NUM_GPUS" -gt 1 ]]; then
@@ -182,6 +205,9 @@ INIT_MODEL_ARGS=()
 if [[ -n "$INIT_MODEL_NAME" ]]; then
   INIT_MODEL_ARGS+=(--init_model_name "$INIT_MODEL_NAME")
 fi
+if [[ -n "$INIT_DRAFT_HEAD_CHECKPOINT_PATH" ]]; then
+  INIT_MODEL_ARGS+=(--init_draft_head_checkpoint_path "$INIT_DRAFT_HEAD_CHECKPOINT_PATH")
+fi
 INIT_TARGET_BLOCK_ARRAY=($INIT_TARGET_BLOCKS)
 TEACHER_TRAJECTORY_SHIFT_ARGS=()
 if [[ -n "$TEACHER_TRAJECTORY_SHIFT" ]]; then
@@ -190,6 +216,10 @@ fi
 TEACHER_TRAJECTORY_DATASET_ARGS=()
 if [[ -n "$TEACHER_TRAJECTORY_DATASET_KEY" ]]; then
   TEACHER_TRAJECTORY_DATASET_ARGS+=(--teacher_trajectory_dataset_key "$TEACHER_TRAJECTORY_DATASET_KEY")
+fi
+DMD_MEMORY_ARGS=()
+if [[ "$DMD_FAKE_SCORE_GRADIENT_CHECKPOINTING" == "1" || "$DMD_FAKE_SCORE_GRADIENT_CHECKPOINTING" == "true" ]]; then
+  DMD_MEMORY_ARGS+=(--dmd_fake_score_gradient_checkpointing)
 fi
 
 "${RUNNER[@]}" train_bidirectional_draft_head.py \
@@ -228,6 +258,11 @@ fi
   --logit_normal_mean "$LOGIT_NORMAL_MEAN" \
   --logit_normal_std "$LOGIT_NORMAL_STD" \
   --unroll_noise_mode "$UNROLL_NOISE_MODE" \
+  --rollout_solver "$ROLLOUT_SOLVER" \
+  --rollout_steps "$ROLLOUT_STEPS" \
+  --rollout_schedule "$ROLLOUT_SCHEDULE" \
+  --rollout_sigma_max "$ROLLOUT_SIGMA_MAX" \
+  --rollout_solver_shift "$ROLLOUT_SOLVER_SHIFT" \
   --teacher_trajectory_cache_dir "$TEACHER_TRAJECTORY_CACHE_DIR" \
   --teacher_trajectory_steps "$TEACHER_TRAJECTORY_STEPS" \
   --teacher_trajectory_solver "$TEACHER_TRAJECTORY_SOLVER" \
@@ -253,7 +288,10 @@ fi
   --dmd_student_update_freq "$DMD_STUDENT_UPDATE_FREQ" \
   --dmd_fake_score_lr "$DMD_FAKE_SCORE_LR" \
   --dmd_fake_score_weight_decay "$DMD_FAKE_SCORE_WEIGHT_DECAY" \
+  "${DMD_MEMORY_ARGS[@]}" \
   --dmd_model_name "$DMD_MODEL_NAME" \
+  --dmd_teacher_model_name "$DMD_TEACHER_MODEL_NAME" \
+  --dmd_fake_score_model_name "$DMD_FAKE_SCORE_MODEL_NAME" \
   --dmd_teacher_checkpoint_path "$DMD_TEACHER_CHECKPOINT_PATH" \
   --dmd_fake_score_checkpoint_path "$DMD_FAKE_SCORE_CHECKPOINT_PATH" \
   --dmd_guidance_scale "$DMD_GUIDANCE_SCALE" \

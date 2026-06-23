@@ -1,9 +1,8 @@
 #!/usr/bin/env bash
-# Train a Wan-token DFlash-style draft head with clean-latent + FlowMatch loss.
+# Train a Wan-token AR bidirectional-style draft head with clean-latent + FlowMatch loss.
 #
-# This head uses Wan patch/time/head modules and DFlash-style target hidden-state
-# conditioning. Unlike the raw KV-cache experiment, it is initialized from target
-# Wan blocks by default.
+# This head uses the bidirectional draft-head architecture adapted to the AR
+# trainer. It intentionally avoids DFlash target-feature conditioning by default.
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -14,12 +13,12 @@ if [[ ! -f "$TEMPLATE" ]]; then
   exit 1
 fi
 
-export HEAD_TYPE="${HEAD_TYPE:-wan_dflash_attention}"
+export HEAD_TYPE="${HEAD_TYPE:-ar_bidirectional}"
 export LAYER_NAMES="${LAYER_NAMES:-blocks.8 blocks.16 blocks.24}"
 export MANIFEST_PATH="${MANIFEST_PATH:-/mnt/lanxiangh/data/ff_exec/draft_head_full_dataset/tau_delta_0p0/manifest.json}"
 
 export MODEL_ROOT="${MODEL_ROOT:-/mnt/lanxiangh/models}"
-export INIT_TARGET_BLOCKS="${INIT_TARGET_BLOCKS-8 16 24}"
+export INIT_TARGET_BLOCKS="${INIT_TARGET_BLOCKS-}"
 export INIT_TARGET_MODEL_NAME="${INIT_TARGET_MODEL_NAME:-Wan2.1-T2V-14B}"
 export INIT_TARGET_CHECKPOINT_PATH="${INIT_TARGET_CHECKPOINT_PATH:-/mnt/lanxiangh/models/realtime-video/checkpoints/krea-realtime-video-14b.safetensors}"
 

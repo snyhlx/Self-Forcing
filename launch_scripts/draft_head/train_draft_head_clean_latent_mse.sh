@@ -34,7 +34,11 @@ DMD_CHECKPOINT_PATH="${DMD_CHECKPOINT_PATH:-/mnt/lanxiangh/models/realtime-video
 DMD_GUIDANCE_SCALE="${DMD_GUIDANCE_SCALE:-3.0}"
 DMD_MIN_TIMESTEP="${DMD_MIN_TIMESTEP:-20}"
 DMD_MAX_TIMESTEP="${DMD_MAX_TIMESTEP:-980}"
+INIT_TARGET_BLOCKS_WAS_SET="${INIT_TARGET_BLOCKS+x}"
 INIT_TARGET_BLOCKS="${INIT_TARGET_BLOCKS:-8 16 24}"
+if [[ "$HEAD_TYPE" == "ar_bidirectional" ]] && [[ -z "$INIT_TARGET_BLOCKS_WAS_SET" ]]; then
+  INIT_TARGET_BLOCKS=""
+fi
 INIT_TARGET_CHECKPOINT_PATH="${INIT_TARGET_CHECKPOINT_PATH:-/mnt/lanxiangh/models/realtime-video/checkpoints/krea-realtime-video-14b.safetensors}"
 INIT_TARGET_MODEL_NAME="${INIT_TARGET_MODEL_NAME:-Wan2.1-T2V-14B}"
 MODEL_ROOT="${MODEL_ROOT:-/mnt/lanxiangh/models}"
@@ -140,7 +144,7 @@ if [[ "$NUM_GPUS" -gt 1 ]]; then
   RUNNER=("$PYTHON" -m torch.distributed.run --nproc_per_node "$NUM_GPUS")
 fi
 
-"${RUNNER[@]}" train_draft_head.py \
+"${RUNNER[@]}" train_ar_draft_head.py \
   --manifest_path "$MANIFEST_PATH" \
   --output_path "$OUTPUT_PATH" \
   --head_type "$HEAD_TYPE" \

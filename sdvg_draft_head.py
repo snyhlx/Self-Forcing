@@ -12,6 +12,8 @@ import torch.nn.functional as F
 import torch.utils.checkpoint as checkpoint
 from torch.utils.data import Dataset
 
+from utils.wan_wrapper import WanDiffusionWrapper
+
 
 def sinusoidal_embedding_1d(dim: int, position: torch.Tensor) -> torch.Tensor:
     half = dim // 2
@@ -223,6 +225,10 @@ def make_draft_head_record(
     target_kv_cache: dict[str, dict[str, torch.Tensor]] | None = None,
     context_latents: torch.Tensor | None = None,
     draft_latents: torch.Tensor | None = None,
+    prompt_embeds: torch.Tensor | None = None,
+    teacher_trajectory_latents: torch.Tensor | None = None,
+    teacher_trajectory_noisy_latents: torch.Tensor | None = None,
+    teacher_trajectory_timesteps: torch.Tensor | None = None,
     delta: float | None = None,
     target_feature_storage: str = "pooled",
 ) -> dict[str, Any]:
@@ -231,8 +237,8 @@ def make_draft_head_record(
             f"block_noise and target_latents must have the same shape, "
             f"got {tuple(block_noise.shape)} and {tuple(target_latents.shape)}"
         )
-    if not target_features and target_kv_cache is None:
-        raise ValueError("target_features must not be empty unless target_kv_cache is provided")
+    if not target_features and target_kv_cache is None and prompt_embeds is None:
+        raise ValueError("target_features must not be empty unless target_kv_cache or prompt_embeds is provided")
 
     return {
         "prompt": prompt,
@@ -244,6 +250,10 @@ def make_draft_head_record(
         "target_kv_cache": prepare_target_kv_cache_for_storage(target_kv_cache) if target_kv_cache is not None else None,
         "context_latents": _cpu_tensor(context_latents) if context_latents is not None else None,
         "draft_latents": _cpu_tensor(draft_latents) if draft_latents is not None else None,
+        "prompt_embeds": _cpu_tensor(prompt_embeds) if prompt_embeds is not None else None,
+        "teacher_trajectory_latents": _cpu_tensor(teacher_trajectory_latents) if teacher_trajectory_latents is not None else None,
+        "teacher_trajectory_noisy_latents": _cpu_tensor(teacher_trajectory_noisy_latents) if teacher_trajectory_noisy_latents is not None else None,
+        "teacher_trajectory_timesteps": _cpu_tensor(teacher_trajectory_timesteps) if teacher_trajectory_timesteps is not None else None,
         "delta": float(delta) if delta is not None else None,
     }
 
@@ -1263,6 +1273,148 @@ class LatentDraftHead(nn.Module):
         return block_noise + residual
 
 
+class CausalWanARDraftHead(nn.Module):
+    """Full causal Wan AR draft head initialized from Self-Forcing-style checkpoints.
+
+    This is intentionally a full causal Wan model, not a DFlash/latent adapter.
+    It supports:
+    - training-time latest-block teacher forcing via clean_x/aug_t
+    - inference-time accumulated KV/cross-attention cache via the regular
+      CausalWanModel inference path
+    """
+
+    def __init__(
+        self,
+        model_name: str = "Wan2.1-T2V-1.3B",
+        timestep_shift: float = 5.0,
+        local_attn_size: int = -1,
+        sink_size: int = 0,
+    ):
+        super().__init__()
+        self.model_name = model_name
+        self.timestep_shift = float(timestep_shift)
+        self.local_attn_size = int(local_attn_size)
+        self.sink_size = int(sink_size)
+        self.generator = WanDiffusionWrapper(
+            model_name=model_name,
+            timestep_shift=timestep_shift,
+            is_causal=True,
+            local_attn_size=local_attn_size,
+            sink_size=sink_size,
+        )
+
+    @property
+    def latent_channels(self) -> int:
+        return int(getattr(self.generator.model, "in_dim", 16))
+
+    def enable_gradient_checkpointing(self) -> None:
+        self.generator.enable_gradient_checkpointing()
+
+    def forward_prefix_teacher_forcing(
+        self,
+        *,
+        noisy_latents: torch.Tensor,
+        prompt_embeds: torch.Tensor,
+        timestep: torch.Tensor,
+        clean_prefix_latents: torch.Tensor | None = None,
+        pad_to_frames: int | None = None,
+        return_clean: bool = False,
+    ) -> torch.Tensor | tuple[torch.Tensor, torch.Tensor]:
+        if clean_prefix_latents is None or clean_prefix_latents.shape[1] == 0:
+            return self(
+                noisy_latents=noisy_latents,
+                prompt_embeds=prompt_embeds,
+                timestep=timestep,
+                return_clean=return_clean,
+            )
+
+        batch_size, current_frames = noisy_latents.shape[:2]
+        prefix_frames = clean_prefix_latents.shape[1]
+        full_latents = torch.cat([clean_prefix_latents, noisy_latents], dim=1)
+        prefix_timestep = torch.zeros(
+            [batch_size, prefix_frames],
+            device=timestep.device,
+            dtype=timestep.dtype,
+        )
+        full_timestep = torch.cat([prefix_timestep, timestep], dim=1)
+        current_start = prefix_frames
+        if pad_to_frames is not None and full_latents.shape[1] < pad_to_frames:
+            pad_frames = int(pad_to_frames) - int(full_latents.shape[1])
+            pad_latents = full_latents.new_zeros(
+                [batch_size, pad_frames, *full_latents.shape[2:]]
+            )
+            pad_timestep = full_timestep.new_zeros([batch_size, pad_frames])
+            full_latents = torch.cat([full_latents, pad_latents], dim=1)
+            full_timestep = torch.cat([full_timestep, pad_timestep], dim=1)
+        seq_len = self.generator._seq_len_for_latents(full_latents)
+
+        flow_pred = self.generator.model(
+            full_latents.permute(0, 2, 1, 3, 4),
+            t=full_timestep,
+            context=prompt_embeds,
+            seq_len=seq_len,
+        ).permute(0, 2, 1, 3, 4)[:, current_start:current_start + current_frames]
+
+        clean_pred = self.generator._convert_flow_pred_to_x0(
+            flow_pred=flow_pred.flatten(0, 1),
+            xt=noisy_latents.flatten(0, 1),
+            timestep=timestep.flatten(0, 1),
+        ).unflatten(0, flow_pred.shape[:2])
+        if return_clean:
+            return flow_pred, clean_pred
+        return flow_pred
+
+    def forward(
+        self,
+        *,
+        noisy_latents: torch.Tensor,
+        prompt_embeds: torch.Tensor,
+        timestep: torch.Tensor,
+        clean_prefix_latents: torch.Tensor | None = None,
+        pad_to_frames: int | None = None,
+        clean_context_latents: torch.Tensor | None = None,
+        kv_cache: list[dict] | None = None,
+        crossattn_cache: list[dict] | None = None,
+        current_start: int | None = None,
+        cache_start: int | None = None,
+        return_clean: bool = False,
+    ) -> torch.Tensor | tuple[torch.Tensor, torch.Tensor]:
+        if clean_prefix_latents is not None:
+            return self.forward_prefix_teacher_forcing(
+                noisy_latents=noisy_latents,
+                prompt_embeds=prompt_embeds,
+                timestep=timestep,
+                clean_prefix_latents=clean_prefix_latents,
+                pad_to_frames=pad_to_frames,
+                return_clean=return_clean,
+            )
+        conditional_dict = {"prompt_embeds": prompt_embeds}
+        # Causal inference mutates KV caches in-place. Gradient checkpointing
+        # can replay these forwards during backward, so keep cached forwards
+        # non-checkpointed even if checkpointing is enabled elsewhere.
+        wan_model = self.generator.model
+        previous_gradient_checkpointing = getattr(wan_model, "gradient_checkpointing", False)
+        if kv_cache is not None:
+            wan_model.gradient_checkpointing = False
+        try:
+            flow_pred, clean_pred = self.generator(
+                noisy_image_or_video=noisy_latents,
+                conditional_dict=conditional_dict,
+                timestep=timestep,
+                kv_cache=kv_cache,
+                crossattn_cache=crossattn_cache,
+                current_start=current_start,
+                clean_x=clean_context_latents,
+                aug_t=torch.zeros_like(timestep) if clean_context_latents is not None else None,
+                cache_start=cache_start,
+            )
+        finally:
+            wan_model.gradient_checkpointing = previous_gradient_checkpointing
+        if return_clean:
+            return flow_pred, clean_pred
+        return flow_pred
+
+
 def collate_draft_head_records(
     records: list[dict[str, Any]],
     layer_names: tuple[str, ...] | None = None,
@@ -1316,6 +1468,25 @@ def collate_draft_head_records(
         }
     if all(record.get("draft_latents") is not None for record in records):
         batch["draft_latents"] = torch.cat([record["draft_latents"] for record in records], dim=0)
+    if all(record.get("context_latents") is not None for record in records):
+        batch["context_latents"] = torch.cat([record["context_latents"] for record in records], dim=0)
+    if all(record.get("prompt_embeds") is not None for record in records):
+        batch["prompt_embeds"] = torch.cat([record["prompt_embeds"] for record in records], dim=0)
+    if all(record.get("teacher_trajectory_latents") is not None for record in records):
+        batch["teacher_trajectory_latents"] = torch.stack(
+            [record["teacher_trajectory_latents"] for record in records],
+            dim=0,
+        )
+    if all(record.get("teacher_trajectory_noisy_latents") is not None for record in records):
+        batch["teacher_trajectory_noisy_latents"] = torch.stack(
+            [record["teacher_trajectory_noisy_latents"] for record in records],
+            dim=0,
+        )
+    if all(record.get("teacher_trajectory_timesteps") is not None for record in records):
+        batch["teacher_trajectory_timesteps"] = torch.stack(
+            [record["teacher_trajectory_timesteps"] for record in records],
+            dim=0,
+        )
     return batch
 
 
@@ -1597,6 +1768,14 @@ def save_draft_head_checkpoint(
             "dropout": model.dropout,
             "eps": model.eps,
         }
+    elif isinstance(model, CausalWanARDraftHead):
+        head_type = "causal_wan_ar"
+        model_config = {
+            "model_name": model.model_name,
+            "timestep_shift": model.timestep_shift,
+            "local_attn_size": model.local_attn_size,
+            "sink_size": model.sink_size,
+        }
     elif isinstance(model, LatentDraftHead):
         head_type = "conv"
         model_config = {
@@ -1648,6 +1827,14 @@ def load_draft_head_checkpoint(
         model_config.setdefault("per_block_context", False)
         model_config.setdefault("mean_init_context_fuser", False)
         model = WanDFlashLatentDraftHead(**model_config)
+    elif head_type == "ar_bidirectional":
+        from train_bidirectional_draft_head import BidirectionalPromptAnchorDraftHead
+
+        if "patch_size" in model_config:
+            model_config["patch_size"] = tuple(model_config["patch_size"])
+        model = BidirectionalPromptAnchorDraftHead(**model_config)
+    elif head_type == "causal_wan_ar":
+        model = CausalWanARDraftHead(**model_config)
     elif head_type == "conv":
         model = LatentDraftHead(**model_config)
     else:

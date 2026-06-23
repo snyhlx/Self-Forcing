@@ -880,6 +880,11 @@ class CausalWanModel(ModelMixin, ConfigMixin):
             self.freqs = self.freqs.to(device)
 
         # Construct blockwise causal attn mask
+        frame_seqlen = x.shape[-2] * x.shape[-1] // (self.patch_size[1] * self.patch_size[2])
+        mask_num_frames = x.shape[2] * (2 if clean_x is not None else 1)
+        required_mask_length = math.ceil(mask_num_frames * frame_seqlen / 128) * 128
+        if self.block_mask is not None and self.block_mask.shape[-1] != required_mask_length:
+            self.block_mask = None
         if self.block_mask is None:
             if clean_x is not None:
                 if self.independent_first_frame:
@@ -887,21 +892,21 @@ class CausalWanModel(ModelMixin, ConfigMixin):
                 else:
                     self.block_mask = self._prepare_teacher_forcing_mask(
                         device, num_frames=x.shape[2],
-                        frame_seqlen=x.shape[-2] * x.shape[-1] // (self.patch_size[1] * self.patch_size[2]),
+                        frame_seqlen=frame_seqlen,
                         num_frame_per_block=self.num_frame_per_block
                     )
             else:
                 if self.independent_first_frame:
                     self.block_mask = self._prepare_blockwise_causal_attn_mask_i2v(
                         device, num_frames=x.shape[2],
-                        frame_seqlen=x.shape[-2] * x.shape[-1] // (self.patch_size[1] * self.patch_size[2]),
+                        frame_seqlen=frame_seqlen,
                         num_frame_per_block=self.num_frame_per_block,
                         local_attn_size=self.local_attn_size
                     )
                 else:
                     self.block_mask = self._prepare_blockwise_causal_attn_mask(
                         device, num_frames=x.shape[2],
-                        frame_seqlen=x.shape[-2] * x.shape[-1] // (self.patch_size[1] * self.patch_size[2]),
+                        frame_seqlen=frame_seqlen,
                         num_frame_per_block=self.num_frame_per_block,
                         local_attn_size=self.local_attn_size
                     )

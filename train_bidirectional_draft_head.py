@@ -24,6 +24,7 @@ from tqdm import tqdm
 
 from fsdp_utils import rank0_save_with_state_dict, unwrap_model, wrap_model_for_training
 from utils.scheduler import FlowMatchScheduler
+from wan.utils.fm_solvers_unipc import FlowUniPCMultistepScheduler
 from sdvg_draft_head import (
     DraftCausalHead,
     WanDFlashDraftBlock,
@@ -187,6 +188,77 @@ def make_descending_timestep_list(num_steps: int) -> list[int]:
     return torch.linspace(1000, 0, steps=num_steps).round().long().tolist()
 
 
+def resolve_rollout_steps(
+    *,
+    rollout_steps: int,
+    denoising_step_list: list[int],
+) -> int:
+    if rollout_steps > 0:
+        if rollout_steps < 2:
+            raise ValueError("--rollout_steps must be >= 2")
+        return int(rollout_steps)
+    if not denoising_step_list:
+        raise ValueError("denoising_step_list must not be empty")
+    return len(denoising_step_list)
+
+
+def _parse_rollout_time_token(token: str, *, sigma_max: float) -> float:
+    token = token.strip()
+    if not token:
+        raise ValueError("empty rollout schedule token")
+    if token == "sigma_max":
+        if sigma_max <= 0:
+            raise ValueError("--rollout_sigma_max must be positive")
+        return sigma_max / (sigma_max + 1.0)
+    if "/" in token:
+        numerator, denominator = token.split("/", 1)
+        return float(numerator) / float(denominator)
+    return float(token)
+
+
+def parse_rollout_timestep_schedule(schedule: str, *, sigma_max: float) -> list[int]:
+    """Parse rCM-style RF times or raw timesteps into descending 0..1000 timesteps."""
+    tokens = [token for token in schedule.replace(",", " ").split() if token]
+    if len(tokens) < 2:
+        raise ValueError("--rollout_schedule must contain at least two time points")
+    values = [_parse_rollout_time_token(token, sigma_max=sigma_max) for token in tokens]
+    timesteps = [int(round(value * 1000.0)) if abs(value) <= 1.0 else int(round(value)) for value in values]
+    timesteps = [max(0, min(1000, timestep)) for timestep in timesteps]
+    if any(a < b for a, b in zip(timesteps, timesteps[1:])):
+        raise ValueError("--rollout_schedule must be descending from noisy to clean")
+    if timesteps[-1] != 0:
+        raise ValueError("--rollout_schedule must end at 0")
+    return timesteps
+
+
+def default_rcm_rollout_schedule(*, rollout_steps: int, sigma_max: float) -> list[int]:
+    if rollout_steps == 5:
+        return parse_rollout_timestep_schedule("sigma_max 15/16 5/6 5/8 0", sigma_max=sigma_max)
+    if rollout_steps == 4:
+        return parse_rollout_timestep_schedule("sigma_max 5/6 5/8 0", sigma_max=sigma_max)
+    if rollout_steps == 3:
+        return parse_rollout_timestep_schedule("sigma_max 5/8 0", sigma_max=sigma_max)
+    if rollout_steps == 2:
+        return parse_rollout_timestep_schedule("sigma_max 0", sigma_max=sigma_max)
+    raise ValueError("--rollout_solver rcm supports rollout_steps in {2,3,4,5} unless --rollout_schedule is set")
+
+
+def resolve_rollout_timestep_list(
+    *,
+    rollout_solver: str,
+    rollout_steps: int,
+    rollout_schedule: str,
+    rollout_sigma_max: float,
+    denoising_step_list: list[int],
+) -> list[int]:
+    if rollout_schedule:
+        return parse_rollout_timestep_schedule(rollout_schedule, sigma_max=rollout_sigma_max)
+    if rollout_solver == "rcm":
+        steps = resolve_rollout_steps(rollout_steps=rollout_steps, denoising_step_list=denoising_step_list)
+        return default_rcm_rollout_schedule(rollout_steps=steps, sigma_max=rollout_sigma_max)
+    return denoising_step_list
+
+
 def sample_random_timesteps(
     *,
     batch_size: int,
@@ -294,7 +366,7 @@ def rcm_fake_score_loss(
     if nan_sample.any():
         per_element = per_element.clone()
         per_element[nan_sample] = 0
-    return per_element.flatten(start_dim=1).sum(dim=1).mean()
+    return per_element.flatten(start_dim=1).mean(dim=1).mean()
 
 
 class RCMStyleDraftHeadDMD:
@@ -303,13 +375,15 @@ class RCMStyleDraftHeadDMD:
     def __init__(
         self,
         *,
-        model_name: str,
+        teacher_model_name: str,
+        fake_score_model_name: str,
         teacher_checkpoint_path: str | None,
         fake_score_checkpoint_path: str | None,
         model_root: str,
         config_path: str,
         text_encoder: nn.Module,
         device: torch.device,
+        fake_score_device: torch.device,
         dtype: torch.dtype,
         guidance_scale: float,
         timestep_shift: float,
@@ -329,17 +403,30 @@ class RCMStyleDraftHeadDMD:
         config = load_config(config_path)
         model_kwargs = dict(getattr(config, "model_kwargs", {}))
         model_kwargs.pop("model_name", None)
-        self.teacher = WanDiffusionWrapper(model_name=model_name, **model_kwargs, is_causal=False)
-        self.fake_score = WanDiffusionWrapper(model_name=model_name, **model_kwargs, is_causal=False)
+        self.teacher_model_name = teacher_model_name
+        self.fake_score_model_name = fake_score_model_name
+        self.teacher = WanDiffusionWrapper(model_name=teacher_model_name, **model_kwargs, is_causal=False)
+        self.fake_score = WanDiffusionWrapper(model_name=fake_score_model_name, **model_kwargs, is_causal=False)
         if teacher_checkpoint_path and not teacher_checkpoint_path.endswith(".index.json"):
             load_checkpoint_into_generator(self.teacher, teacher_checkpoint_path, use_ema=False)
         self.teacher = self.teacher.to(device=device, dtype=dtype).eval().requires_grad_(False)
         if fake_score_checkpoint_path:
             load_checkpoint_into_generator(self.fake_score, fake_score_checkpoint_path, use_ema=False)
-        else:
+            self.fake_score_init = f"checkpoint:{fake_score_checkpoint_path}"
+        elif fake_score_model_name == teacher_model_name:
             self.fake_score.load_state_dict(self.teacher.state_dict(), strict=True)
-        self.fake_score = self.fake_score.to(device=device, dtype=dtype).train().requires_grad_(True)
-        self.optimizer = torch.optim.AdamW(self.fake_score.parameters(), lr=fake_score_lr, weight_decay=fake_score_weight_decay)
+            self.fake_score_init = "teacher_state"
+        else:
+            # Cross-size ablations cannot copy teacher weights; keep the fake-score
+            # model's own pretrained initialization from WanDiffusionWrapper.
+            self.fake_score_init = "pretrained_model"
+        self.fake_score = self.fake_score.to(device=fake_score_device, dtype=dtype).train().requires_grad_(True)
+        self.raw_fake_score = self.fake_score
+        self.fake_score_is_wrapped = False
+        self.fake_score_init_device = str(fake_score_device)
+        self.fake_score_lr = float(fake_score_lr)
+        self.fake_score_weight_decay = float(fake_score_weight_decay)
+        self.optimizer: torch.optim.Optimizer | None = None
         self.scheduler = self.teacher.get_scheduler()
         self.scheduler.timesteps = self.scheduler.timesteps.to(device)
         self.text_encoder = text_encoder
@@ -352,6 +439,36 @@ class RCMStyleDraftHeadDMD:
         self.score_scope = score_scope
         self.negative_prompt = negative_prompt
         self._negative_cache: dict[int, torch.Tensor] = {}
+
+    def enable_fake_score_gradient_checkpointing(self) -> None:
+        if hasattr(self.raw_fake_score, "enable_gradient_checkpointing"):
+            self.raw_fake_score.enable_gradient_checkpointing()
+
+    def wrap_fake_score(
+        self,
+        *,
+        strategy: str,
+        is_distributed: bool,
+        local_rank: int,
+        fsdp_min_num_params: int,
+        fsdp_mixed_precision: str,
+    ) -> None:
+        self.fake_score = wrap_model_for_training(
+            self.fake_score,
+            strategy=strategy,
+            is_distributed=is_distributed,
+            local_rank=local_rank,
+            fsdp_min_num_params=fsdp_min_num_params,
+            fsdp_mixed_precision=fsdp_mixed_precision,
+        )
+        self.fake_score_is_wrapped = self.fake_score is not self.raw_fake_score
+
+    def create_optimizer(self) -> None:
+        self.optimizer = torch.optim.AdamW(
+            self.fake_score.parameters(),
+            lr=self.fake_score_lr,
+            weight_decay=self.fake_score_weight_decay,
+        )
 
     @staticmethod
     def is_student_phase(step: int, *, warmup_steps: int, student_update_freq: int) -> bool:
@@ -451,7 +568,7 @@ class RCMStyleDraftHeadDMD:
         }
 
     def average_fake_score_gradients(self, world_size: int) -> None:
-        if world_size <= 1:
+        if world_size <= 1 or self.fake_score_is_wrapped:
             return
         for parameter in self.fake_score.parameters():
             if parameter.grad is not None:
@@ -686,6 +803,8 @@ class BidirectionalPromptAnchorDataset(Dataset):
                 "anchor_latents": target_latents[:, :3].contiguous(),
                 "future_noise": noise[:, 3:].contiguous(),
                 "future_target_latents": target_latents[:, 3:].contiguous(),
+                "full_noise": noise.contiguous(),
+                "full_target_latents": target_latents.contiguous(),
             }
         prompt_index, prompt, blocks = self.examples[index]
         ordered = [self._load_record(blocks[block_index]) for block_index in range(1, self.num_blocks)]
@@ -712,6 +831,10 @@ def collate_bidirectional_examples(records: list[dict[str, Any]]) -> dict[str, A
     }
     if "anchor_latents" in records[0]:
         batch["anchor_latents"] = torch.cat([record["anchor_latents"] for record in records], dim=0)
+    if "full_noise" in records[0]:
+        batch["full_noise"] = torch.cat([record["full_noise"] for record in records], dim=0)
+    if "full_target_latents" in records[0]:
+        batch["full_target_latents"] = torch.cat([record["full_target_latents"] for record in records], dim=0)
     return batch
 
 
@@ -1679,6 +1802,10 @@ def compute_bidirectional_losses(
     boundary_weight: float,
     dmd: RCMStyleDraftHeadDMD | None = None,
     dmd_loss_weight: float = 0.0,
+    rollout_solver: str = "euler",
+    rollout_steps: int = 0,
+    rollout_timestep_list: list[int] | None = None,
+    rollout_solver_shift: float = 8.0,
 ) -> tuple[torch.Tensor, dict[str, float]]:
     if training_mode not in ("one_step", "unrolled", "random_timestep"):
         raise ValueError("--training_mode must be 'one_step', 'unrolled', or 'random_timestep'")
@@ -1756,6 +1883,81 @@ def compute_bidirectional_losses(
 
     if len(denoising_step_list) != len(unroll_step_weights):
         raise ValueError("denoising_step_list and unroll_step_weights must have the same length")
+    if rollout_solver in ("unipc", "rcm"):
+        if prediction_type != "flow":
+            raise ValueError(f"--rollout_solver {rollout_solver} requires --prediction_type flow")
+        if rollout_solver == "unipc":
+            actual_rollout_steps = resolve_rollout_steps(
+                rollout_steps=rollout_steps,
+                denoising_step_list=denoising_step_list,
+            )
+            prediction, used_timesteps = unipc_bidirectional_clean_rollout(
+                model,
+                anchor=anchor,
+                initial_latents=initial_noise,
+                prompt_embeds=prompt_embeds,
+                num_steps=actual_rollout_steps,
+                shift=rollout_solver_shift,
+            )
+        else:
+            used_timesteps = list(rollout_timestep_list or denoising_step_list)
+            prediction = timestep_list_bidirectional_clean_rollout(
+                model,
+                anchor=anchor,
+                initial_latents=initial_noise,
+                prompt_embeds=prompt_embeds,
+                scheduler=scheduler,
+                timestep_list=used_timesteps,
+            )
+        components: list[torch.Tensor] = []
+        final_clean_loss = F.mse_loss(prediction.float(), target.float())
+        if clean_latent_loss_weight > 0:
+            components.append(final_clean_loss * clean_latent_loss_weight)
+        if detail_loss_weight > 0:
+            detail_loss = spatial_detail_loss(prediction, target)
+            components.append(detail_loss * detail_loss_weight)
+        else:
+            detail_loss = None
+        if temporal_delta_weight > 0:
+            pred_delta = prediction[:, 1:].float() - prediction[:, :-1].float()
+            target_delta = target[:, 1:].float() - target[:, :-1].float()
+            temporal_delta_loss = F.mse_loss(pred_delta, target_delta)
+            components.append(temporal_delta_loss * temporal_delta_weight)
+        else:
+            temporal_delta_loss = None
+        if boundary_weight > 0:
+            pred_boundary = prediction[:, 0].float() - anchor[:, -1].float()
+            target_boundary = target[:, 0].float() - anchor[:, -1].float()
+            boundary_loss = F.mse_loss(pred_boundary, target_boundary)
+            components.append(boundary_loss * boundary_weight)
+        else:
+            boundary_loss = None
+        dmd_metrics: dict[str, float] = {}
+        if dmd is not None and dmd_loss_weight > 0:
+            dmd_component, dmd_metrics = dmd.student_loss(prediction, anchor=anchor, prompt_embeds=prompt_embeds)
+            components.append(dmd_component * dmd_loss_weight)
+        if flow_loss_weight > 0:
+            raise ValueError(f"--rollout_solver {rollout_solver} does not support flow supervision; use DMD/clean/detail losses or rollout_solver=euler")
+        if not components:
+            raise ValueError("At least one loss component must be enabled")
+        total_loss = sum(components)
+        metrics = {
+            "loss": float(total_loss.detach().cpu().item()),
+            "clean_latent_mse": float(final_clean_loss.detach().cpu().item()),
+            f"rollout_{rollout_solver}_steps": float(len(used_timesteps)),
+        }
+        if detail_loss is not None:
+            metrics["unrolled_detail_loss"] = float(detail_loss.detach().cpu().item())
+        if temporal_delta_loss is not None:
+            metrics["temporal_delta_loss"] = float(temporal_delta_loss.detach().cpu().item())
+        if boundary_loss is not None:
+            metrics["boundary_loss"] = float(boundary_loss.detach().cpu().item())
+        if dmd_metrics:
+            metrics["dmd_loss"] = float((dmd_component * dmd_loss_weight).detach().cpu().item())
+            metrics.update(dmd_metrics)
+        return total_loss, metrics
+    if rollout_solver != "euler":
+        raise ValueError("--rollout_solver must be 'euler', 'unipc', or 'rcm'")
     clean_weight_denominator = max(sum(unroll_step_weights), 1e-8)
     flow_weight_denominator = max(
         sum(
@@ -1860,6 +2062,73 @@ def compute_bidirectional_losses(
     return total_loss, metrics
 
 
+def unipc_bidirectional_clean_rollout(
+    model: nn.Module,
+    *,
+    anchor: torch.Tensor | None,
+    initial_latents: torch.Tensor,
+    prompt_embeds: torch.Tensor,
+    num_steps: int,
+    shift: float,
+) -> tuple[torch.Tensor, list[int]]:
+    if num_steps < 2:
+        raise ValueError("UniPC rollout requires at least 2 steps")
+    sample_scheduler = FlowUniPCMultistepScheduler(
+        num_train_timesteps=1000,
+        shift=1,
+        use_dynamic_shifting=False,
+    )
+    sample_scheduler.set_timesteps(num_steps, device=initial_latents.device, shift=shift)
+    current = initial_latents
+    used_timesteps: list[int] = []
+    for t in sample_scheduler.timesteps:
+        timestep = t * torch.ones(current.shape[:2], device=current.device, dtype=torch.float32)
+        flow_prediction = model(
+            anchor_latents=anchor,
+            future_noise=current,
+            prompt_embeds=prompt_embeds,
+            timestep=timestep,
+        )
+        current = sample_scheduler.step(
+            flow_prediction.unsqueeze(0),
+            t,
+            current.unsqueeze(0),
+            return_dict=False,
+        )[0].squeeze(0)
+        used_timesteps.append(int(round(float(t.detach().cpu().item()))))
+    return current, used_timesteps
+
+
+def timestep_list_bidirectional_clean_rollout(
+    model: nn.Module,
+    *,
+    anchor: torch.Tensor | None,
+    initial_latents: torch.Tensor,
+    prompt_embeds: torch.Tensor,
+    scheduler: FlowMatchScheduler,
+    timestep_list: list[int],
+) -> torch.Tensor:
+    if len(timestep_list) < 2:
+        raise ValueError("rollout timestep list must contain at least two time points")
+    batch_size, frames = initial_latents.shape[:2]
+    current = initial_latents
+    prediction = current
+    for index, current_timestep in enumerate(timestep_list):
+        timestep = timestep_batch(current_timestep, batch_size, frames, device=initial_latents.device)
+        flow_prediction = model(anchor_latents=anchor, future_noise=current, prompt_embeds=prompt_embeds, timestep=timestep)
+        prediction = flow_prediction_to_clean_latent(scheduler, flow_prediction, current, timestep)
+        if index < len(timestep_list) - 1:
+            next_timestep_tensor = timestep_batch(timestep_list[index + 1], batch_size, frames, device=initial_latents.device)
+            current = flow_prediction_step(
+                scheduler,
+                flow_prediction,
+                current,
+                timestep,
+                next_timestep_tensor,
+            )
+    return prediction
+
+
 def predict_bidirectional_clean_rollout(
     model: nn.Module,
     *,
@@ -1875,6 +2144,10 @@ def predict_bidirectional_clean_rollout(
     logit_normal_mean: float,
     logit_normal_std: float,
     unroll_noise_mode: str,
+    rollout_solver: str = "euler",
+    rollout_steps: int = 0,
+    rollout_timestep_list: list[int] | None = None,
+    rollout_solver_shift: float = 8.0,
 ) -> torch.Tensor:
     """Generate the clean draft-head prediction used as G(x) for fake-score updates."""
     if training_mode not in ("one_step", "unrolled", "random_timestep"):
@@ -1913,6 +2186,36 @@ def predict_bidirectional_clean_rollout(
         if prediction_type == "flow":
             return flow_prediction_to_clean_latent(scheduler, model_output, noisy_latents, timestep)
         return model_output
+
+    if rollout_solver == "unipc":
+        if prediction_type != "flow":
+            raise ValueError("--rollout_solver unipc requires --prediction_type flow")
+        actual_rollout_steps = resolve_rollout_steps(
+            rollout_steps=rollout_steps,
+            denoising_step_list=denoising_step_list,
+        )
+        prediction, _used_timesteps = unipc_bidirectional_clean_rollout(
+            model,
+            anchor=anchor,
+            initial_latents=initial_noise,
+            prompt_embeds=prompt_embeds,
+            num_steps=actual_rollout_steps,
+            shift=rollout_solver_shift,
+        )
+        return prediction
+    if rollout_solver == "rcm":
+        if prediction_type != "flow":
+            raise ValueError("--rollout_solver rcm requires --prediction_type flow")
+        return timestep_list_bidirectional_clean_rollout(
+            model,
+            anchor=anchor,
+            initial_latents=initial_noise,
+            prompt_embeds=prompt_embeds,
+            scheduler=scheduler,
+            timestep_list=rollout_timestep_list or denoising_step_list,
+        )
+    if rollout_solver != "euler":
+        raise ValueError("--rollout_solver must be 'euler', 'unipc', or 'rcm'")
 
     current = initial_noise
     current_noise = initial_noise
@@ -2089,6 +2392,7 @@ def main() -> None:
     parser.add_argument("--target_model_name", default="Wan2.1-T2V-14B")
     parser.add_argument("--target_checkpoint_path", default="/mnt/lanxiangh/models/realtime-video/checkpoints/krea-realtime-video-14b.safetensors")
     parser.add_argument("--init_model_name", default=None)
+    parser.add_argument("--init_draft_head_checkpoint_path", default="")
     parser.add_argument("--anchor_noise_seed", type=int, default=42)
     parser.add_argument("--num_blocks", type=int, default=9)
     parser.add_argument("--hidden_channels", type=int, default=5120)
@@ -2111,6 +2415,11 @@ def main() -> None:
     parser.add_argument("--logit_normal_std", type=float, default=1.0)
     parser.add_argument("--unroll_step_weights", nargs="+", type=float, default=None)
     parser.add_argument("--unroll_noise_mode", choices=["fixed", "fresh"], default="fixed")
+    parser.add_argument("--rollout_solver", choices=["euler", "unipc", "rcm"], default="euler")
+    parser.add_argument("--rollout_steps", type=int, default=0)
+    parser.add_argument("--rollout_schedule", default="")
+    parser.add_argument("--rollout_sigma_max", type=float, default=1600.0)
+    parser.add_argument("--rollout_solver_shift", type=float, default=8.0)
     parser.add_argument("--epochs", type=int, default=10)
     parser.add_argument("--batch_size", type=int, default=1)
     parser.add_argument("--lr", type=float, default=1e-4)
@@ -2129,7 +2438,10 @@ def main() -> None:
     parser.add_argument("--dmd_student_update_freq", type=int, default=5)
     parser.add_argument("--dmd_fake_score_lr", type=float, default=1e-7)
     parser.add_argument("--dmd_fake_score_weight_decay", type=float, default=0.01)
-    parser.add_argument("--dmd_model_name", default=None)
+    parser.add_argument("--dmd_fake_score_gradient_checkpointing", action="store_true")
+    parser.add_argument("--dmd_model_name", default=None, help="Deprecated alias: set both DMD teacher and fake-score model names.")
+    parser.add_argument("--dmd_teacher_model_name", default=None)
+    parser.add_argument("--dmd_fake_score_model_name", default=None)
     parser.add_argument("--dmd_teacher_checkpoint_path", default="")
     parser.add_argument("--dmd_fake_score_checkpoint_path", default="")
     parser.add_argument("--dmd_guidance_scale", type=float, default=5.0)
@@ -2162,10 +2474,27 @@ def main() -> None:
         raise ValueError("--dmd_max_timestep must be greater than --dmd_min_timestep")
     if args.dense_schedule_steps:
         args.denoising_step_list = make_descending_timestep_list(args.dense_schedule_steps)
-    if args.anchor_conditioning == "none" and args.training_mode != "teacher_trajectory":
-        raise ValueError("--anchor_conditioning none is currently supported only with --training_mode teacher_trajectory")
+    if args.anchor_conditioning == "none" and args.training_mode != "teacher_trajectory" and args.dmd_loss_weight <= 0:
+        raise ValueError("--anchor_conditioning none outside teacher_trajectory currently requires --dmd_loss_weight > 0")
     if args.dmd_loss_weight > 0 and args.training_mode == "teacher_trajectory":
         raise ValueError("rCM-style DMD is currently wired for one_step/unrolled/random_timestep, not teacher_trajectory")
+    if args.rollout_solver in ("unipc", "rcm") and args.prediction_type != "flow":
+        raise ValueError(f"--rollout_solver {args.rollout_solver} requires --prediction_type flow")
+    if args.rollout_steps < 0:
+        raise ValueError("--rollout_steps must be non-negative")
+    if args.rollout_schedule and args.rollout_solver != "rcm":
+        raise ValueError("--rollout_schedule is only used with --rollout_solver rcm")
+    if args.rollout_solver == "unipc" and args.rollout_steps == 0:
+        args.rollout_steps = len(args.denoising_step_list)
+    if args.rollout_solver == "rcm" and args.rollout_steps == 0:
+        args.rollout_steps = 5
+    rollout_timestep_list = resolve_rollout_timestep_list(
+        rollout_solver=args.rollout_solver,
+        rollout_steps=args.rollout_steps,
+        rollout_schedule=args.rollout_schedule,
+        rollout_sigma_max=args.rollout_sigma_max,
+        denoising_step_list=args.denoising_step_list,
+    )
 
     if "RANK" in os.environ and "WORLD_SIZE" in os.environ:
         dist.init_process_group(backend="nccl")
@@ -2352,7 +2681,21 @@ def main() -> None:
         ).to(device)
     log_stage(f"draft head ready in {time.perf_counter() - head_t0:.1f}s class={type(model).__name__}")
     init_report = None
-    if args.init_target_blocks:
+    if args.init_draft_head_checkpoint_path:
+        init_ckpt_t0 = time.perf_counter()
+        log_stage(f"loading draft-head warm-start checkpoint {args.init_draft_head_checkpoint_path}")
+        init_payload = torch.load(args.init_draft_head_checkpoint_path, map_location="cpu", weights_only=False)
+        if init_payload.get("format") != "bidirectional_prompt_anchor_draft_head_v1":
+            raise ValueError(f"Unsupported draft-head checkpoint format: {init_payload.get('format')}")
+        init_model_config = dict(init_payload.get("model_config", {}))
+        init_model_class = init_model_config.get("model_class", "BidirectionalPromptAnchorDraftHead")
+        if init_model_class != type(model).__name__:
+            raise ValueError(
+                f"Warm-start checkpoint model_class={init_model_class} does not match current model class {type(model).__name__}"
+            )
+        model.load_state_dict(init_payload["model_state_dict"], strict=True)
+        log_stage(f"draft-head warm-start loaded in {time.perf_counter() - init_ckpt_t0:.1f}s")
+    if args.init_target_blocks and not args.init_draft_head_checkpoint_path:
         init_t0 = time.perf_counter()
         init_model_name = args.init_model_name or args.target_model_name
         log_stage(f"initializing draft head from {init_model_name} blocks {args.init_target_blocks}")
@@ -2384,6 +2727,8 @@ def main() -> None:
         log_stage(f"target block initialization ready in {time.perf_counter() - init_t0:.1f}s report={init_report}")
         if is_main:
             print(f"Initialized bidirectional Wan head from target blocks {args.init_target_blocks}: {init_report}")
+    elif args.init_target_blocks and args.init_draft_head_checkpoint_path:
+        log_stage("skipping target block initialization because draft-head warm-start checkpoint was provided")
     raw_model = model
     wrap_t0 = time.perf_counter()
     log_stage(f"wrapping model with {args.parallel_strategy if is_distributed else 'none'}")
@@ -2412,14 +2757,17 @@ def main() -> None:
             "negative_prompt",
             "色调艳丽，过曝，静态，细节模糊不清，字幕，风格，作品，画作，画面，静止，整体发灰，最差质量，低质量",
         )
+        fake_score_init_device = torch.device("cpu") if is_distributed and args.parallel_strategy == "fsdp" else device
         dmd = RCMStyleDraftHeadDMD(
-            model_name=args.dmd_model_name or args.target_model_name,
+            teacher_model_name=args.dmd_teacher_model_name or args.dmd_model_name or args.target_model_name,
+            fake_score_model_name=args.dmd_fake_score_model_name or args.dmd_model_name or args.target_model_name,
             teacher_checkpoint_path=args.dmd_teacher_checkpoint_path or None,
             fake_score_checkpoint_path=args.dmd_fake_score_checkpoint_path or None,
             model_root=args.model_root,
             config_path=args.config_path,
             text_encoder=text_encoder,
             device=device,
+            fake_score_device=fake_score_init_device,
             dtype=torch.bfloat16 if args.amp_dtype == "bf16" and device.type == "cuda" else torch.float32,
             guidance_scale=args.dmd_guidance_scale,
             timestep_shift=args.dmd_timestep_shift,
@@ -2430,9 +2778,22 @@ def main() -> None:
             fake_score_weight_decay=args.dmd_fake_score_weight_decay,
             negative_prompt=negative_prompt,
         )
+        if args.dmd_fake_score_gradient_checkpointing:
+            dmd.enable_fake_score_gradient_checkpointing()
+        dmd.wrap_fake_score(
+            strategy=args.parallel_strategy if is_distributed else "none",
+            is_distributed=is_distributed,
+            local_rank=device.index or 0,
+            fsdp_min_num_params=args.fsdp_min_num_params,
+            fsdp_mixed_precision=args.fsdp_mixed_precision,
+        )
+        dmd.create_optimizer()
         log_stage(
             f"rCM-style DMD ready in {time.perf_counter() - dmd_t0:.1f}s "
-            f"weight={args.dmd_loss_weight} fake_lr={args.dmd_fake_score_lr} "
+            f"teacher={dmd.teacher_model_name} fake_score={dmd.fake_score_model_name} "
+            f"fake_init={dmd.fake_score_init} weight={args.dmd_loss_weight} fake_lr={args.dmd_fake_score_lr} "
+            f"fake_init_device={dmd.fake_score_init_device} fake_wrapped={dmd.fake_score_is_wrapped} "
+            f"fake_gc={args.dmd_fake_score_gradient_checkpointing} "
             f"student_update_freq={args.dmd_student_update_freq} scope={args.dmd_score_scope}"
         )
 
@@ -2444,7 +2805,8 @@ def main() -> None:
             f"heads={args.num_heads} ffn_dim={args.ffn_dim} "
             f"temporal_mixer_layers={args.temporal_mixer_layers} "
             f"temporal_mixer_ffn_dim={args.temporal_mixer_ffn_dim} world_size={world_size} "
-            f"dmd_weight={args.dmd_loss_weight} parallel={args.parallel_strategy if is_distributed else 'none'}"
+            f"dmd_weight={args.dmd_loss_weight} rollout={args.rollout_solver}:{rollout_timestep_list} "
+            f"parallel={args.parallel_strategy if is_distributed else 'none'}"
         )
 
     history = []
@@ -2469,8 +2831,16 @@ def main() -> None:
                     anchor, prompt_embeds = anchor_generator(batch)
                 anchor = anchor.to(device=device, dtype=torch.bfloat16 if args.amp_dtype == "bf16" else torch.float32)
                 prompt_embeds = prompt_embeds.to(device=device, dtype=anchor.dtype)
-                future_noise = batch["future_noise"].to(device=device, dtype=anchor.dtype)
-                target = batch["future_target_latents"].to(device=device, dtype=anchor.dtype)
+                if args.anchor_conditioning == "none":
+                    if "full_noise" not in batch or "full_target_latents" not in batch:
+                        raise ValueError("--anchor_conditioning none requires a full-video Option-B manifest")
+                    model_anchor = None
+                    future_noise = batch["full_noise"].to(device=device, dtype=anchor.dtype)
+                    target = batch["full_target_latents"].to(device=device, dtype=anchor.dtype)
+                else:
+                    model_anchor = anchor
+                    future_noise = batch["future_noise"].to(device=device, dtype=anchor.dtype)
+                    target = batch["future_target_latents"].to(device=device, dtype=anchor.dtype)
                 trajectory = teacher_trajectory_cache(batch) if teacher_trajectory_cache is not None else None
             next_step = global_step + 1
             dmd_fake_phase = (
@@ -2483,12 +2853,13 @@ def main() -> None:
             )
             if dmd_fake_phase:
                 assert dmd is not None
+                assert dmd.optimizer is not None
                 dmd.optimizer.zero_grad(set_to_none=True)
                 model.eval()
                 with torch.no_grad(), amp_context(device, args.amp_dtype):
                     generator_prediction = predict_bidirectional_clean_rollout(
                         model,
-                        anchor=anchor,
+                        anchor=model_anchor,
                         initial_noise=future_noise,
                         target=target,
                         prompt_embeds=prompt_embeds,
@@ -2500,11 +2871,15 @@ def main() -> None:
                         logit_normal_mean=args.logit_normal_mean,
                         logit_normal_std=args.logit_normal_std,
                         unroll_noise_mode=args.unroll_noise_mode,
+                        rollout_solver=args.rollout_solver,
+                        rollout_steps=args.rollout_steps,
+                        rollout_timestep_list=rollout_timestep_list,
+                        rollout_solver_shift=args.rollout_solver_shift,
                     )
                 with amp_context(device, args.amp_dtype):
                     fake_loss, fake_metrics = dmd.fake_score_loss(
                         generator_prediction.detach(),
-                        anchor=anchor,
+                        anchor=model_anchor,
                         prompt_embeds=prompt_embeds,
                     )
                     loss = fake_loss * args.dmd_fake_score_loss_weight
@@ -2527,7 +2902,7 @@ def main() -> None:
                         assert trajectory is not None
                         loss, metrics = compute_teacher_trajectory_losses(
                             model,
-                            anchor=anchor,
+                            anchor=model_anchor,
                             prompt_embeds=prompt_embeds,
                             trajectory=trajectory,
                             scheduler=scheduler,
@@ -2539,7 +2914,7 @@ def main() -> None:
                     else:
                         loss, metrics = compute_bidirectional_losses(
                             model,
-                            anchor=anchor,
+                            anchor=model_anchor,
                             initial_noise=future_noise,
                             target=target,
                             prompt_embeds=prompt_embeds,
@@ -2559,6 +2934,10 @@ def main() -> None:
                             boundary_weight=args.boundary_weight,
                             dmd=dmd,
                             dmd_loss_weight=args.dmd_loss_weight,
+                            rollout_solver=args.rollout_solver,
+                            rollout_steps=args.rollout_steps,
+                            rollout_timestep_list=rollout_timestep_list,
+                            rollout_solver_shift=args.rollout_solver_shift,
                         )
                 loss.backward()
                 optimizer.step()
@@ -2623,15 +3002,23 @@ def main() -> None:
                         dtype=torch.bfloat16 if args.amp_dtype == "bf16" else torch.float32,
                     )
                     prompt_embeds = prompt_embeds.to(device=device, dtype=anchor.dtype)
-                    future_noise = batch["future_noise"].to(device=device, dtype=anchor.dtype)
-                    target = batch["future_target_latents"].to(device=device, dtype=anchor.dtype)
+                    if args.anchor_conditioning == "none":
+                        if "full_noise" not in batch or "full_target_latents" not in batch:
+                            raise ValueError("--anchor_conditioning none requires a full-video Option-B manifest")
+                        model_anchor = None
+                        future_noise = batch["full_noise"].to(device=device, dtype=anchor.dtype)
+                        target = batch["full_target_latents"].to(device=device, dtype=anchor.dtype)
+                    else:
+                        model_anchor = anchor
+                        future_noise = batch["future_noise"].to(device=device, dtype=anchor.dtype)
+                        target = batch["future_target_latents"].to(device=device, dtype=anchor.dtype)
                     trajectory = teacher_trajectory_cache(batch) if teacher_trajectory_cache is not None else None
                     with amp_context(device, args.amp_dtype):
                         if args.training_mode == "teacher_trajectory":
                             assert trajectory is not None
                             _loss, metrics = compute_teacher_trajectory_losses(
                                 model,
-                                anchor=anchor,
+                                anchor=model_anchor,
                                 prompt_embeds=prompt_embeds,
                                 trajectory=trajectory,
                                 scheduler=scheduler,
@@ -2643,7 +3030,7 @@ def main() -> None:
                         else:
                             _loss, metrics = compute_bidirectional_losses(
                                 model,
-                                anchor=anchor,
+                                anchor=model_anchor,
                                 initial_noise=future_noise,
                                 target=target,
                                 prompt_embeds=prompt_embeds,
@@ -2661,6 +3048,12 @@ def main() -> None:
                                 detail_loss_weight=args.detail_loss_weight,
                                 temporal_delta_weight=args.temporal_delta_weight,
                                 boundary_weight=args.boundary_weight,
+                                dmd=dmd,
+                                dmd_loss_weight=args.dmd_loss_weight,
+                                rollout_solver=args.rollout_solver,
+                                rollout_steps=args.rollout_steps,
+                                rollout_timestep_list=rollout_timestep_list,
+                                rollout_solver_shift=args.rollout_solver_shift,
                             )
                     val_loss += metrics["loss"]
                     val_mse += metrics["clean_latent_mse"]
