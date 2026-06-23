@@ -9,7 +9,9 @@ import sys
 from pathlib import Path
 from typing import Any
 
+import torch
 from tqdm import tqdm
+from wan.utils.fm_solvers_unipc import FlowUniPCMultistepScheduler
 
 
 def prompt_args(args: argparse.Namespace, *, prompt_override: str | None = None) -> list[str]:
@@ -35,6 +37,47 @@ def split_indices(num_records: int, val_fraction: float, seed: int) -> tuple[lis
     val_count = max(1, int(round(num_records * val_fraction)))
     val_count = min(val_count, num_records - 1)
     return sorted(indices[val_count:]), sorted(indices[:val_count])
+
+
+def parse_timestep_list(value: str) -> list[int]:
+    timesteps = [int(item) for item in value.replace(",", " ").split() if item.strip()]
+    if not timesteps:
+        raise ValueError("--denoising_step_list must contain at least one timestep")
+    return timesteps
+
+
+def generate_unipc_timesteps(num_steps: int, shift: float) -> list[int]:
+    if num_steps < 1:
+        raise ValueError("--denoising_sampling_steps must be positive")
+    scheduler = FlowUniPCMultistepScheduler(
+        num_train_timesteps=1000,
+        shift=1,
+        use_dynamic_shifting=False,
+    )
+    scheduler.set_timesteps(num_steps, device=torch.device("cpu"), shift=shift)
+    return [int(round(float(timestep.item()))) for timestep in scheduler.timesteps]
+
+
+def generate_euler_timesteps(num_steps: int, shift: float) -> list[int]:
+    if num_steps < 1:
+        raise ValueError("--denoising_sampling_steps must be positive")
+    unit = torch.linspace(1.0, 0.0, steps=num_steps, dtype=torch.float64)
+    if shift <= 0:
+        raise ValueError("--denoising_shift must be positive")
+    shifted = shift * unit / (1.0 + (shift - 1.0) * unit)
+    return [int(round(float(value) * 1000.0)) for value in shifted]
+
+
+def resolve_denoising_step_list(args: argparse.Namespace) -> list[int]:
+    if args.denoising_step_solver == "list":
+        return parse_timestep_list(args.denoising_step_list)
+    if args.denoising_sampling_steps is None:
+        args.denoising_sampling_steps = len(parse_timestep_list(args.denoising_step_list))
+    if args.denoising_step_solver == "unipc":
+        return generate_unipc_timesteps(args.denoising_sampling_steps, args.denoising_shift)
+    if args.denoising_step_solver == "euler":
+        return generate_euler_timesteps(args.denoising_sampling_steps, args.denoising_shift)
+    raise ValueError("--denoising_step_solver must be 'list', 'unipc', or 'euler'")
 
 
 def select_manifest_prompt(args: argparse.Namespace) -> dict[str, Any] | None:
@@ -90,6 +133,7 @@ def run_sdvg(
     output_dir: Path,
     seed: int,
     prompt_override: str | None = None,
+    denoising_step_list: list[int],
 ) -> dict[str, Any]:
     command = [
         sys.executable,
@@ -113,7 +157,7 @@ def run_sdvg(
         "--num_blocks",
         str(args.num_blocks),
         "--denoising_step_list",
-        args.denoising_step_list,
+        " ".join(str(timestep) for timestep in denoising_step_list),
         "--seed",
         str(seed),
         "--fps",
@@ -171,6 +215,9 @@ def main() -> None:
     parser.add_argument("--dataset_cache_wait_seconds", type=int, default=3600)
     parser.add_argument("--num_blocks", type=int, default=7)
     parser.add_argument("--denoising_step_list", default="999 969 922 841 666")
+    parser.add_argument("--denoising_step_solver", choices=["list", "unipc", "euler"], default="list")
+    parser.add_argument("--denoising_sampling_steps", type=int, default=None)
+    parser.add_argument("--denoising_shift", type=float, default=8.0)
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--target_reference_count", type=int, default=1)
     parser.add_argument("--target_reference_seed_stride", type=int, default=1000)
@@ -194,17 +241,33 @@ def main() -> None:
     summaries = []
     manifest_selection = select_manifest_prompt(args)
     prompt_override = manifest_selection["prompt"] if manifest_selection is not None else None
+    denoising_step_list = resolve_denoising_step_list(args)
+    print(
+        f"Using denoising steps ({args.denoising_step_solver}, shift={args.denoising_shift}): "
+        f"{' '.join(str(timestep) for timestep in denoising_step_list)}",
+        flush=True,
+    )
 
     jobs = [("draft_head", output_dir / "draft_head", args.seed)]
     for ref_index in range(args.target_reference_count):
         ref_seed = args.seed + ref_index * args.target_reference_seed_stride
         jobs.append(("target_only", output_dir / f"target_ref_{ref_index:02d}", ref_seed))
     for mode, run_output_dir, seed in tqdm(jobs, desc="AR eval runs", unit="run"):
-        summaries.append(run_sdvg(args, mode=mode, output_dir=run_output_dir, seed=seed, prompt_override=prompt_override))
+        summaries.append(
+            run_sdvg(
+                args,
+                mode=mode,
+                output_dir=run_output_dir,
+                seed=seed,
+                prompt_override=prompt_override,
+                denoising_step_list=denoising_step_list,
+            )
+        )
 
     summary = {
         "args": vars(args),
         "manifest_selection": manifest_selection,
+        "denoising_step_list": denoising_step_list,
         "runs": summaries,
     }
     summary_path = output_dir / "profile.json"
