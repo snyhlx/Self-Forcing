@@ -248,11 +248,27 @@ def main() -> None:
         flush=True,
     )
 
-    jobs = [("draft_head", output_dir / "draft_head", args.seed)]
-    for ref_index in range(args.target_reference_count):
-        ref_seed = args.seed + ref_index * args.target_reference_seed_stride
-        jobs.append(("target_only", output_dir / f"target_ref_{ref_index:02d}", ref_seed))
-    for mode, run_output_dir, seed in tqdm(jobs, desc="AR eval runs", unit="run"):
+    drafter_jobs = [("draft_head", output_dir / "draft_head", args.seed)]
+    for mode, run_output_dir, seed in tqdm(drafter_jobs, desc="AR drafter eval", unit="run"):
+        summaries.append(
+            run_sdvg(
+                args,
+                mode=mode,
+                output_dir=run_output_dir,
+                seed=seed,
+                prompt_override=prompt_override,
+                denoising_step_list=denoising_step_list,
+            )
+        )
+    target_reference_jobs = [
+        (
+            "target_only",
+            output_dir / f"target_ref_{ref_index:02d}",
+            args.seed + ref_index * args.target_reference_seed_stride,
+        )
+        for ref_index in range(args.target_reference_count)
+    ]
+    for mode, run_output_dir, seed in tqdm(target_reference_jobs, desc="AR target references", unit="run"):
         summaries.append(
             run_sdvg(
                 args,
