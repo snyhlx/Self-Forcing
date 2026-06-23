@@ -504,12 +504,14 @@ def denoise_block_with_draft_head(
             raise ValueError("causal_wan_ar draft head requires conditional_dict with prompt_embeds")
         if scheduler is None or denoising_step_list is None:
             raise ValueError("causal_wan_ar draft head requires scheduler and denoising_step_list")
-        if causal_kv_cache is None or causal_crossattn_cache is None or causal_current_start is None:
-            raise ValueError("causal_wan_ar draft head requires causal KV cache context")
         current = block_latents
         prediction = block_latents
         batch_size, current_num_frames = block_latents.shape[:2]
         prompt_embeds = conditional_dict["prompt_embeds"].to(device=block_latents.device, dtype=block_latents.dtype)
+        clean_prefix_latents = None
+        if context_latents is not None and context_latents.shape[1] > 0:
+            clean_prefix_latents = context_latents.to(device=block_latents.device, dtype=block_latents.dtype)
+        pad_to_frames = int(num_blocks) * int(current_num_frames)
         for step_index, current_timestep in enumerate(denoising_step_list):
             timestep = torch.ones(
                 [batch_size, current_num_frames],
@@ -520,9 +522,8 @@ def denoise_block_with_draft_head(
                 noisy_latents=current,
                 prompt_embeds=prompt_embeds,
                 timestep=timestep,
-                kv_cache=causal_kv_cache,
-                crossattn_cache=causal_crossattn_cache,
-                current_start=causal_current_start,
+                clean_prefix_latents=clean_prefix_latents,
+                pad_to_frames=pad_to_frames,
             )
             prediction = draft_output_to_clean_latent(
                 model_output,

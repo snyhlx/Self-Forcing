@@ -372,112 +372,6 @@ def batch_scalar(batch: dict[str, Any], key: str, default: Any = "unknown") -> A
     return default if value is None else value
 
 
-class OnlineTargetKVCacheReplay:
-    """Rebuild target-model context KV cache for a draft-head record on demand."""
-
-    def __init__(
-        self,
-        *,
-        model_name: str,
-        checkpoint_path: str,
-        model_root: str,
-        config_path: str,
-        layer_names: tuple[str, ...],
-        num_blocks: int,
-        denoising_step_list: list[int],
-        noise_seed: int,
-        device: torch.device,
-        dtype: torch.dtype,
-    ):
-        if not checkpoint_path:
-            raise ValueError("--kv_cache_target_checkpoint_path is required for --head_type kv_cache_attention")
-        from pipeline import CausalInferencePipeline
-        from sdvg_inference import (
-            commit_clean_block,
-            denoise_block,
-            ensure_wan_symlinks,
-            load_checkpoint_into_generator,
-            load_config,
-            reset_pipeline_cache,
-            target_kv_cache_from_pipeline,
-        )
-        from utils.wan_wrapper import WanDiffusionWrapper, WanTextEncoder
-
-        ensure_wan_symlinks(model_root)
-        config = load_config(config_path)
-        config.denoising_step_list = list(denoising_step_list)
-        config.warp_denoising_step = False
-        config.num_frame_per_block = 3
-
-        generator = WanDiffusionWrapper(
-            model_name=model_name,
-            **getattr(config, "model_kwargs", {}),
-            is_causal=True,
-        )
-        load_checkpoint_into_generator(generator, checkpoint_path, use_ema=False)
-        generator = generator.to(device=device, dtype=dtype).eval().requires_grad_(False)
-        text_encoder = WanTextEncoder().to(device=device, dtype=torch.bfloat16).eval().requires_grad_(False)
-
-        self.pipeline = CausalInferencePipeline(
-            config,
-            device=device,
-            generator=generator,
-            text_encoder=text_encoder,
-            vae=torch.nn.Identity(),
-        )
-        self.layer_names = layer_names
-        self.num_blocks = num_blocks
-        self.noise_seed = noise_seed
-        self.device = device
-        self.dtype = dtype
-        self._reset_pipeline_cache = reset_pipeline_cache
-        self._denoise_block = denoise_block
-        self._commit_clean_block = commit_clean_block
-        self._target_kv_cache_from_pipeline = target_kv_cache_from_pipeline
-
-    @torch.no_grad()
-    def attach(self, batch: dict[str, Any]) -> dict[str, Any]:
-        batch_size = int(batch["target_latents"].shape[0])
-        if batch_size != 1:
-            raise ValueError("Online KV-cache replay currently requires per-rank --batch_size 1")
-        prompt_index = int(batch["prompt_index"][0].item())
-        if prompt_index < 0:
-            raise ValueError("Online KV-cache replay requires prompt_index in draft-head records")
-        block_index = int(batch["block_index"][0].item())
-        if block_index <= 0:
-            raise ValueError("Online KV-cache replay requires block_index > 0")
-
-        target_latents = batch["target_latents"]
-        frames, channels, height, width = [int(value) for value in target_latents.shape[1:]]
-        total_frames = self.num_blocks * frames
-        self._reset_pipeline_cache(
-            self.pipeline,
-            batch_size=1,
-            dtype=self.dtype,
-            device=self.device,
-            total_frames=total_frames,
-        )
-        generator = torch.Generator(device=self.device).manual_seed(self.noise_seed + prompt_index)
-        full_noise = torch.randn(
-            [1, total_frames, channels, height, width],
-            device=self.device,
-            dtype=self.dtype,
-            generator=generator,
-        )
-        conditional_dict = self.pipeline.text_encoder([batch["prompts"][0]])
-
-        for context_block_index in range(block_index):
-            start = context_block_index * frames
-            end = start + frames
-            block_noise = full_noise[:, start:end]
-            context_latents = self._denoise_block(self.pipeline, block_noise, conditional_dict, start)
-            self._commit_clean_block(self.pipeline, context_latents, conditional_dict, start)
-
-        replayed = dict(batch)
-        replayed["target_kv_cache"] = self._target_kv_cache_from_pipeline(self.pipeline, self.layer_names)
-        return replayed
-
-
 class DraftHeadDMDLoss:
     """Teacher-score distribution matching term for draft-head clean-latent predictions.
 
@@ -978,7 +872,6 @@ def evaluate(
     prediction_type: str = "clean_latent",
     training_mode: str = "one_step",
     unroll_noise_mode: str = "fixed",
-    online_kv_replay: OnlineTargetKVCacheReplay | None = None,
     prompt_text_encoder: torch.nn.Module | None = None,
 ) -> dict[str, float]:
     model.eval()
@@ -987,8 +880,6 @@ def evaluate(
     total_values = 0
     dtype = next(model.parameters()).dtype
     for batch in loader:
-        if online_kv_replay is not None:
-            batch = online_kv_replay.attach(batch)
         batch = attach_prompt_embeds_if_needed(
             batch,
             model=model,
@@ -1203,17 +1094,6 @@ def main() -> None:
     parser.add_argument("--init_target_model_name", default="Wan2.1-T2V-14B")
     parser.add_argument("--init_target_checkpoint_path", default=None)
     parser.add_argument("--init_draft_head_checkpoint_path", default=None)
-    parser.add_argument("--kv_cache_target_model_name", default="Wan2.1-T2V-14B")
-    parser.add_argument(
-        "--kv_cache_target_checkpoint_path",
-        default="/mnt/lanxiangh/models/realtime-video/checkpoints/krea-realtime-video-14b.safetensors",
-    )
-    parser.add_argument(
-        "--online_kv_noise_seed",
-        type=int,
-        default=42,
-        help="Seed used to reconstruct per-prompt target noise for online KV-cache replay.",
-    )
     parser.add_argument("--causal_wan_local_attn_size", type=int, default=-1)
     parser.add_argument("--causal_wan_sink_size", type=int, default=0)
     parser.add_argument("--model_root", default="/mnt/lanxiangh/models")
@@ -1459,25 +1339,6 @@ def main() -> None:
         if is_distributed:
             for tensor in model.state_dict().values():
                 dist.broadcast(tensor, src=0)
-    online_kv_replay = None
-    if args.head_type == "kv_cache_attention":
-        online_target_dtype = next(model.parameters()).dtype
-        if device.type == "cuda" and args.amp_dtype == "bf16":
-            online_target_dtype = torch.bfloat16
-        elif device.type == "cuda" and args.amp_dtype == "fp16":
-            online_target_dtype = torch.float16
-        online_kv_replay = OnlineTargetKVCacheReplay(
-            model_name=args.kv_cache_target_model_name,
-            checkpoint_path=args.kv_cache_target_checkpoint_path,
-            model_root=args.model_root,
-            config_path=args.config_path,
-            layer_names=layer_names,
-            num_blocks=args.num_blocks,
-            denoising_step_list=args.denoising_step_list,
-            noise_seed=args.online_kv_noise_seed,
-            device=device,
-            dtype=online_target_dtype,
-        )
     prompt_text_encoder = None
     if args.head_type == "ar_bidirectional":
         from utils.wan_wrapper import WanTextEncoder
@@ -1564,8 +1425,6 @@ def main() -> None:
             step_start = time.perf_counter()
             model.train()
             optimizer.zero_grad(set_to_none=True)
-            if online_kv_replay is not None:
-                batch = online_kv_replay.attach(batch)
             batch = attach_prompt_embeds_if_needed(
                 batch,
                 model=raw_model,
@@ -1723,7 +1582,6 @@ def main() -> None:
                 prediction_type=args.prediction_type,
                 training_mode=args.training_mode,
                 unroll_noise_mode=args.unroll_noise_mode,
-                online_kv_replay=online_kv_replay,
                 prompt_text_encoder=prompt_text_encoder,
             )
             metrics.update({f"val_{key}": value for key, value in val_metrics.items()})
@@ -1845,7 +1703,6 @@ def main() -> None:
             prediction_type=args.prediction_type,
             training_mode=args.training_mode,
             unroll_noise_mode=args.unroll_noise_mode,
-            online_kv_replay=online_kv_replay,
             prompt_text_encoder=prompt_text_encoder,
         )
         print(
