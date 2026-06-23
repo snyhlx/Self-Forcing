@@ -13,6 +13,7 @@ from einops import rearrange
 from torch.utils.data import DataLoader, Subset
 from tqdm import tqdm
 from wan.utils.fm_solvers_unipc import FlowUniPCMultistepScheduler
+from wan.utils.rcm_rf import rcm_rf_times, rcm_stochastic_step, rcm_timestep_list
 
 from train_bidirectional_draft_head import (
     BidirectionalPromptAnchorDataset,
@@ -152,6 +153,59 @@ def unipc_head_sample(
 
 
 @torch.no_grad()
+def rcm_head_sample(
+    *,
+    model: torch.nn.Module,
+    initial_noise: torch.Tensor,
+    prompt_embeds: torch.Tensor,
+    negative_prompt_embeds: torch.Tensor | None,
+    anchor_latents: torch.Tensor | None,
+    num_steps: int,
+    sigma_max: float,
+    cfg_scale: float,
+    generator: torch.Generator,
+) -> tuple[torch.Tensor, list[int]]:
+    rf_times = rcm_rf_times(num_steps, sigma_max=sigma_max, device=initial_noise.device).to(dtype=torch.float64)
+    current = initial_noise.to(torch.float64) * rf_times[0]
+    used_timesteps = [int(round(float(value.detach().cpu().item()) * 1000.0)) for value in rf_times]
+    for step_index, (t_cur, t_next) in enumerate(
+        tqdm(list(zip(rf_times[:-1], rf_times[1:])), desc="draft head rcm", leave=True)
+    ):
+        timestep = torch.full(
+            current.shape[:2],
+            float(t_cur.detach().cpu().item()) * 1000.0,
+            device=initial_noise.device,
+            dtype=torch.float32,
+        )
+        flow_prediction = draft_head_forward_with_cfg(
+            model=model,
+            anchor_latents=anchor_latents,
+            future_noise=current.to(dtype=initial_noise.dtype),
+            prompt_embeds=prompt_embeds,
+            negative_prompt_embeds=negative_prompt_embeds,
+            timestep=timestep,
+            cfg_scale=cfg_scale,
+        ).to(torch.float64)
+        if step_index < len(rf_times) - 2:
+            next_noise = torch.randn(
+                current.shape,
+                device=current.device,
+                dtype=initial_noise.dtype,
+                generator=generator,
+            ).to(torch.float64)
+        else:
+            next_noise = torch.zeros_like(current)
+        current = rcm_stochastic_step(
+            current,
+            flow_prediction,
+            t_cur=t_cur.reshape(1, 1).to(device=current.device, dtype=current.dtype),
+            t_next=t_next.reshape(1, 1).to(device=current.device, dtype=current.dtype),
+            next_noise=next_noise,
+        )
+    return current.to(dtype=initial_noise.dtype), used_timesteps
+
+
+@torch.no_grad()
 def generate_videos(
     *,
     model: BidirectionalPromptAnchorDraftHead,
@@ -172,6 +226,7 @@ def generate_videos(
     anchor_conditioning: str,
     head_solver: str,
     head_solver_shift: float,
+    head_rcm_sigma_max: float,
     head_cfg_scale: float,
     teacher_sampling_steps: int | None,
     unroll_noise_mode: str,
@@ -190,10 +245,12 @@ def generate_videos(
         raise ValueError(f"Unsupported training_mode: {training_mode}")
     if anchor_conditioning not in ("clean", "none"):
         raise ValueError("--anchor_conditioning must be 'clean' or 'none'")
-    if head_solver not in ("euler", "unipc"):
-        raise ValueError("--head_solver must be 'euler' or 'unipc'")
+    if head_solver not in ("euler", "unipc", "rcm"):
+        raise ValueError("--head_solver must be 'euler', 'unipc', or 'rcm'")
     if head_solver == "unipc" and prediction_type != "flow":
         raise ValueError("--head_solver unipc requires --prediction_type flow")
+    if head_solver == "rcm" and prediction_type != "flow":
+        raise ValueError("--head_solver rcm requires --prediction_type flow")
     if head_cfg_scale < 0:
         raise ValueError("--head_cfg_scale must be non-negative")
     if num_blocks <= 1:
@@ -275,6 +332,20 @@ def generate_videos(
                 num_steps=len(denoising_step_list),
                 shift=head_solver_shift,
                 cfg_scale=head_cfg_scale,
+            )
+            prediction = output_prediction
+        elif head_solver == "rcm":
+            num_rcm_steps = len(denoising_step_list) - 1
+            output_prediction, actual_denoising_step_list = rcm_head_sample(
+                model=model,
+                initial_noise=model_input,
+                prompt_embeds=prompt_embeds,
+                negative_prompt_embeds=negative_prompt_embeds,
+                anchor_latents=model_anchor,
+                num_steps=num_rcm_steps,
+                sigma_max=head_rcm_sigma_max,
+                cfg_scale=head_cfg_scale,
+                generator=generator,
             )
             prediction = output_prediction
         elif training_mode == "one_step":
@@ -387,6 +458,7 @@ def generate_videos(
         "anchor_conditioning": anchor_conditioning,
         "head_solver": head_solver,
         "head_solver_shift": float(head_solver_shift),
+        "head_rcm_sigma_max": float(head_rcm_sigma_max),
         "head_cfg_scale": float(head_cfg_scale),
         "teacher_sampling_steps": int(target_pipeline.sampling_steps),
         "denoising_step_list": list(actual_denoising_step_list) if summaries else list(denoising_step_list),
@@ -423,6 +495,7 @@ def generate_manifest_videos(
     anchor_conditioning: str,
     head_solver: str,
     head_solver_shift: float,
+    head_rcm_sigma_max: float,
     head_cfg_scale: float,
     unroll_noise_mode: str,
     timestep_shift: float,
@@ -443,10 +516,12 @@ def generate_manifest_videos(
         raise ValueError(f"Unsupported training_mode: {training_mode}")
     if anchor_conditioning not in ("clean", "none"):
         raise ValueError("--anchor_conditioning must be 'clean' or 'none'")
-    if head_solver not in ("euler", "unipc"):
-        raise ValueError("--head_solver must be 'euler' or 'unipc'")
+    if head_solver not in ("euler", "unipc", "rcm"):
+        raise ValueError("--head_solver must be 'euler', 'unipc', or 'rcm'")
     if head_solver == "unipc" and prediction_type != "flow":
         raise ValueError("--head_solver unipc requires --prediction_type flow")
+    if head_solver == "rcm" and prediction_type != "flow":
+        raise ValueError("--head_solver rcm requires --prediction_type flow")
     if head_cfg_scale < 0:
         raise ValueError("--head_cfg_scale must be non-negative")
     output_dir = Path(output_dir)
@@ -529,6 +604,19 @@ def generate_manifest_videos(
             num_steps=len(denoising_step_list),
             shift=head_solver_shift,
             cfg_scale=head_cfg_scale,
+        )
+    elif head_solver == "rcm":
+        generator = torch.Generator(device=device).manual_seed(int(seed) + int(dataset_index))
+        prediction, actual_denoising_step_list = rcm_head_sample(
+            model=model,
+            initial_noise=model_input,
+            prompt_embeds=prompt_embeds,
+            negative_prompt_embeds=negative_prompt_embeds,
+            anchor_latents=model_anchor,
+            num_steps=len(denoising_step_list) - 1,
+            sigma_max=head_rcm_sigma_max,
+            cfg_scale=head_cfg_scale,
+            generator=generator,
         )
     elif training_mode == "one_step":
         timestep = torch.full(model_input.shape[:2], int(denoising_step_list[0]), device=device, dtype=torch.long)
@@ -668,6 +756,7 @@ def generate_manifest_videos(
         "anchor_conditioning": anchor_conditioning,
         "head_solver": head_solver,
         "head_solver_shift": float(head_solver_shift),
+        "head_rcm_sigma_max": float(head_rcm_sigma_max),
         "head_cfg_scale": float(head_cfg_scale),
         "denoising_step_list": list(actual_denoising_step_list),
         "unroll_noise_mode": unroll_noise_mode,
@@ -863,8 +952,9 @@ def main() -> None:
     parser.add_argument("--anchor_conditioning", choices=["clean", "none"], default=None)
     parser.add_argument("--denoising_step_list", nargs="+", type=int, default=None)
     parser.add_argument("--head_sampling_steps", type=int, default=None)
-    parser.add_argument("--head_solver", choices=["euler", "unipc"], default="euler")
+    parser.add_argument("--head_solver", choices=["euler", "unipc", "rcm"], default="euler")
     parser.add_argument("--head_solver_shift", type=float, default=8.0)
+    parser.add_argument("--head_rcm_sigma_max", type=float, default=80.0)
     parser.add_argument("--head_cfg_scale", type=float, default=1.0)
     parser.add_argument("--teacher_sampling_steps", type=int, default=None)
     parser.add_argument("--random_timestep_sampling", choices=["uniform_schedule", "logit_normal"], default=None)
@@ -899,7 +989,10 @@ def main() -> None:
     anchor_conditioning = str(_arg_or_checkpoint(args, train_args, "anchor_conditioning", "clean"))
     if args.head_sampling_steps is not None:
         training_mode = "unrolled"
-        denoising_step_list = make_descending_timestep_list(args.head_sampling_steps)
+        if args.head_solver == "rcm":
+            denoising_step_list = rcm_timestep_list(args.head_sampling_steps, sigma_max=args.head_rcm_sigma_max)
+        else:
+            denoising_step_list = make_descending_timestep_list(args.head_sampling_steps)
     elif args.video_output_dir and training_mode == "random_timestep":
         training_mode = "unrolled"
     random_timestep_sampling = str(_arg_or_checkpoint(args, train_args, "random_timestep_sampling", "uniform_schedule"))
@@ -939,6 +1032,7 @@ def main() -> None:
                 anchor_conditioning=anchor_conditioning,
                 head_solver=args.head_solver,
                 head_solver_shift=args.head_solver_shift,
+                head_rcm_sigma_max=args.head_rcm_sigma_max,
                 head_cfg_scale=args.head_cfg_scale,
                 unroll_noise_mode=unroll_noise_mode,
                 timestep_shift=timestep_shift,
@@ -975,6 +1069,7 @@ def main() -> None:
             anchor_conditioning=anchor_conditioning,
             head_solver=args.head_solver,
             head_solver_shift=args.head_solver_shift,
+            head_rcm_sigma_max=args.head_rcm_sigma_max,
             head_cfg_scale=args.head_cfg_scale,
             teacher_sampling_steps=args.teacher_sampling_steps,
             unroll_noise_mode=unroll_noise_mode,

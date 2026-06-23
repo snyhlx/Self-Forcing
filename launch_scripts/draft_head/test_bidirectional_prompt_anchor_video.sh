@@ -40,6 +40,7 @@ DENOISING_STEP_LIST="${DENOISING_STEP_LIST:-}"
 HEAD_SAMPLING_STEPS="${HEAD_SAMPLING_STEPS:-}"
 HEAD_SOLVER="${HEAD_SOLVER:-}"
 HEAD_SOLVER_SHIFT="${HEAD_SOLVER_SHIFT:-}"
+HEAD_RCM_SIGMA_MAX="${HEAD_RCM_SIGMA_MAX:-80.0}"
 HEAD_CFG_SCALE="${HEAD_CFG_SCALE:-1.0}"
 TEACHER_SAMPLING_STEPS="${TEACHER_SAMPLING_STEPS:-}"
 VIDEO_MANIFEST_PATH="${VIDEO_MANIFEST_PATH:-}"
@@ -113,6 +114,9 @@ fi
 if [[ -n "$HEAD_SOLVER_SHIFT" ]]; then
   OPTIONAL_ARGS+=(--head_solver_shift "$HEAD_SOLVER_SHIFT")
 fi
+if [[ "$HEAD_SOLVER" == "rcm" ]]; then
+  OPTIONAL_ARGS+=(--head_rcm_sigma_max "$HEAD_RCM_SIGMA_MAX")
+fi
 if [[ -n "$HEAD_CFG_SCALE" ]]; then
   OPTIONAL_ARGS+=(--head_cfg_scale "$HEAD_CFG_SCALE")
 fi
@@ -162,7 +166,7 @@ log "Manifest:   ${VIDEO_MANIFEST_PATH:-off} dataset_index=${VIDEO_DATASET_INDEX
 log "Prediction: ${PREDICTION_TYPE:-checkpoint/default}"
 log "Anchor conditioning: ${ANCHOR_CONDITIONING:-checkpoint/default}"
 log "Head steps: ${HEAD_SAMPLING_STEPS:-checkpoint/default}"
-log "Head solver: ${HEAD_SOLVER:-euler} shift=${HEAD_SOLVER_SHIFT:-8.0}"
+log "Head solver: ${HEAD_SOLVER:-euler} shift=${HEAD_SOLVER_SHIFT:-8.0} rcm_sigma_max=$HEAD_RCM_SIGMA_MAX"
 log "Head CFG:   scale=$HEAD_CFG_SCALE"
 log "Teacher steps: ${TEACHER_SAMPLING_STEPS:-default}"
 log "Refine:     target_timestep=$TARGET_REFINE_TIMESTEP save_raw=$SAVE_RAW_VIDEO save_target=$SAVE_TARGET_VIDEO save_stored_target=$SAVE_STORED_TARGET_VIDEO save_alt_drafter=$SAVE_ALT_DRAFTER_VIDEO alt_drafter_model=$ALT_DRAFTER_MODEL_NAME alt_drafter_steps=${ALT_DRAFTER_SAMPLING_STEPS:-head_steps} alt_drafter_shift=${ALT_DRAFTER_SHIFT:-head_shift}"
