@@ -986,7 +986,7 @@ def main() -> None:
     denoising_step_list = list(_arg_or_checkpoint(args, train_args, "denoising_step_list", [1000, 750, 500, 250, 0]))
     training_mode = str(_arg_or_checkpoint(args, train_args, "training_mode", "unrolled"))
     prediction_type = str(_arg_or_checkpoint(args, train_args, "prediction_type", "clean_latent"))
-    anchor_conditioning = str(_arg_or_checkpoint(args, train_args, "anchor_conditioning", "clean"))
+    anchor_conditioning = str(_arg_or_checkpoint(args, train_args, "anchor_conditioning", "none"))
     if args.head_sampling_steps is not None:
         training_mode = "unrolled"
         if args.head_solver == "rcm":

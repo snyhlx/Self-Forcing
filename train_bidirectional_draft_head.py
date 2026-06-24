@@ -2707,7 +2707,7 @@ def main() -> None:
     parser.add_argument("--timestep_shift", type=float, default=5.0)
     parser.add_argument("--prediction_type", choices=["flow", "clean_latent"], default="flow")
     parser.add_argument("--training_mode", choices=["one_step", "unrolled", "random_timestep", "teacher_trajectory"], default="unrolled")
-    parser.add_argument("--anchor_conditioning", choices=["clean", "none"], default="clean")
+    parser.add_argument("--anchor_conditioning", choices=["clean", "none"], default="none")
     parser.add_argument("--random_timestep_sampling", choices=["uniform_schedule", "logit_normal"], default="uniform_schedule")
     parser.add_argument("--logit_normal_mean", type=float, default=0.0)
     parser.add_argument("--logit_normal_std", type=float, default=1.0)
