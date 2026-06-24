@@ -630,15 +630,12 @@ class RCMStyleDraftHeadDMD:
             c_in = c_in.unsqueeze(-1)
             c_skip = c_skip.unsqueeze(-1)
             c_out = c_out.unsqueeze(-1)
-        seq_len = model._seq_len_for_latents(noisy)
         timestep = c_noise.to(device=noisy.device, dtype=torch.float32)
-        input_timestep = timestep[:, 0] if getattr(model, "uniform_timestep", False) else timestep
-        net_output = model.model(
-            (noisy.double() * c_in).to(device=noisy.device, dtype=self.dtype).permute(0, 2, 1, 3, 4),
-            t=input_timestep,
-            context=prompt_embeds.to(device=noisy.device, dtype=self.dtype),
-            seq_len=seq_len,
-        ).permute(0, 2, 1, 3, 4)
+        net_output, _ = model(
+            noisy_image_or_video=(noisy.double() * c_in).to(device=noisy.device, dtype=self.dtype),
+            conditional_dict={"prompt_embeds": prompt_embeds.to(device=noisy.device, dtype=self.dtype)},
+            timestep=timestep,
+        )
         x0 = c_skip.to(device=noisy.device) * noisy.double() + c_out.to(device=noisy.device) * net_output.double()
         return x0.to(dtype=noisy.dtype)
 

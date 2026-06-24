@@ -187,6 +187,10 @@ class BidirectionalRCMDMDTests(unittest.TestCase):
             def _seq_len_for_latents(self, noisy):
                 return 1
 
+            def forward(self, noisy_image_or_video, conditional_dict, timestep):
+                del conditional_dict, timestep
+                return torch.zeros_like(noisy_image_or_video), torch.zeros_like(noisy_image_or_video)
+
         dmd = RCMStyleDraftHeadDMD.__new__(RCMStyleDraftHeadDMD)
         dmd.dtype = torch.float32
         noisy = torch.ones(1, 2, 1, 1, 1)
