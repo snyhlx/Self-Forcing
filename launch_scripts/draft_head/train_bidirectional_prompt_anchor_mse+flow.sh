@@ -83,6 +83,14 @@ DMD_GUIDANCE_SCALE="${DMD_GUIDANCE_SCALE:-5.0}"
 DMD_TIMESTEP_SHIFT="${DMD_TIMESTEP_SHIFT:-5.0}"
 DMD_MIN_TIMESTEP="${DMD_MIN_TIMESTEP:-20}"
 DMD_MAX_TIMESTEP="${DMD_MAX_TIMESTEP:-980}"
+DMD_TIME_DISTRIBUTION="${DMD_TIME_DISTRIBUTION:-shifted_uniform}"
+DMD_LOGNORMAL_MEAN="${DMD_LOGNORMAL_MEAN:-0.0}"
+DMD_LOGNORMAL_STD="${DMD_LOGNORMAL_STD:-1.6}"
+DMD_FAKE_SCORE_WEIGHTING="${DMD_FAKE_SCORE_WEIGHTING:-scheduler_sigma}"
+DMD_TARGET_CONVENTION="${DMD_TARGET_CONVENTION:-wan_rf_x0}"
+DMD_CONSISTENCY_OBJECTIVE="${DMD_CONSISTENCY_OBJECTIVE:-none}"
+DMD_CONSISTENCY_LOSS_WEIGHT="${DMD_CONSISTENCY_LOSS_WEIGHT:-0.0}"
+DMD_CONSISTENCY_FD_EPSILON="${DMD_CONSISTENCY_FD_EPSILON:-1e-4}"
 DMD_SCORE_SCOPE="${DMD_SCORE_SCOPE:-future}"
 AMP_DTYPE="${AMP_DTYPE:-bf16}"
 NUM_GPUS="${NUM_GPUS:-4}"
@@ -180,7 +188,7 @@ log "Attention: backend=$ATTENTION_BACKEND"
 log "Init:      model=${INIT_MODEL_NAME:-$TARGET_MODEL_NAME} target_blocks=[$INIT_TARGET_BLOCKS] draft_head_ckpt=${INIT_DRAFT_HEAD_CHECKPOINT_PATH:-none}"
 log "Training:  mode=$TRAINING_MODE anchor_conditioning=$ANCHOR_CONDITIONING prediction_type=$PREDICTION_TYPE euler_steps=[$DENOISING_STEP_LIST] dense_schedule_steps=${DENSE_SCHEDULE_STEPS:-off} random_sampling=$RANDOM_TIMESTEP_SAMPLING logit_mean=$LOGIT_NORMAL_MEAN logit_std=$LOGIT_NORMAL_STD unroll_noise=$UNROLL_NOISE_MODE rollout_solver=$ROLLOUT_SOLVER rollout_steps=$ROLLOUT_STEPS rollout_schedule=${ROLLOUT_SCHEDULE:-default} rollout_sigma_max=$ROLLOUT_SIGMA_MAX rollout_shift=$ROLLOUT_SOLVER_SHIFT weights=${UNROLL_STEP_WEIGHTS:-auto} teacher_traj_steps=$TEACHER_TRAJECTORY_STEPS teacher_traj_solver=$TEACHER_TRAJECTORY_SOLVER teacher_traj_shift=${TEACHER_TRAJECTORY_SHIFT:-legacy} teacher_traj_dataset_key=${TEACHER_TRAJECTORY_DATASET_KEY:-auto} teacher_traj_cache=$TEACHER_TRAJECTORY_CACHE_DIR overfit_num=$OVERFIT_NUM_EXAMPLES overfit_start=$OVERFIT_START_INDEX num_workers=$NUM_WORKERS"
 log "Loss:      clean=$CLEAN_LATENT_LOSS_WEIGHT flow=$FLOW_LOSS_WEIGHT detail=$DETAIL_LOSS_WEIGHT temporal_delta=$TEMPORAL_DELTA_WEIGHT boundary=$BOUNDARY_WEIGHT dmd=$DMD_LOSS_WEIGHT dmd_fake=$DMD_FAKE_SCORE_LOSS_WEIGHT"
-log "DMD:       teacher_model=$DMD_TEACHER_MODEL_NAME fake_score_model=$DMD_FAKE_SCORE_MODEL_NAME teacher_ckpt=${DMD_TEACHER_CHECKPOINT_PATH:-pretrained-dir} fake_ckpt=${DMD_FAKE_SCORE_CHECKPOINT_PATH:-teacher/pretrained-init} guidance=$DMD_GUIDANCE_SCALE shift=$DMD_TIMESTEP_SHIFT t=[$DMD_MIN_TIMESTEP,$DMD_MAX_TIMESTEP] scope=$DMD_SCORE_SCOPE warmup=$DMD_WARMUP_STEPS student_update_freq=$DMD_STUDENT_UPDATE_FREQ fake_lr=$DMD_FAKE_SCORE_LR fake_gc=$DMD_FAKE_SCORE_GRADIENT_CHECKPOINTING"
+log "DMD:       teacher_model=$DMD_TEACHER_MODEL_NAME fake_score_model=$DMD_FAKE_SCORE_MODEL_NAME teacher_ckpt=${DMD_TEACHER_CHECKPOINT_PATH:-pretrained-dir} fake_ckpt=${DMD_FAKE_SCORE_CHECKPOINT_PATH:-teacher/pretrained-init} guidance=$DMD_GUIDANCE_SCALE time_dist=$DMD_TIME_DISTRIBUTION shift=$DMD_TIMESTEP_SHIFT lognormal_mean=$DMD_LOGNORMAL_MEAN lognormal_std=$DMD_LOGNORMAL_STD fake_weighting=$DMD_FAKE_SCORE_WEIGHTING target_convention=$DMD_TARGET_CONVENTION consistency=$DMD_CONSISTENCY_OBJECTIVE consistency_weight=$DMD_CONSISTENCY_LOSS_WEIGHT fd_eps=$DMD_CONSISTENCY_FD_EPSILON t=[$DMD_MIN_TIMESTEP,$DMD_MAX_TIMESTEP] scope=$DMD_SCORE_SCOPE warmup=$DMD_WARMUP_STEPS student_update_freq=$DMD_STUDENT_UPDATE_FREQ fake_lr=$DMD_FAKE_SCORE_LR fake_gc=$DMD_FAKE_SCORE_GRADIENT_CHECKPOINTING"
 
 RUNNER=("$PYTHON")
 if [[ "$NUM_GPUS" -gt 1 ]]; then
@@ -298,6 +306,14 @@ fi
   --dmd_timestep_shift "$DMD_TIMESTEP_SHIFT" \
   --dmd_min_timestep "$DMD_MIN_TIMESTEP" \
   --dmd_max_timestep "$DMD_MAX_TIMESTEP" \
+  --dmd_time_distribution "$DMD_TIME_DISTRIBUTION" \
+  --dmd_lognormal_mean "$DMD_LOGNORMAL_MEAN" \
+  --dmd_lognormal_std "$DMD_LOGNORMAL_STD" \
+  --dmd_fake_score_weighting "$DMD_FAKE_SCORE_WEIGHTING" \
+  --dmd_target_convention "$DMD_TARGET_CONVENTION" \
+  --dmd_consistency_objective "$DMD_CONSISTENCY_OBJECTIVE" \
+  --dmd_consistency_loss_weight "$DMD_CONSISTENCY_LOSS_WEIGHT" \
+  --dmd_consistency_fd_epsilon "$DMD_CONSISTENCY_FD_EPSILON" \
   --dmd_score_scope "$DMD_SCORE_SCOPE" \
   --amp_dtype "$AMP_DTYPE" \
   2>&1 | tee -a "$LOG_FILE"

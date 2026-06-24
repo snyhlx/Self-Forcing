@@ -5,6 +5,51 @@ import math
 import torch
 
 
+def shift_rf_time(u: torch.Tensor, shift: float) -> torch.Tensor:
+    if shift <= 0:
+        return u
+    return shift * u / (1.0 + (shift - 1.0) * u)
+
+
+def rf_to_sigma(rf_t: torch.Tensor) -> torch.Tensor:
+    eps = torch.finfo(rf_t.dtype).eps
+    rf_t = rf_t.clamp(min=0.0, max=1.0 - eps)
+    return rf_t / (1.0 - rf_t)
+
+
+def sigma_to_rf_time(sigma: torch.Tensor) -> torch.Tensor:
+    return sigma / (sigma + 1.0)
+
+
+def rf_to_trig_time(rf_t: torch.Tensor) -> torch.Tensor:
+    return torch.atan(rf_to_sigma(rf_t))
+
+
+def sample_shifted_uniform_rf_times(
+    *,
+    shape: tuple[int, ...],
+    shift: float,
+    device: torch.device | str,
+    dtype: torch.dtype = torch.float32,
+) -> torch.Tensor:
+    unit = torch.rand(shape, device=device, dtype=dtype)
+    return shift_rf_time(unit, shift).clamp(0.0, 1.0)
+
+
+def sample_lognormal_rf_times(
+    *,
+    shape: tuple[int, ...],
+    mean: float = 0.0,
+    std: float = 1.6,
+    device: torch.device | str,
+    dtype: torch.dtype = torch.float32,
+) -> torch.Tensor:
+    if std <= 0:
+        raise ValueError("Lognormal RF timestep std must be positive")
+    log_sigma = torch.randn(shape, device=device, dtype=dtype) * std + mean
+    return sigma_to_rf_time(torch.exp(log_sigma)).clamp(0.0, 1.0)
+
+
 def rcm_trig_angles(num_steps: int, sigma_max: float = 80.0) -> torch.Tensor:
     """Return the original rCM trig-time schedule, including the final clean step."""
     if num_steps < 1 or num_steps > 4:

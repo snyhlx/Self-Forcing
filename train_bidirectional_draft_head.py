@@ -25,6 +25,7 @@ from tqdm import tqdm
 from fsdp_utils import rank0_save_with_state_dict, unwrap_model, wrap_model_for_training
 from utils.scheduler import FlowMatchScheduler
 from wan.utils.fm_solvers_unipc import FlowUniPCMultistepScheduler
+from wan.utils.rcm_rf import rf_to_sigma, rf_to_trig_time, sample_lognormal_rf_times, sample_shifted_uniform_rf_times
 from sdvg_draft_head import (
     DraftCausalHead,
     WanDFlashDraftBlock,
@@ -313,6 +314,46 @@ def shifted_uniform_timesteps(
     return timestep.expand(batch_size, frames)
 
 
+def rcm_rf_training_timesteps(
+    *,
+    batch_size: int,
+    frames: int,
+    distribution: str,
+    shift: float,
+    lognormal_mean: float,
+    lognormal_std: float,
+    min_timestep: float,
+    max_timestep: float,
+    device: torch.device,
+) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]:
+    """Sample DMD score times in RF domain and return Wan timesteps plus rCM diagnostics."""
+    if max_timestep <= min_timestep:
+        raise ValueError("DMD max timestep must be greater than min timestep")
+    shape = (batch_size, 1)
+    if distribution == "shifted_uniform":
+        rf_time = sample_shifted_uniform_rf_times(shape=shape, shift=shift, device=device, dtype=torch.float32)
+    elif distribution == "rcm_lognormal":
+        rf_time = sample_lognormal_rf_times(
+            shape=shape,
+            mean=lognormal_mean,
+            std=lognormal_std,
+            device=device,
+            dtype=torch.float32,
+        )
+    else:
+        raise ValueError("--dmd_time_distribution must be 'shifted_uniform' or 'rcm_lognormal'")
+    timestep = (rf_time * 1000.0).clamp(min_timestep, max_timestep)
+    rf_time = (timestep / 1000.0).clamp(0.0, 1.0 - torch.finfo(torch.float32).eps)
+    trig_time = rf_to_trig_time(rf_time)
+    sigma = rf_to_sigma(rf_time)
+    return (
+        timestep.expand(batch_size, frames),
+        rf_time.expand(batch_size, frames),
+        trig_time.expand(batch_size, frames),
+        sigma.expand(batch_size, frames),
+    )
+
+
 def rcm_dmd_gradient_target(
     generator_x0: torch.Tensor,
     fake_score_x0: torch.Tensor,
@@ -389,6 +430,14 @@ class RCMStyleDraftHeadDMD:
         timestep_shift: float,
         min_timestep: float,
         max_timestep: float,
+        time_distribution: str,
+        lognormal_mean: float,
+        lognormal_std: float,
+        fake_score_weighting: str,
+        target_convention: str,
+        consistency_objective: str,
+        consistency_loss_weight: float,
+        consistency_fd_epsilon: float,
         score_scope: str,
         fake_score_lr: float,
         fake_score_weight_decay: float,
@@ -436,6 +485,22 @@ class RCMStyleDraftHeadDMD:
         self.timestep_shift = float(timestep_shift)
         self.min_timestep = float(min_timestep)
         self.max_timestep = float(max_timestep)
+        self.time_distribution = str(time_distribution)
+        self.lognormal_mean = float(lognormal_mean)
+        self.lognormal_std = float(lognormal_std)
+        self.fake_score_weighting = str(fake_score_weighting)
+        self.target_convention = str(target_convention)
+        if self.target_convention not in ("wan_rf_x0", "rcm_trig_x0"):
+            raise ValueError("--dmd_target_convention must be 'wan_rf_x0' or 'rcm_trig_x0'")
+        if consistency_objective not in ("none", "rcm_fd", "rcm_jvp"):
+            raise ValueError("--dmd_consistency_objective must be 'none', 'rcm_fd', or 'rcm_jvp'")
+        if consistency_loss_weight < 0:
+            raise ValueError("--dmd_consistency_loss_weight must be non-negative")
+        if consistency_fd_epsilon <= 0:
+            raise ValueError("--dmd_consistency_fd_epsilon must be positive")
+        self.consistency_objective = str(consistency_objective)
+        self.consistency_loss_weight = float(consistency_loss_weight)
+        self.consistency_fd_epsilon = float(consistency_fd_epsilon)
         self.score_scope = score_scope
         self.negative_prompt = negative_prompt
         self._negative_cache: dict[int, torch.Tensor] = {}
@@ -493,31 +558,100 @@ class RCMStyleDraftHeadDMD:
             return torch.cat([anchor, generator_x0], dim=1), slice(anchor.shape[1], None)
         return generator_x0, slice(None)
 
-    def _sample_noisy_score_input(self, clean_x0: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
+    def _sample_noisy_score_input(
+        self,
+        clean_x0: torch.Tensor,
+    ) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]:
         batch_size, frames = clean_x0.shape[:2]
-        timestep = shifted_uniform_timesteps(
-            batch_size=batch_size,
-            frames=frames,
-            shift=self.timestep_shift,
-            min_timestep=self.min_timestep,
-            max_timestep=self.max_timestep,
-            device=clean_x0.device,
-        )
+        if self.time_distribution == "shifted_uniform":
+            timestep = shifted_uniform_timesteps(
+                batch_size=batch_size,
+                frames=frames,
+                shift=self.timestep_shift,
+                min_timestep=self.min_timestep,
+                max_timestep=self.max_timestep,
+                device=clean_x0.device,
+            )
+            rf_time = (timestep / 1000.0).clamp(0.0, 1.0 - torch.finfo(torch.float32).eps)
+            trig_time = rf_to_trig_time(rf_time)
+            explicit_weight_scale = None
+        elif self.time_distribution == "rcm_lognormal":
+            timestep, rf_time, trig_time, rf_sigma = rcm_rf_training_timesteps(
+                batch_size=batch_size,
+                frames=frames,
+                distribution=self.time_distribution,
+                shift=self.timestep_shift,
+                lognormal_mean=self.lognormal_mean,
+                lognormal_std=self.lognormal_std,
+                min_timestep=self.min_timestep,
+                max_timestep=self.max_timestep,
+                device=clean_x0.device,
+            )
+            if self.fake_score_weighting == "scheduler_sigma":
+                explicit_weight_scale = rf_sigma
+            elif self.fake_score_weighting == "rcm_trig_sin":
+                explicit_weight_scale = torch.sin(trig_time).clamp_min(1e-6)
+            else:
+                raise ValueError("--dmd_fake_score_weighting must be 'scheduler_sigma' or 'rcm_trig_sin'")
+        else:
+            raise ValueError("--dmd_time_distribution must be 'shifted_uniform' or 'rcm_lognormal'")
         noise = torch.randn_like(clean_x0)
-        noisy = self.scheduler.add_noise(
-            clean_x0.detach().flatten(0, 1),
-            noise.flatten(0, 1),
-            timestep.flatten(0, 1),
-        ).unflatten(0, clean_x0.shape[:2])
+        if self.time_distribution == "rcm_lognormal":
+            rf = rf_time.reshape(*rf_time.shape, 1, 1, 1).to(device=clean_x0.device, dtype=clean_x0.dtype)
+            noisy = (1.0 - rf) * clean_x0.detach() + rf * noise
+        else:
+            noisy = self.scheduler.add_noise(
+                clean_x0.detach().flatten(0, 1),
+                noise.flatten(0, 1),
+                timestep.flatten(0, 1),
+            ).unflatten(0, clean_x0.shape[:2])
         sigma = sigma_for_timestep(
             self.scheduler,
             timestep,
             device=clean_x0.device,
             dtype=clean_x0.dtype,
         )
-        return noisy.to(dtype=self.dtype), timestep, sigma
+        if explicit_weight_scale is not None:
+            sigma = explicit_weight_scale.reshape(*explicit_weight_scale.shape, 1, 1, 1).to(device=clean_x0.device, dtype=clean_x0.dtype)
+        return noisy.to(dtype=self.dtype), timestep, sigma, rf_time, trig_time
 
-    def _predict_x0(self, model: nn.Module, noisy: torch.Tensor, prompt_embeds: torch.Tensor, timestep: torch.Tensor) -> torch.Tensor:
+    def _predict_rcm_trig_x0(
+        self,
+        model: nn.Module,
+        noisy: torch.Tensor,
+        prompt_embeds: torch.Tensor,
+        trig_time: torch.Tensor,
+    ) -> torch.Tensor:
+        c_skip = 1.0 / (torch.cos(trig_time.double()) + torch.sin(trig_time.double()))
+        c_out = -torch.sin(trig_time.double()) / (torch.cos(trig_time.double()) + torch.sin(trig_time.double()))
+        c_in = c_skip
+        c_noise = (torch.sin(trig_time.double()) / (torch.cos(trig_time.double()) + torch.sin(trig_time.double()))) * 1000.0
+        while c_in.ndim < noisy.ndim:
+            c_in = c_in.unsqueeze(-1)
+            c_skip = c_skip.unsqueeze(-1)
+            c_out = c_out.unsqueeze(-1)
+        seq_len = model._seq_len_for_latents(noisy)
+        timestep = c_noise.to(device=noisy.device, dtype=torch.float32)
+        input_timestep = timestep[:, 0] if getattr(model, "uniform_timestep", False) else timestep
+        net_output = model.model(
+            (noisy.double() * c_in).to(device=noisy.device, dtype=self.dtype).permute(0, 2, 1, 3, 4),
+            t=input_timestep,
+            context=prompt_embeds.to(device=noisy.device, dtype=self.dtype),
+            seq_len=seq_len,
+        ).permute(0, 2, 1, 3, 4)
+        x0 = c_skip.to(device=noisy.device) * noisy.double() + c_out.to(device=noisy.device) * net_output.double()
+        return x0.to(dtype=noisy.dtype)
+
+    def _predict_x0(
+        self,
+        model: nn.Module,
+        noisy: torch.Tensor,
+        prompt_embeds: torch.Tensor,
+        timestep: torch.Tensor,
+        trig_time: torch.Tensor,
+    ) -> torch.Tensor:
+        if self.target_convention == "rcm_trig_x0":
+            return self._predict_rcm_trig_x0(model, noisy.to(device=self.device, dtype=self.dtype), prompt_embeds, trig_time)
         _, pred_x0 = model(
             noisy_image_or_video=noisy.to(device=self.device, dtype=self.dtype),
             conditional_dict={"prompt_embeds": prompt_embeds.to(device=self.device, dtype=self.dtype)},
@@ -525,12 +659,135 @@ class RCMStyleDraftHeadDMD:
         )
         return pred_x0
 
-    def _teacher_cfg_x0(self, noisy: torch.Tensor, prompt_embeds: torch.Tensor, timestep: torch.Tensor) -> torch.Tensor:
-        cond_x0 = self._predict_x0(self.teacher, noisy, prompt_embeds, timestep)
+    def _teacher_cfg_x0(
+        self,
+        noisy: torch.Tensor,
+        prompt_embeds: torch.Tensor,
+        timestep: torch.Tensor,
+        trig_time: torch.Tensor,
+    ) -> torch.Tensor:
+        cond_x0 = self._predict_x0(self.teacher, noisy, prompt_embeds, timestep, trig_time)
         if self.guidance_scale <= 1.0:
             return cond_x0
-        uncond_x0 = self._predict_x0(self.teacher, noisy, self._negative_prompt_embeds(noisy.shape[0]), timestep)
+        uncond_x0 = self._predict_x0(self.teacher, noisy, self._negative_prompt_embeds(noisy.shape[0]), timestep, trig_time)
         return uncond_x0 + self.guidance_scale * (cond_x0 - uncond_x0)
+
+    def _predict_flow(self, model: nn.Module, noisy: torch.Tensor, prompt_embeds: torch.Tensor, timestep: torch.Tensor) -> torch.Tensor:
+        flow, _x0 = model(
+            noisy_image_or_video=noisy.to(device=self.device, dtype=self.dtype),
+            conditional_dict={"prompt_embeds": prompt_embeds.to(device=self.device, dtype=self.dtype)},
+            timestep=timestep.to(device=self.device),
+        )
+        return flow
+
+    def _teacher_cfg_flow(self, noisy: torch.Tensor, prompt_embeds: torch.Tensor, timestep: torch.Tensor) -> torch.Tensor:
+        cond_flow = self._predict_flow(self.teacher, noisy, prompt_embeds, timestep)
+        if self.guidance_scale <= 1.0:
+            return cond_flow
+        uncond_flow = self._predict_flow(self.teacher, noisy, self._negative_prompt_embeds(noisy.shape[0]), timestep)
+        return uncond_flow + self.guidance_scale * (cond_flow - uncond_flow)
+
+    @staticmethod
+    def _student_future_flow(
+        student_model: nn.Module,
+        *,
+        anchor: torch.Tensor | None,
+        noisy_future: torch.Tensor,
+        prompt_embeds: torch.Tensor,
+        timestep: torch.Tensor,
+    ) -> torch.Tensor:
+        return student_model(
+            anchor_latents=anchor,
+            future_noise=noisy_future,
+            prompt_embeds=prompt_embeds,
+            timestep=timestep,
+        )
+
+    def consistency_loss(
+        self,
+        student_model: nn.Module,
+        generator_x0: torch.Tensor,
+        *,
+        anchor: torch.Tensor | None,
+        prompt_embeds: torch.Tensor,
+    ) -> tuple[torch.Tensor, dict[str, float]]:
+        if self.consistency_objective == "none" or self.consistency_loss_weight <= 0:
+            return generator_x0.new_zeros(()), {}
+        clean_score_x0, future_slice = self._score_clean_and_slice(generator_x0.detach(), anchor)
+        noisy, timestep, _sigma, rf_time, _trig_time = self._sample_noisy_score_input(clean_score_x0)
+        with torch.no_grad():
+            teacher_flow = self._teacher_cfg_flow(noisy, prompt_embeds, timestep)[:, future_slice]
+        noisy_future = noisy[:, future_slice].detach()
+        timestep_future = timestep[:, future_slice].detach()
+        student_anchor = anchor.detach().to(device=noisy_future.device, dtype=noisy_future.dtype) if anchor is not None else None
+        prompt_embeds = prompt_embeds.to(device=noisy_future.device, dtype=noisy_future.dtype)
+
+        with torch.no_grad():
+            if self.consistency_objective == "rcm_fd":
+                h = float(self.consistency_fd_epsilon)
+                base_flow = self._student_future_flow(
+                    student_model,
+                    anchor=student_anchor,
+                    noisy_future=noisy_future,
+                    prompt_embeds=prompt_embeds,
+                    timestep=timestep_future,
+                )
+                next_noisy = noisy_future + h * teacher_flow.to(dtype=noisy_future.dtype)
+                next_timestep = (timestep_future + h * 1000.0).clamp(0.0, 1000.0)
+                next_flow = self._student_future_flow(
+                    student_model,
+                    anchor=student_anchor,
+                    noisy_future=next_noisy,
+                    prompt_embeds=prompt_embeds,
+                    timestep=next_timestep,
+                )
+                tangent_flow = (next_flow.float() - base_flow.float()) / h
+            elif self.consistency_objective == "rcm_jvp":
+                def student_fn(noisy_arg: torch.Tensor, timestep_arg: torch.Tensor) -> torch.Tensor:
+                    return self._student_future_flow(
+                        student_model,
+                        anchor=student_anchor,
+                        noisy_future=noisy_arg,
+                        prompt_embeds=prompt_embeds,
+                        timestep=timestep_arg,
+                    )
+
+                _base_flow, tangent_flow = torch.func.jvp(
+                    student_fn,
+                    (noisy_future, timestep_future),
+                    (teacher_flow.to(dtype=noisy_future.dtype), torch.ones_like(timestep_future) * 1000.0),
+                )
+                tangent_flow = tangent_flow.float()
+            else:
+                raise ValueError("--dmd_consistency_objective must be 'none', 'rcm_fd', or 'rcm_jvp'")
+
+        student_flow = self._student_future_flow(
+            student_model,
+            anchor=student_anchor,
+            noisy_future=noisy_future,
+            prompt_embeds=prompt_embeds,
+            timestep=timestep_future,
+        )
+        student_flow_sg = student_flow.detach()
+        rf = rf_time[:, future_slice].reshape(*rf_time[:, future_slice].shape, 1, 1, 1).to(
+            device=student_flow.device,
+            dtype=student_flow.dtype,
+        )
+        grad = -(student_flow_sg.float() - teacher_flow.float()) - rf.float() * tangent_flow.float()
+        reduce_dims = tuple(range(1, grad.ndim))
+        grad = grad.double() / (grad.double().norm(p=2, dim=reduce_dims, keepdim=True) + 0.1)
+        grad = torch.nan_to_num(grad).to(dtype=student_flow.dtype)
+        per_element = (student_flow.float() - student_flow_sg.float() - grad.float()).square()
+        nan_sample = torch.isnan(per_element).flatten(start_dim=1).any(dim=1)
+        if nan_sample.any():
+            per_element = per_element.clone()
+            per_element[nan_sample] = 0
+        loss = per_element.flatten(start_dim=1).sum(dim=1).mean()
+        return loss, {
+            "dmd_consistency_loss_raw": float(loss.detach().cpu().item()),
+            "dmd_consistency_rf_time": float(rf_time.detach().mean().cpu().item()),
+            "dmd_consistency_gradient_norm": float(grad.detach().abs().mean().cpu().item()),
+        }
 
     def student_loss(
         self,
@@ -540,14 +797,17 @@ class RCMStyleDraftHeadDMD:
         prompt_embeds: torch.Tensor,
     ) -> tuple[torch.Tensor, dict[str, float]]:
         clean_score_x0, future_slice = self._score_clean_and_slice(generator_x0, anchor)
-        noisy, timestep, _sigma = self._sample_noisy_score_input(clean_score_x0)
+        noisy, timestep, _sigma, rf_time, trig_time = self._sample_noisy_score_input(clean_score_x0)
         self.teacher.eval()
         self.fake_score.eval()
         with torch.no_grad():
-            fake_x0 = self._predict_x0(self.fake_score, noisy, prompt_embeds, timestep)
-            teacher_x0 = self._teacher_cfg_x0(noisy, prompt_embeds, timestep)
+            fake_x0 = self._predict_x0(self.fake_score, noisy, prompt_embeds, timestep, trig_time)
+            teacher_x0 = self._teacher_cfg_x0(noisy, prompt_embeds, timestep, trig_time)
         loss, metrics = rcm_dmd_surrogate_loss(generator_x0, fake_x0[:, future_slice], teacher_x0[:, future_slice])
         metrics["dmd_timestep"] = float(timestep.detach().mean().cpu().item())
+        metrics["dmd_rf_time"] = float(rf_time.detach().mean().cpu().item())
+        metrics["dmd_trig_time"] = float(trig_time.detach().mean().cpu().item())
+        metrics[f"dmd_target_convention_{self.target_convention}"] = 1.0
         return loss, metrics
 
     def fake_score_loss(
@@ -558,13 +818,15 @@ class RCMStyleDraftHeadDMD:
         prompt_embeds: torch.Tensor,
     ) -> tuple[torch.Tensor, dict[str, float]]:
         clean_score_x0, _future_slice = self._score_clean_and_slice(generator_x0.detach(), anchor)
-        noisy, timestep, sigma = self._sample_noisy_score_input(clean_score_x0)
+        noisy, timestep, sigma, rf_time, trig_time = self._sample_noisy_score_input(clean_score_x0)
         self.fake_score.train()
-        fake_x0 = self._predict_x0(self.fake_score, noisy, prompt_embeds.detach(), timestep)
+        fake_x0 = self._predict_x0(self.fake_score, noisy, prompt_embeds.detach(), timestep, trig_time)
         loss = rcm_fake_score_loss(fake_x0, clean_score_x0.detach(), sigma)
         return loss, {
             "dmd_fake_score_loss": float(loss.detach().cpu().item()),
             "dmd_fake_score_timestep": float(timestep.detach().mean().cpu().item()),
+            "dmd_fake_score_rf_time": float(rf_time.detach().mean().cpu().item()),
+            "dmd_fake_score_trig_time": float(trig_time.detach().mean().cpu().item()),
         }
 
     def average_fake_score_gradients(self, world_size: int) -> None:
@@ -1717,6 +1979,7 @@ def initialize_bidirectional_wan_head_from_target_blocks(
 
 
 def sequence_losses(
+    student_model: nn.Module,
     model_output: torch.Tensor,
     target: torch.Tensor,
     anchor: torch.Tensor,
@@ -1775,6 +2038,18 @@ def sequence_losses(
         loss = loss + dmd_component * dmd_loss_weight
         metrics["dmd_loss"] = float((dmd_component * dmd_loss_weight).detach().cpu().item())
         metrics.update(dmd_metrics)
+        consistency_component, consistency_metrics = dmd.consistency_loss(
+            student_model,
+            clean_prediction,
+            anchor=anchor,
+            prompt_embeds=prompt_embeds,
+        )
+        if consistency_metrics:
+            loss = loss + consistency_component * dmd.consistency_loss_weight
+            metrics["dmd_consistency_loss"] = float(
+                (consistency_component * dmd.consistency_loss_weight).detach().cpu().item()
+            )
+            metrics.update(consistency_metrics)
     metrics["loss"] = float(loss.detach().cpu().item())
     return loss, metrics
 
@@ -1821,6 +2096,7 @@ def compute_bidirectional_losses(
         timestep = timestep_batch(denoising_step_list[0], batch_size, frames, device=target.device)
         model_output = model(anchor_latents=anchor, future_noise=initial_noise, prompt_embeds=prompt_embeds, timestep=timestep)
         return sequence_losses(
+            model,
             model_output,
             target,
             anchor,
@@ -1859,6 +2135,7 @@ def compute_bidirectional_losses(
         ).unflatten(0, target.shape[:2])
         model_output = model(anchor_latents=anchor, future_noise=noisy_latents, prompt_embeds=prompt_embeds, timestep=timestep)
         loss, metrics = sequence_losses(
+            model,
             model_output,
             target,
             anchor,
@@ -1936,6 +2213,18 @@ def compute_bidirectional_losses(
         if dmd is not None and dmd_loss_weight > 0:
             dmd_component, dmd_metrics = dmd.student_loss(prediction, anchor=anchor, prompt_embeds=prompt_embeds)
             components.append(dmd_component * dmd_loss_weight)
+            consistency_component, consistency_metrics = dmd.consistency_loss(
+                model,
+                prediction,
+                anchor=anchor,
+                prompt_embeds=prompt_embeds,
+            )
+            if consistency_metrics:
+                components.append(consistency_component * dmd.consistency_loss_weight)
+                dmd_metrics["dmd_consistency_loss"] = float(
+                    (consistency_component * dmd.consistency_loss_weight).detach().cpu().item()
+                )
+                dmd_metrics.update(consistency_metrics)
         if flow_loss_weight > 0:
             raise ValueError(f"--rollout_solver {rollout_solver} does not support flow supervision; use DMD/clean/detail losses or rollout_solver=euler")
         if not components:
@@ -2039,6 +2328,18 @@ def compute_bidirectional_losses(
     if dmd is not None and dmd_loss_weight > 0:
         dmd_component, dmd_metrics = dmd.student_loss(prediction, anchor=anchor, prompt_embeds=prompt_embeds)
         components.append(dmd_component * dmd_loss_weight)
+        consistency_component, consistency_metrics = dmd.consistency_loss(
+            model,
+            prediction,
+            anchor=anchor,
+            prompt_embeds=prompt_embeds,
+        )
+        if consistency_metrics:
+            components.append(consistency_component * dmd.consistency_loss_weight)
+            dmd_metrics["dmd_consistency_loss"] = float(
+                (consistency_component * dmd.consistency_loss_weight).detach().cpu().item()
+            )
+            dmd_metrics.update(consistency_metrics)
     if not components:
         raise ValueError("At least one loss component must be enabled")
     total_loss = sum(components)
@@ -2448,6 +2749,14 @@ def main() -> None:
     parser.add_argument("--dmd_timestep_shift", type=float, default=5.0)
     parser.add_argument("--dmd_min_timestep", type=float, default=20.0)
     parser.add_argument("--dmd_max_timestep", type=float, default=980.0)
+    parser.add_argument("--dmd_time_distribution", choices=["shifted_uniform", "rcm_lognormal"], default="shifted_uniform")
+    parser.add_argument("--dmd_lognormal_mean", type=float, default=0.0)
+    parser.add_argument("--dmd_lognormal_std", type=float, default=1.6)
+    parser.add_argument("--dmd_fake_score_weighting", choices=["scheduler_sigma", "rcm_trig_sin"], default="scheduler_sigma")
+    parser.add_argument("--dmd_target_convention", choices=["wan_rf_x0", "rcm_trig_x0"], default="wan_rf_x0")
+    parser.add_argument("--dmd_consistency_objective", choices=["none", "rcm_fd", "rcm_jvp"], default="none")
+    parser.add_argument("--dmd_consistency_loss_weight", type=float, default=0.0)
+    parser.add_argument("--dmd_consistency_fd_epsilon", type=float, default=1e-4)
     parser.add_argument("--dmd_score_scope", choices=["future", "full"], default="full")
     parser.add_argument("--teacher_trajectory_cache_dir", default="/mnt/lanxiangh/data/ff_exec/teacher_trajectory_cache")
     parser.add_argument("--teacher_trajectory_steps", type=int, default=5)
@@ -2472,6 +2781,12 @@ def main() -> None:
         raise ValueError("--dmd_student_update_freq must be positive")
     if args.dmd_max_timestep <= args.dmd_min_timestep:
         raise ValueError("--dmd_max_timestep must be greater than --dmd_min_timestep")
+    if args.dmd_lognormal_std <= 0:
+        raise ValueError("--dmd_lognormal_std must be positive")
+    if args.dmd_consistency_loss_weight < 0:
+        raise ValueError("--dmd_consistency_loss_weight must be non-negative")
+    if args.dmd_consistency_fd_epsilon <= 0:
+        raise ValueError("--dmd_consistency_fd_epsilon must be positive")
     if args.dense_schedule_steps:
         args.denoising_step_list = make_descending_timestep_list(args.dense_schedule_steps)
     if args.anchor_conditioning == "none" and args.training_mode != "teacher_trajectory" and args.dmd_loss_weight <= 0:
@@ -2773,6 +3088,14 @@ def main() -> None:
             timestep_shift=args.dmd_timestep_shift,
             min_timestep=args.dmd_min_timestep,
             max_timestep=args.dmd_max_timestep,
+            time_distribution=args.dmd_time_distribution,
+            lognormal_mean=args.dmd_lognormal_mean,
+            lognormal_std=args.dmd_lognormal_std,
+            fake_score_weighting=args.dmd_fake_score_weighting,
+            target_convention=args.dmd_target_convention,
+            consistency_objective=args.dmd_consistency_objective,
+            consistency_loss_weight=args.dmd_consistency_loss_weight,
+            consistency_fd_epsilon=args.dmd_consistency_fd_epsilon,
             score_scope=args.dmd_score_scope,
             fake_score_lr=args.dmd_fake_score_lr,
             fake_score_weight_decay=args.dmd_fake_score_weight_decay,
