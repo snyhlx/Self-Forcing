@@ -51,12 +51,19 @@ class BlockProfile:
     score_ms: float = 0.0
     commit_ms: float = 0.0
     output_decode_ms: float = 0.0
+    overhead_profile: dict[str, Any] | None = None
 
 
 def sync_time() -> float:
     if torch.cuda.is_available():
         torch.cuda.synchronize()
     return time.perf_counter()
+
+
+def record_profile_ms(profile: dict[str, Any] | None, key: str, start_time: float) -> None:
+    if profile is None:
+        return
+    profile[key] = float(profile.get(key, 0.0)) + (sync_time() - start_time) * 1000.0
 
 
 def write_video(output_path: str | Path, video: torch.Tensor, fps: int = 16):
@@ -235,20 +242,97 @@ def reset_pipeline_cache(
     ]
 
 
+def initialize_causal_generator_caches(
+    generator: WanDiffusionWrapper,
+    *,
+    batch_size: int,
+    dtype: torch.dtype,
+    device: torch.device,
+    total_frames: int,
+    frame_seq_length: int,
+) -> tuple[list[dict], list[dict]]:
+    """Create standalone causal caches for a Wan generator without wrapping it in a pipeline."""
+    num_heads = generator.model.num_heads
+    dim = generator.model.dim
+    head_dim = dim // num_heads
+    kv_cache_size = max(generator.seq_len, total_frames * frame_seq_length)
+    num_blocks = len(generator.model.blocks)
+    kv_cache = [
+        {
+            "k": torch.zeros([batch_size, kv_cache_size, num_heads, head_dim], dtype=dtype, device=device),
+            "v": torch.zeros([batch_size, kv_cache_size, num_heads, head_dim], dtype=dtype, device=device),
+            "global_end_index": torch.tensor([0], dtype=torch.long, device=device),
+            "local_end_index": torch.tensor([0], dtype=torch.long, device=device),
+        }
+        for _ in range(num_blocks)
+    ]
+    crossattn_cache = [
+        {
+            "k": torch.zeros([batch_size, 512, num_heads, head_dim], dtype=dtype, device=device),
+            "v": torch.zeros([batch_size, 512, num_heads, head_dim], dtype=dtype, device=device),
+            "is_init": False,
+        }
+        for _ in range(num_blocks)
+    ]
+    return kv_cache, crossattn_cache
+
+
+@torch.no_grad()
+def commit_causal_wan_ar_draft_head_block(
+    draft_head: CausalWanARDraftHead,
+    block_latents: torch.Tensor,
+    prompt_embeds: torch.Tensor,
+    *,
+    current_start_frame: int,
+    frame_seq_length: int,
+    context_noise: int,
+    kv_cache: list[dict],
+    crossattn_cache: list[dict],
+    overhead_profile: dict[str, Any] | None = None,
+) -> None:
+    t_profile = sync_time() if overhead_profile is not None else 0.0
+    timestep = torch.ones(
+        [block_latents.shape[0], block_latents.shape[1]],
+        device=block_latents.device,
+        dtype=torch.int64,
+    ) * int(context_noise)
+    record_profile_ms(overhead_profile, "timestep_alloc_ms", t_profile)
+    t_profile = sync_time() if overhead_profile is not None else 0.0
+    draft_head(
+        noisy_latents=block_latents,
+        prompt_embeds=prompt_embeds,
+        timestep=timestep,
+        kv_cache=kv_cache,
+        crossattn_cache=crossattn_cache,
+        current_start=current_start_frame * frame_seq_length,
+    )
+    record_profile_ms(overhead_profile, "forward_ms", t_profile)
+
+
 def denoise_block(
     pipeline: CausalInferencePipeline,
     noisy_input: torch.Tensor,
     conditional_dict: dict,
     current_start_frame: int,
+    overhead_profile: dict[str, Any] | None = None,
 ) -> torch.Tensor:
     batch_size, current_num_frames = noisy_input.shape[:2]
     current = noisy_input
+    step_profiles = overhead_profile.setdefault("steps", []) if overhead_profile is not None else None
     for index, current_timestep in enumerate(pipeline.denoising_step_list):
+        step_profile: dict[str, Any] | None = (
+            {"step_index": int(index), "timestep": int(current_timestep.item() if torch.is_tensor(current_timestep) else current_timestep)}
+            if step_profiles is not None
+            else None
+        )
+        t_profile = sync_time() if overhead_profile is not None else 0.0
         timestep = torch.ones(
             [batch_size, current_num_frames],
             device=noisy_input.device,
             dtype=torch.int64,
         ) * current_timestep
+        record_profile_ms(step_profile, "timestep_alloc_ms", t_profile)
+        t_profile = sync_time() if overhead_profile is not None else 0.0
         _, denoised_pred = pipeline.generator(
             noisy_image_or_video=current,
             conditional_dict=conditional_dict,
@@ -257,17 +341,31 @@ def denoise_block(
             crossattn_cache=pipeline.crossattn_cache,
             current_start=current_start_frame * pipeline.frame_seq_length,
         )
+        record_profile_ms(step_profile, "forward_ms", t_profile)
         if index < len(pipeline.denoising_step_list) - 1:
             next_timestep = pipeline.denoising_step_list[index + 1]
+            t_profile = sync_time() if overhead_profile is not None else 0.0
+            next_noise = torch.randn_like(denoised_pred.flatten(0, 1))
+            record_profile_ms(step_profile, "next_noise_ms", t_profile)
+            t_profile = sync_time() if overhead_profile is not None else 0.0
+            next_timestep_tensor = next_timestep * torch.ones(
+                [batch_size * current_num_frames],
+                device=noisy_input.device,
+                dtype=torch.long,
+            )
+            record_profile_ms(step_profile, "next_timestep_alloc_ms", t_profile)
+            t_profile = sync_time() if overhead_profile is not None else 0.0
             current = pipeline.scheduler.add_noise(
                 denoised_pred.flatten(0, 1),
-                torch.randn_like(denoised_pred.flatten(0, 1)),
-                next_timestep * torch.ones(
-                    [batch_size * current_num_frames],
-                    device=noisy_input.device,
-                    dtype=torch.long,
-                ),
+                next_noise,
+                next_timestep_tensor,
             ).unflatten(0, denoised_pred.shape[:2])
+            record_profile_ms(step_profile, "add_noise_ms", t_profile)
+        if step_profiles is not None and step_profile is not None:
+            step_profile["total_ms"] = sum(
+                float(value) for key, value in step_profile.items() if key.endswith("_ms")
+            )
+            step_profiles.append(step_profile)
     return denoised_pred
 
 
@@ -276,12 +374,16 @@ def commit_clean_block(
     block_latents: torch.Tensor,
     conditional_dict: dict,
     current_start_frame: int,
+    overhead_profile: dict[str, Any] | None = None,
 ):
+    t_profile = sync_time() if overhead_profile is not None else 0.0
     timestep = torch.ones(
         [block_latents.shape[0], block_latents.shape[1]],
         device=block_latents.device,
         dtype=torch.int64,
     ) * pipeline.args.context_noise
+    record_profile_ms(overhead_profile, "timestep_alloc_ms", t_profile)
+    t_profile = sync_time() if overhead_profile is not None else 0.0
     pipeline.generator(
         noisy_image_or_video=block_latents,
         conditional_dict=conditional_dict,
@@ -290,6 +392,7 @@ def commit_clean_block(
         crossattn_cache=pipeline.crossattn_cache,
         current_start=current_start_frame * pipeline.frame_seq_length,
     )
+    record_profile_ms(overhead_profile, "forward_ms", t_profile)
 
 
 def commit_clean_block_with_feature_capture(
@@ -447,6 +550,7 @@ def denoise_block_with_draft_head(
     causal_kv_cache: list[dict] | None = None,
     causal_crossattn_cache: list[dict] | None = None,
     causal_current_start: int | None = None,
+    overhead_profile: dict[str, Any] | None = None,
 ) -> torch.Tensor:
     if isinstance(draft_head, BidirectionalPromptAnchorDraftHead):
         if conditional_dict is None or "prompt_embeds" not in conditional_dict:
@@ -458,22 +562,33 @@ def denoise_block_with_draft_head(
         batch_size, current_num_frames = block_latents.shape[:2]
         anchor_latents = context_latents
         if anchor_latents is not None:
+            t_profile = sync_time() if overhead_profile is not None else 0.0
             anchor_latents = anchor_latents.to(device=block_latents.device, dtype=block_latents.dtype)
             if anchor_latents.shape[1] != current_num_frames:
                 anchor_latents = anchor_latents[:, -current_num_frames:]
+            record_profile_ms(overhead_profile, "context_prepare_ms", t_profile)
+        t_profile = sync_time() if overhead_profile is not None else 0.0
         prompt_embeds = conditional_dict["prompt_embeds"].to(device=block_latents.device, dtype=block_latents.dtype)
+        record_profile_ms(overhead_profile, "prompt_prepare_ms", t_profile)
+        step_profiles = overhead_profile.setdefault("steps", []) if overhead_profile is not None else None
         for step_index, current_timestep in enumerate(denoising_step_list):
+            step_profile: dict[str, Any] | None = {"step_index": step_index, "timestep": int(current_timestep)} if step_profiles is not None else None
+            t_profile = sync_time() if overhead_profile is not None else 0.0
             timestep = torch.ones(
                 [batch_size, current_num_frames],
                 device=block_latents.device,
                 dtype=torch.int64,
             ) * current_timestep
+            record_profile_ms(step_profile, "timestep_alloc_ms", t_profile)
+            t_profile = sync_time() if overhead_profile is not None else 0.0
             model_output = draft_head(
                 anchor_latents=anchor_latents,
                 future_noise=current,
                 prompt_embeds=prompt_embeds,
                 timestep=timestep,
             )
+            record_profile_ms(step_profile, "forward_ms", t_profile)
+            t_profile = sync_time() if overhead_profile is not None else 0.0
             prediction = draft_output_to_clean_latent(
                 model_output,
                 prediction_type=prediction_type,
@@ -481,13 +596,20 @@ def denoise_block_with_draft_head(
                 noisy_latents=current,
                 timestep=timestep,
             )
+            record_profile_ms(step_profile, "clean_convert_ms", t_profile)
             if step_index < len(denoising_step_list) - 1:
                 next_timestep = denoising_step_list[step_index + 1]
+                t_profile = sync_time() if overhead_profile is not None else 0.0
                 next_timestep_tensor = next_timestep * torch.ones(
                     [batch_size, current_num_frames],
                     device=block_latents.device,
                     dtype=torch.long,
                 )
+                record_profile_ms(step_profile, "next_timestep_alloc_ms", t_profile)
+                t_profile = sync_time() if overhead_profile is not None else 0.0
+                next_noise = torch.randn_like(prediction)
+                record_profile_ms(step_profile, "next_noise_ms", t_profile)
+                t_profile = sync_time() if overhead_profile is not None else 0.0
                 current = draft_flow_step(
                     model_output,
                     prediction_type=prediction_type,
@@ -496,8 +618,14 @@ def denoise_block_with_draft_head(
                     current_timestep=timestep,
                     next_timestep=next_timestep_tensor,
                     clean_prediction=prediction,
-                    next_noise=torch.randn_like(prediction),
+                    next_noise=next_noise,
                 )
+                record_profile_ms(step_profile, "flow_step_ms", t_profile)
+            if step_profiles is not None and step_profile is not None:
+                step_profile["total_ms"] = sum(
+                    float(value) for key, value in step_profile.items() if key.endswith("_ms")
+                )
+                step_profiles.append(step_profile)
         return prediction
     if isinstance(draft_head, CausalWanARDraftHead):
         if conditional_dict is None or "prompt_embeds" not in conditional_dict:
@@ -510,14 +638,24 @@ def denoise_block_with_draft_head(
         prompt_embeds = conditional_dict["prompt_embeds"].to(device=block_latents.device, dtype=block_latents.dtype)
         clean_prefix_latents = None
         if context_latents is not None and context_latents.shape[1] > 0:
+            t_profile = sync_time() if overhead_profile is not None else 0.0
             clean_prefix_latents = context_latents.to(device=block_latents.device, dtype=block_latents.dtype)
+            record_profile_ms(overhead_profile, "context_prepare_ms", t_profile)
+        t_profile = sync_time() if overhead_profile is not None else 0.0
+        prompt_embeds = conditional_dict["prompt_embeds"].to(device=block_latents.device, dtype=block_latents.dtype)
+        record_profile_ms(overhead_profile, "prompt_prepare_ms", t_profile)
         pad_to_frames = int(num_blocks) * int(current_num_frames)
+        step_profiles = overhead_profile.setdefault("steps", []) if overhead_profile is not None else None
         for step_index, current_timestep in enumerate(denoising_step_list):
+            step_profile = {"step_index": step_index, "timestep": int(current_timestep)} if step_profiles is not None else None
+            t_profile = sync_time() if overhead_profile is not None else 0.0
             timestep = torch.ones(
                 [batch_size, current_num_frames],
                 device=block_latents.device,
                 dtype=torch.int64,
             ) * current_timestep
+            record_profile_ms(step_profile, "timestep_alloc_ms", t_profile)
+            t_profile = sync_time() if overhead_profile is not None else 0.0
             model_output = draft_head(
                 noisy_latents=current,
                 prompt_embeds=prompt_embeds,
@@ -525,6 +663,8 @@ def denoise_block_with_draft_head(
                 clean_prefix_latents=clean_prefix_latents,
                 pad_to_frames=pad_to_frames,
             )
+            record_profile_ms(step_profile, "forward_ms", t_profile)
+            t_profile = sync_time() if overhead_profile is not None else 0.0
             prediction = draft_output_to_clean_latent(
                 model_output,
                 prediction_type=prediction_type,
@@ -532,13 +672,20 @@ def denoise_block_with_draft_head(
                 noisy_latents=current,
                 timestep=timestep,
             )
+            record_profile_ms(step_profile, "clean_convert_ms", t_profile)
             if step_index < len(denoising_step_list) - 1:
                 next_timestep = denoising_step_list[step_index + 1]
+                t_profile = sync_time() if overhead_profile is not None else 0.0
                 next_timestep_tensor = next_timestep * torch.ones(
                     [batch_size, current_num_frames],
                     device=block_latents.device,
                     dtype=torch.long,
                 )
+                record_profile_ms(step_profile, "next_timestep_alloc_ms", t_profile)
+                t_profile = sync_time() if overhead_profile is not None else 0.0
+                next_noise = torch.randn_like(prediction)
+                record_profile_ms(step_profile, "next_noise_ms", t_profile)
+                t_profile = sync_time() if overhead_profile is not None else 0.0
                 current = draft_flow_step(
                     model_output,
                     prediction_type=prediction_type,
@@ -547,8 +694,14 @@ def denoise_block_with_draft_head(
                     current_timestep=timestep,
                     next_timestep=next_timestep_tensor,
                     clean_prediction=prediction,
-                    next_noise=torch.randn_like(prediction),
+                    next_noise=next_noise,
                 )
+                record_profile_ms(step_profile, "flow_step_ms", t_profile)
+            if step_profiles is not None and step_profile is not None:
+                step_profile["total_ms"] = sum(
+                    float(value) for key, value in step_profile.items() if key.endswith("_ms")
+                )
+                step_profiles.append(step_profile)
         return prediction
     if isinstance(draft_head, KVCacheInjectedLatentDraftHead):
         kv_cache = {
@@ -799,6 +952,8 @@ def run_mode(
     draft_head_prediction_type: str,
     draft_head_log_target_delta: bool,
     draft_head_oracle_context: bool,
+    draft_head_inference_mode: str,
+    profile_overheads: bool,
 ) -> dict:
     batch_size, num_frames = noise.shape[:2]
     current_num_frames = target_pipeline.num_frame_per_block
@@ -806,18 +961,45 @@ def run_mode(
     device = noise.device
     dtype = noise.dtype
 
+    run_overhead_profile: dict[str, Any] | None = {"blocks": []} if profile_overheads else None
+    t_profile = sync_time() if run_overhead_profile is not None else 0.0
     reset_pipeline_cache(target_pipeline, batch_size, dtype, device, total_frames=num_frames)
+    record_profile_ms(run_overhead_profile, "reset_target_cache_ms", t_profile)
     if draft_pipeline is not None:
+        t_profile = sync_time() if run_overhead_profile is not None else 0.0
         reset_pipeline_cache(draft_pipeline, batch_size, dtype, device, total_frames=num_frames)
+        record_profile_ms(run_overhead_profile, "reset_draft_cache_ms", t_profile)
 
+    t_profile = sync_time() if run_overhead_profile is not None else 0.0
     target_cond = target_pipeline.text_encoder([prompt])
+    record_profile_ms(run_overhead_profile, "target_text_encode_ms", t_profile)
+    t_profile = sync_time() if run_overhead_profile is not None else 0.0
     draft_cond = target_cond if draft_pipeline is None or draft_pipeline.text_encoder is target_pipeline.text_encoder else draft_pipeline.text_encoder([prompt])
+    record_profile_ms(run_overhead_profile, "draft_text_encode_ms", t_profile)
     output = torch.zeros_like(noise)
     profiles: list[BlockProfile] = []
     accepted = 0
     use_streamed_output = reuse_scoring_decodes_for_output and mode in ("sdvg", "target_regen", "draft_head")
     output_chunks: list[torch.Tensor] = []
     latest_target_context: dict | None = None
+    draft_head_kv_cache: list[dict] | None = None
+    draft_head_crossattn_cache: list[dict] | None = None
+    use_draft_head_incremental_kv = (
+        mode == "draft_head"
+        and draft_head_inference_mode == "incremental_kv"
+        and isinstance(draft_head_model, CausalWanARDraftHead)
+    )
+    if use_draft_head_incremental_kv:
+        t_profile = sync_time() if run_overhead_profile is not None else 0.0
+        draft_head_kv_cache, draft_head_crossattn_cache = initialize_causal_generator_caches(
+            draft_head_model.generator,
+            batch_size=batch_size,
+            dtype=dtype,
+            device=device,
+            total_frames=num_frames,
+            frame_seq_length=target_pipeline.frame_seq_length,
+        )
+        record_profile_ms(run_overhead_profile, "reset_draft_head_cache_ms", t_profile)
     if use_streamed_output:
         target_pipeline.vae.model.clear_cache()
 
@@ -827,6 +1009,9 @@ def run_mode(
         end = start + current_num_frames
         block_noise = noise[:, start:end]
         profile = BlockProfile(block_index=block_index, source="target", accepted=False, score=None)
+        block_overhead_profile: dict[str, Any] | None = (
+            {"block_index": block_index, "mode": mode} if run_overhead_profile is not None else None
+        )
 
         use_target = mode == "target_only" or (
             mode == "sdvg" and force_target_first_block and block_index == 0
@@ -849,9 +1034,22 @@ def run_mode(
             profile.draft_ms = (sync_time() - t0) * 1000.0
             restore_current_block_cache(draft_pipeline, draft_cache_before)
 
+            target_denoise_profile = (
+                {"type": type(target_pipeline.generator.model).__name__, "num_steps": len(target_pipeline.denoising_step_list)}
+                if block_overhead_profile is not None
+                else None
+            )
             t0 = sync_time()
-            target_latents = denoise_block(target_pipeline, block_noise, target_cond, start)
+            target_latents = denoise_block(
+                target_pipeline,
+                block_noise,
+                target_cond,
+                start,
+                overhead_profile=target_denoise_profile,
+            )
             profile.target_ms = (sync_time() - t0) * 1000.0
+            if block_overhead_profile is not None:
+                block_overhead_profile["target_denoise"] = target_denoise_profile
             restore_current_block_cache(target_pipeline, target_cache_before)
 
             t0 = sync_time()
@@ -924,7 +1122,16 @@ def run_mode(
                     draft_head_capture_layers,
                 )
             else:
-                commit_clean_block(target_pipeline, chosen_latents, target_cond, start)
+                target_commit_profile = {} if block_overhead_profile is not None else None
+                commit_clean_block(
+                    target_pipeline,
+                    chosen_latents,
+                    target_cond,
+                    start,
+                    overhead_profile=target_commit_profile,
+                )
+                if block_overhead_profile is not None:
+                    block_overhead_profile["target_context_commit"] = target_commit_profile
             if draft_pipeline is not None:
                 commit_clean_block(draft_pipeline, chosen_latents, draft_cond, start)
             profile.commit_ms = (sync_time() - t0) * 1000.0
@@ -941,9 +1148,23 @@ def run_mode(
                 raise ValueError("draft_head mode requires --draft_head_checkpoint_path")
             if latest_target_context is None and not isinstance(draft_head_model, (BidirectionalPromptAnchorDraftHead, CausalWanARDraftHead)):
                 raise RuntimeError("draft_head mode has no target context; block 0 must be target-generated")
+            if use_draft_head_incremental_kv and (draft_head_kv_cache is None or draft_head_crossattn_cache is None):
+                raise RuntimeError("incremental KV draft-head mode was requested but drafter caches are not initialized")
 
+            t_profile = sync_time() if block_overhead_profile is not None else 0.0
+            context_latents = None if use_draft_head_incremental_kv else (output[:, :start] if start > 0 else None)
+            record_profile_ms(block_overhead_profile, "context_slice_ms", t_profile)
             t0 = sync_time()
-            context_latents = output[:, :start] if start > 0 else None
+            draft_head_overhead_profile = (
+                {
+                    "type": type(draft_head_model).__name__,
+                    "prediction_type": draft_head_prediction_type,
+                    "inference_mode": "incremental_kv" if use_draft_head_incremental_kv else "prefix",
+                    "num_steps": len(target_pipeline.denoising_step_list),
+                }
+                if block_overhead_profile is not None
+                else None
+            )
             draft_head_latents = denoise_block_with_draft_head(
                 draft_head_model,
                 block_noise,
@@ -956,24 +1177,46 @@ def run_mode(
                 prediction_type=draft_head_prediction_type,
                 context_latents=context_latents,
                 conditional_dict=target_cond,
-                causal_kv_cache=target_pipeline.kv_cache1,
-                causal_crossattn_cache=target_pipeline.crossattn_cache,
+                causal_kv_cache=draft_head_kv_cache if use_draft_head_incremental_kv else target_pipeline.kv_cache1,
+                causal_crossattn_cache=draft_head_crossattn_cache if use_draft_head_incremental_kv else target_pipeline.crossattn_cache,
                 causal_current_start=start * target_pipeline.frame_seq_length,
+                overhead_profile=draft_head_overhead_profile,
             )
             profile.draft_ms = (sync_time() - t0) * 1000.0
+            if block_overhead_profile is not None:
+                block_overhead_profile["draft_head"] = draft_head_overhead_profile
 
             target_latents = None
             if draft_head_log_target_delta:
+                t_profile = sync_time() if block_overhead_profile is not None else 0.0
                 target_cache_before = snapshot_current_block_cache(target_pipeline, current_num_frames)
+                record_profile_ms(block_overhead_profile, "target_cache_snapshot_ms", t_profile)
+                target_denoise_profile = (
+                    {"type": type(target_pipeline.generator.model).__name__, "num_steps": len(target_pipeline.denoising_step_list)}
+                    if block_overhead_profile is not None
+                    else None
+                )
                 t0 = sync_time()
-                target_latents = denoise_block(target_pipeline, block_noise, target_cond, start)
+                target_latents = denoise_block(
+                    target_pipeline,
+                    block_noise,
+                    target_cond,
+                    start,
+                    overhead_profile=target_denoise_profile,
+                )
                 profile.target_ms = (sync_time() - t0) * 1000.0
+                if block_overhead_profile is not None:
+                    block_overhead_profile["target_denoise"] = target_denoise_profile
+                t_profile = sync_time() if block_overhead_profile is not None else 0.0
                 restore_current_block_cache(target_pipeline, target_cache_before)
+                record_profile_ms(block_overhead_profile, "target_cache_restore_ms", t_profile)
                 profile.score = block_agreement_delta(draft_head_latents, target_latents, agreement_metric)
                 profile.agreement_delta = profile.score
                 profile.score_ms = 0.0
 
+            t_profile = sync_time() if block_overhead_profile is not None else 0.0
             output[:, start:end] = draft_head_latents
+            record_profile_ms(block_overhead_profile, "output_assign_ms", t_profile)
             profile.source = "draft_head"
             profile.accepted = True
             accepted += 1
@@ -1002,8 +1245,35 @@ def run_mode(
                     draft_head_capture_layers,
                 )
             else:
-                commit_clean_block(target_pipeline, commit_latents, target_cond, start)
+                target_commit_profile = {} if block_overhead_profile is not None else None
+                commit_clean_block(
+                    target_pipeline,
+                    commit_latents,
+                    target_cond,
+                    start,
+                    overhead_profile=target_commit_profile,
+                )
+                if block_overhead_profile is not None:
+                    block_overhead_profile["target_context_commit"] = target_commit_profile
             profile.commit_ms = (sync_time() - t0) * 1000.0
+            if use_draft_head_incremental_kv:
+                t_profile = sync_time() if block_overhead_profile is not None else 0.0
+                assert draft_head_kv_cache is not None and draft_head_crossattn_cache is not None
+                draft_head_commit_profile = {} if block_overhead_profile is not None else None
+                commit_causal_wan_ar_draft_head_block(
+                    draft_head_model,
+                    commit_latents,
+                    target_cond["prompt_embeds"],
+                    current_start_frame=start,
+                    frame_seq_length=target_pipeline.frame_seq_length,
+                    context_noise=int(target_pipeline.args.context_noise),
+                    kv_cache=draft_head_kv_cache,
+                    crossattn_cache=draft_head_crossattn_cache,
+                    overhead_profile=draft_head_commit_profile,
+                )
+                if block_overhead_profile is not None:
+                    block_overhead_profile["draft_head_context_commit"] = draft_head_commit_profile
+                record_profile_ms(block_overhead_profile, "draft_head_context_commit_ms", t_profile)
 
             if use_streamed_output:
                 t0 = sync_time()
@@ -1067,9 +1337,22 @@ def run_mode(
                 use_target = True
 
         if use_target:
+            target_denoise_profile = (
+                {"type": type(target_pipeline.generator.model).__name__, "num_steps": len(target_pipeline.denoising_step_list)}
+                if block_overhead_profile is not None
+                else None
+            )
             t0 = sync_time()
-            target_latents = denoise_block(target_pipeline, block_noise, target_cond, start)
+            target_latents = denoise_block(
+                target_pipeline,
+                block_noise,
+                target_cond,
+                start,
+                overhead_profile=target_denoise_profile,
+            )
             profile.target_ms = (sync_time() - t0) * 1000.0
+            if block_overhead_profile is not None:
+                block_overhead_profile["target_denoise"] = target_denoise_profile
             output[:, start:end] = target_latents
             if mode == "target_only" and draft_head_writer is not None and latest_target_context is not None:
                 context_latents = output[:, :start] if start > 0 else None
@@ -1106,8 +1389,36 @@ def run_mode(
                     draft_head_capture_layers,
                 )
             else:
-                commit_clean_block(target_pipeline, target_latents, target_cond, start)
+                target_commit_profile = {} if block_overhead_profile is not None else None
+                commit_clean_block(
+                    target_pipeline,
+                    target_latents,
+                    target_cond,
+                    start,
+                    overhead_profile=target_commit_profile,
+                )
+                if block_overhead_profile is not None:
+                    block_overhead_profile["target_context_commit"] = target_commit_profile
             profile.commit_ms += (sync_time() - t0) * 1000.0
+            if use_draft_head_incremental_kv:
+                t_profile = sync_time() if block_overhead_profile is not None else 0.0
+                assert isinstance(draft_head_model, CausalWanARDraftHead)
+                assert draft_head_kv_cache is not None and draft_head_crossattn_cache is not None
+                draft_head_commit_profile = {} if block_overhead_profile is not None else None
+                commit_causal_wan_ar_draft_head_block(
+                    draft_head_model,
+                    target_latents,
+                    target_cond["prompt_embeds"],
+                    current_start_frame=start,
+                    frame_seq_length=target_pipeline.frame_seq_length,
+                    context_noise=int(target_pipeline.args.context_noise),
+                    kv_cache=draft_head_kv_cache,
+                    crossattn_cache=draft_head_crossattn_cache,
+                    overhead_profile=draft_head_commit_profile,
+                )
+                if block_overhead_profile is not None:
+                    block_overhead_profile["draft_head_context_commit"] = draft_head_commit_profile
+                record_profile_ms(block_overhead_profile, "draft_head_context_commit_ms", t_profile)
             if use_streamed_output:
                 t0 = sync_time()
                 target_video = target_pipeline.vae.decode_to_pixel(target_latents, use_cache=True)
@@ -1115,6 +1426,9 @@ def run_mode(
                 profile.output_decode_ms += (sync_time() - t0) * 1000.0
                 output_chunks.append(target_video.detach().cpu())
 
+        if block_overhead_profile is not None:
+            profile.overhead_profile = block_overhead_profile
+            run_overhead_profile["blocks"].append(block_overhead_profile)
         profiles.append(profile)
 
     generation_ms = (sync_time() - total_start) * 1000.0
@@ -1127,9 +1441,13 @@ def run_mode(
         video = target_pipeline.vae.decode_to_pixel(output, use_cache=False)
         video = (video * 0.5 + 0.5).clamp(0, 1)
         vae_decode_ms = (sync_time() - t0) * 1000.0
+        if run_overhead_profile is not None:
+            run_overhead_profile["final_vae_decode_ms"] = vae_decode_ms
 
     video_path = output_dir / f"{output_stem}_{mode}.mp4"
+    t_profile = sync_time() if run_overhead_profile is not None else 0.0
     write_video(video_path, 255.0 * rearrange(video, "b t c h w -> b t h w c")[0], fps=fps)
+    record_profile_ms(run_overhead_profile, "write_video_ms", t_profile)
 
     profile_dicts = [asdict(p) for p in profiles]
     summary = {
@@ -1153,6 +1471,8 @@ def run_mode(
         "reuse_scoring_decodes_for_output": use_streamed_output,
         "blocks": profile_dicts,
     }
+    if run_overhead_profile is not None:
+        summary["overhead_profile"] = run_overhead_profile
     return summary
 
 
@@ -1330,6 +1650,23 @@ def main():
         ),
     )
     parser.add_argument(
+        "--draft_head_inference_mode",
+        choices=["prefix", "incremental_kv"],
+        default="prefix",
+        help=(
+            "CausalWanARDraftHead rollout strategy. 'prefix' reprocesses previous clean latents; "
+            "'incremental_kv' keeps a separate drafter KV cache and only processes the current block."
+        ),
+    )
+    parser.add_argument(
+        "--profile_overheads",
+        action="store_true",
+        help=(
+            "Add detailed timing buckets to profile.json. This synchronizes CUDA more often, "
+            "so use only for diagnostics."
+        ),
+    )
+    parser.add_argument(
         "--compare_mode",
         choices=["sdvg", "target_regen", "draft_head"],
         default="sdvg",
@@ -1475,6 +1812,8 @@ def main():
                 draft_head_prediction_type=draft_head_prediction_type,
                 draft_head_log_target_delta=args.draft_head_log_target_delta if mode == "draft_head" else False,
                 draft_head_oracle_context=args.draft_head_oracle_context if mode == "draft_head" else False,
+                draft_head_inference_mode=args.draft_head_inference_mode,
+                profile_overheads=args.profile_overheads,
             )
             summaries.append(summary)
 

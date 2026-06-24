@@ -170,6 +170,10 @@ def run_sdvg(
         command.append("--draft_head_log_target_delta")
     if args.draft_head_oracle_context and mode == "draft_head":
         command.append("--draft_head_oracle_context")
+    if args.draft_head_inference_mode:
+        command.extend(["--draft_head_inference_mode", args.draft_head_inference_mode])
+    if args.profile_overheads:
+        command.append("--profile_overheads")
 
     output_dir.mkdir(parents=True, exist_ok=True)
     log_path = output_dir / "eval.log"
@@ -225,6 +229,17 @@ def main() -> None:
     parser.add_argument("--no_force_target_first_block", action="store_true")
     parser.add_argument("--draft_head_log_target_delta", action="store_true")
     parser.add_argument("--draft_head_oracle_context", action="store_true")
+    parser.add_argument(
+        "--draft_head_inference_mode",
+        choices=["prefix", "incremental_kv"],
+        default="prefix",
+        help="CausalWan AR draft-head rollout mode.",
+    )
+    parser.add_argument(
+        "--profile_overheads",
+        action="store_true",
+        help="Ask sdvg_inference.py to add detailed timing buckets to each run profile.",
+    )
     args = parser.parse_args()
 
     if args.target_reference_count < 0:
