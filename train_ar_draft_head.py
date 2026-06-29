@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 from contextlib import nullcontext
+from datetime import timedelta
 import json
 import os
 import random
@@ -17,7 +18,13 @@ from torch.utils.data import DataLoader, Subset
 from torch.utils.data.distributed import DistributedSampler
 from tqdm import tqdm
 
-from fsdp_utils import fsdp_rank0_state_dict, rank0_save_with_state_dict, unwrap_model, wrap_model_for_training
+from fsdp_utils import (
+    fsdp_rank0_state_dict,
+    is_fsdp_model,
+    rank0_save_with_state_dict,
+    unwrap_model,
+    wrap_model_for_training,
+)
 from sdvg_draft_head import (
     DraftHeadRecordDataset,
     CausalWanARDraftHead,
@@ -41,12 +48,12 @@ from utils.scheduler import FlowMatchScheduler
 
 
 def is_ar_bidirectional_head(model: torch.nn.Module) -> bool:
-    inner = model.module if hasattr(model, "module") else model
+    inner = unwrap_model(model)
     return isinstance(inner, BidirectionalPromptAnchorDraftHead)
 
 
 def is_causal_wan_ar_head(model: torch.nn.Module) -> bool:
-    inner = model.module if hasattr(model, "module") else model
+    inner = unwrap_model(model)
     return isinstance(inner, CausalWanARDraftHead)
 
 
@@ -56,6 +63,44 @@ def causal_wan_frame_seq_length(model: torch.nn.Module, latents: torch.Tensor) -
     patch = getattr(inner.generator.model, "patch_size", (1, 2, 2))
     _, patch_h, patch_w = (int(value) for value in patch)
     return (int(height) // patch_h) * (int(width) // patch_w)
+
+
+def initialize_causal_wan_ar_caches(
+    model: torch.nn.Module,
+    *,
+    batch_size: int,
+    dtype: torch.dtype,
+    device: torch.device,
+    total_frames: int,
+    frame_seq_length: int,
+) -> tuple[list[dict[str, torch.Tensor | bool]], list[dict[str, torch.Tensor | bool]]]:
+    """Create standalone KV/cross-attention caches for CausalWanARDraftHead replay."""
+    inner = unwrap_model(model)
+    if not isinstance(inner, CausalWanARDraftHead):
+        raise ValueError("incremental KV replay requires --head_type causal_wan_ar")
+    generator = inner.generator
+    num_heads = int(generator.model.num_heads)
+    head_dim = int(generator.model.dim) // num_heads
+    kv_cache_size = max(int(generator.seq_len), int(total_frames) * int(frame_seq_length))
+    num_blocks = len(generator.model.blocks)
+    kv_cache = [
+        {
+            "k": torch.zeros([batch_size, kv_cache_size, num_heads, head_dim], dtype=dtype, device=device),
+            "v": torch.zeros([batch_size, kv_cache_size, num_heads, head_dim], dtype=dtype, device=device),
+            "global_end_index": torch.tensor([0], dtype=torch.long, device=device),
+            "local_end_index": torch.tensor([0], dtype=torch.long, device=device),
+        }
+        for _ in range(num_blocks)
+    ]
+    crossattn_cache = [
+        {
+            "k": torch.zeros([batch_size, 512, num_heads, head_dim], dtype=dtype, device=device),
+            "v": torch.zeros([batch_size, 512, num_heads, head_dim], dtype=dtype, device=device),
+            "is_init": False,
+        }
+        for _ in range(num_blocks)
+    ]
+    return kv_cache, crossattn_cache
 
 
 def predict_draft_head_batch(
@@ -80,7 +125,7 @@ def predict_draft_head_batch(
             prompt_embeds=batch["prompt_embeds"].to(device=device, dtype=dtype),
             timestep=batch["timestep"].to(device=device),
             clean_prefix_latents=context_latents,
-            pad_to_frames=num_blocks * int(batch[input_key].shape[1]),
+            pad_to_frames=batch.get("causal_wan_pad_to_frames", num_blocks * int(batch[input_key].shape[1])),
         )
     if not is_ar_bidirectional_head(model):
         return predict_sdvg_draft_head_batch(model, batch, num_blocks, input_key=input_key)
@@ -361,6 +406,77 @@ def require_model_parameters_finite(model: torch.nn.Module, *, context: str) -> 
             raise FloatingPointError(tensor_finite_summary(f"{context} parameter {name}", parameter))
 
 
+def first_nonfinite_grad_summary(model: torch.nn.Module) -> str | None:
+    for name, parameter in model.named_parameters():
+        grad = parameter.grad
+        if grad is not None and not torch.isfinite(grad).all().item():
+            return tensor_finite_summary(f"grad:{name}", grad)
+    return None
+
+
+def register_nonfinite_backward_debug_hooks(
+    model: torch.nn.Module,
+    *,
+    rank: int,
+    state: dict[str, Any],
+) -> list[Any]:
+    """Register lightweight hooks that report where backward first becomes non-finite."""
+    handles = []
+    inner = unwrap_model(model)
+
+    def should_watch(name: str) -> bool:
+        if not name.startswith("generator.model."):
+            return False
+        if ".blocks." in name:
+            return name.endswith((".self_attn", ".cross_attn", ".ffn", ".norm1", ".norm2", ".norm3"))
+        return name in ("generator.model.patch_embedding", "generator.model.head", "generator.model.time_embedding")
+
+    def tensor_list_nonfinite_summary(label: str, tensors: tuple[Any, ...]) -> str | None:
+        for index, tensor in enumerate(tensors):
+            if torch.is_tensor(tensor) and not torch.isfinite(tensor).all().item():
+                return tensor_finite_summary(f"{label}[{index}]", tensor)
+        return None
+
+    def tensor_list_all_finite(tensors: tuple[Any, ...]) -> bool:
+        found_tensor = False
+        for tensor in tensors:
+            if torch.is_tensor(tensor):
+                found_tensor = True
+                if not torch.isfinite(tensor).all().item():
+                    return False
+        return found_tensor
+
+    def make_hook(name: str):
+        def hook(_module, grad_input, grad_output):
+            if not state.get("enabled", False):
+                return
+            if int(state.get("reports", 0)) >= int(state.get("max_reports", 8)):
+                return
+            grad_output_finite = tensor_list_all_finite(grad_output)
+            grad_input_summary = tensor_list_nonfinite_summary("grad_input", grad_input)
+            if grad_output_finite and grad_input_summary is not None:
+                summary = grad_input_summary
+                direction = "introduced_nonfinite_grad_input"
+            else:
+                summary = tensor_list_nonfinite_summary("grad_output", grad_output)
+                direction = "received_nonfinite_grad_output"
+            if summary is None:
+                return
+            state["reports"] = int(state.get("reports", 0)) + 1
+            print(
+                "[nonfinite-backward] "
+                f"rank={rank} global_step={state.get('global_step')} "
+                f"module={name} direction={direction} {summary}",
+                flush=True,
+            )
+        return hook
+
+    for name, module in inner.named_modules():
+        if should_watch(name):
+            handles.append(module.register_full_backward_hook(make_hook(name)))
+    return handles
+
+
 def batch_scalar(batch: dict[str, Any], key: str, default: Any = "unknown") -> Any:
     value = batch.get(key)
     if torch.is_tensor(value):
@@ -370,6 +486,85 @@ def batch_scalar(batch: dict[str, Any], key: str, default: Any = "unknown") -> A
     if isinstance(value, (list, tuple)) and value:
         return value[0]
     return default if value is None else value
+
+
+def teacher_trajectory_active_step_indices(
+    batch: dict[str, Any],
+    step_indices: list[int] | None,
+    *,
+    sample_one: bool = False,
+) -> list[int]:
+    if "teacher_trajectory_noisy_latents" not in batch:
+        raise ValueError("teacher_trajectory mode requires teacher_trajectory_noisy_latents")
+    num_steps = int(batch["teacher_trajectory_noisy_latents"].shape[1])
+    if step_indices is None:
+        active_step_indices = list(range(num_steps))
+    else:
+        active_step_indices = [int(index) for index in step_indices]
+        if not active_step_indices:
+            raise ValueError("--teacher_trajectory_step_indices must not be empty")
+        invalid_indices = [index for index in active_step_indices if index < 0 or index >= num_steps]
+        if invalid_indices:
+            raise ValueError(
+                f"teacher trajectory step indices {invalid_indices} are out of range for {num_steps} steps"
+            )
+    if sample_one and len(active_step_indices) > 1:
+        device = batch["teacher_trajectory_noisy_latents"].device
+        choice = torch.empty((), device=device, dtype=torch.long)
+        if not (dist.is_available() and dist.is_initialized()) or dist.get_rank() == 0:
+            choice.fill_(random.choice(active_step_indices))
+        if dist.is_available() and dist.is_initialized():
+            dist.broadcast(choice, src=0)
+        active_step_indices = [int(choice.detach().cpu().item())]
+    return active_step_indices
+
+
+def distributed_sample_teacher_trajectory_step(step_indices: list[int], device: torch.device) -> int:
+    choice = torch.empty((), device=device, dtype=torch.long)
+    if not (dist.is_available() and dist.is_initialized()) or dist.get_rank() == 0:
+        choice.fill_(random.choice(step_indices))
+    if dist.is_available() and dist.is_initialized():
+        dist.broadcast(choice, src=0)
+    return int(choice.detach().cpu().item())
+
+
+def filter_teacher_trajectory_step_indices_for_loss(
+    batch: dict[str, Any],
+    step_indices: list[int],
+    *,
+    loss_type: str,
+    device: torch.device | None = None,
+) -> list[int]:
+    if loss_type != "flow":
+        return step_indices
+    timesteps = batch.get("teacher_trajectory_timesteps")
+    if timesteps is None:
+        return step_indices
+    if timesteps.ndim == 1:
+        local_valid = [bool((timesteps[index] > 0).item()) for index in step_indices]
+    else:
+        local_valid = [bool((timesteps[:, index] > 0).any().item()) for index in step_indices]
+    if dist.is_available() and dist.is_initialized():
+        if device is None:
+            device = torch.device("cuda", torch.cuda.current_device()) if torch.cuda.is_available() else torch.device("cpu")
+        valid_tensor = torch.tensor(local_valid, device=device, dtype=torch.int32)
+        dist.all_reduce(valid_tensor, op=dist.ReduceOp.MIN)
+        local_valid = [bool(value) for value in valid_tensor.detach().cpu().tolist()]
+    return [index for index, is_valid in zip(step_indices, local_valid, strict=True) if is_valid]
+
+
+def merge_loss_metric_lists(metric_lists: list[dict[str, float]], *, loss: float) -> dict[str, float]:
+    if not metric_lists:
+        return {"loss": loss, "clean_latent_mse": 0.0}
+    merged: dict[str, float] = {"loss": loss}
+    keys = sorted({key for metrics in metric_lists for key in metrics if key != "loss"})
+    for key in keys:
+        values = [metrics[key] for metrics in metric_lists if key in metrics]
+        if values:
+            merged[key] = float(sum(values) / len(values))
+    if "clean_latent_mse" not in merged:
+        merged["clean_latent_mse"] = 0.0
+    return merged
 
 
 class DraftHeadDMDLoss:
@@ -716,7 +911,24 @@ def compute_teacher_trajectory_draft_head_losses(
     clean_latent_loss_weight: float,
     flow_loss_weight: float,
     step_indices: list[int] | None = None,
+    step_mode: str = "whole_graph",
+    teacher_trajectory_objective: str = "prefix_flow",
+    teacher_trajectory_prefix_loss_weight: float = 1.0,
+    teacher_trajectory_incremental_kv_loss_weight: float = 1.0,
+    incremental_kv_consistency_weight: float = 0.0,
+    incremental_kv_context_noise: int = 0,
+    debug_timing: bool = False,
+    debug_nonfinite_backward: bool = False,
+    debug_rank: int = 0,
+    debug_global_step: int = 0,
 ) -> tuple[torch.Tensor, dict[str, float]]:
+    if step_mode not in ("whole_graph", "sample_one", "sequential_backward"):
+        raise ValueError("--teacher_trajectory_step_mode must be whole_graph, sample_one, or sequential_backward")
+    if teacher_trajectory_objective not in ("prefix_flow", "incremental_kv_flow", "hybrid_prefix_incremental_kv_flow"):
+        raise ValueError(
+            "--teacher_trajectory_objective must be prefix_flow, incremental_kv_flow, or "
+            "hybrid_prefix_incremental_kv_flow"
+        )
     if "teacher_trajectory_noisy_latents" not in batch or "teacher_trajectory_latents" not in batch:
         raise ValueError("teacher_trajectory mode requires teacher_trajectory_noisy_latents and teacher_trajectory_latents")
     if "teacher_trajectory_timesteps" not in batch:
@@ -739,22 +951,57 @@ def compute_teacher_trajectory_draft_head_losses(
         raise ValueError("teacher trajectory timesteps must have shape [B, S] or [S]")
 
     batch_size, num_steps, frames = noisy_states.shape[:3]
-    if step_indices is None:
-        active_step_indices = list(range(num_steps))
-    else:
-        active_step_indices = [int(index) for index in step_indices]
-        if not active_step_indices:
-            raise ValueError("--teacher_trajectory_step_indices must not be empty")
-        invalid_indices = [index for index in active_step_indices if index < 0 or index >= num_steps]
-        if invalid_indices:
-            raise ValueError(
-                f"teacher trajectory step indices {invalid_indices} are out of range for {num_steps} steps"
-            )
+    active_step_indices = teacher_trajectory_active_step_indices(
+        batch,
+        step_indices,
+        sample_one=False,
+    )
+    active_step_indices = filter_teacher_trajectory_step_indices_for_loss(
+        batch,
+        active_step_indices,
+        loss_type=loss_type,
+        device=noisy_states.device,
+    )
+    if step_mode == "sample_one" and len(active_step_indices) > 1:
+        active_step_indices = [distributed_sample_teacher_trajectory_step(active_step_indices, noisy_states.device)]
+    if not active_step_indices:
+        raise ValueError("No teacher trajectory steps can contribute to the selected loss")
 
     components: list[torch.Tensor] = []
     flow_losses = []
     clean_losses = []
+    consistency_losses = []
+    committed_prefix_frame_counts = []
     prefix_frames = int(batch["context_latents"].shape[1]) if batch.get("context_latents") is not None else 0
+    use_prefix_flow = teacher_trajectory_objective in ("prefix_flow", "hybrid_prefix_incremental_kv_flow")
+    use_incremental_kv_flow = teacher_trajectory_objective in (
+        "incremental_kv_flow",
+        "hybrid_prefix_incremental_kv_flow",
+    )
+    use_hybrid_flow = teacher_trajectory_objective == "hybrid_prefix_incremental_kv_flow"
+    use_incremental_kv_consistency = incremental_kv_consistency_weight > 0
+    needs_incremental_kv = use_incremental_kv_flow or use_incremental_kv_consistency
+    if use_incremental_kv_consistency and teacher_trajectory_objective != "prefix_flow":
+        raise ValueError("--incremental_kv_consistency_weight is only used with prefix_flow objective")
+    if needs_incremental_kv:
+        if not is_causal_wan_ar_head(model):
+            raise ValueError("incremental KV teacher trajectory objectives require --head_type causal_wan_ar")
+        if batch.get("context_latents") is None:
+            raise ValueError("incremental KV teacher trajectory objectives require context_latents")
+        if use_incremental_kv_consistency and prefix_frames == 0:
+            raise ValueError("incremental KV consistency requires context_latents with at least one prefix frame")
+        if "prompt_embeds" not in batch:
+            raise ValueError("incremental KV teacher trajectory objectives require prompt_embeds in the batch")
+        frame_seq_length = causal_wan_frame_seq_length(model, noisy_states[:, 0])
+        prefix_latents = batch["context_latents"].to(device=device, dtype=dtype)
+        prompt_embeds = batch["prompt_embeds"].to(device=device, dtype=dtype)
+        require_finite("teacher_trajectory_context_latents", prefix_latents)
+        require_finite("teacher_trajectory_prompt_embeds", prompt_embeds)
+    else:
+        frame_seq_length = 0
+        prefix_latents = None
+        prompt_embeds = None
+
     for step_index in active_step_indices:
         state = noisy_states[:, step_index]
         clean_target = clean_targets[:, step_index]
@@ -765,34 +1012,250 @@ def compute_teacher_trajectory_draft_head_losses(
             f"block_index={batch_scalar(batch, 'block_index')} "
             f"prefix_frames={prefix_frames}"
         )
-        step_batch = dict(batch)
-        step_batch["scheduled_latents"] = state
-        step_batch["timestep"] = timestep
-        model_output = predict_draft_head_batch(model, step_batch, num_blocks, input_key="scheduled_latents")
-        require_finite(f"teacher_trajectory_model_output ({debug_context})", model_output)
-        if prediction_type == "flow":
-            flow_prediction = model_output
-            clean_prediction = flow_prediction_to_clean_latent(scheduler, flow_prediction, state, timestep)
-        elif prediction_type == "clean_latent":
-            clean_prediction = model_output
-            flow_prediction = clean_latent_to_flow_prediction(scheduler, clean_prediction, state, timestep)
-        else:
-            raise ValueError("--prediction_type must be 'flow' or 'clean_latent'")
+        valid_flow_timestep = bool((timestep > 0).any().detach().cpu().item())
+        valid_consistency_timestep = valid_flow_timestep
+        needs_flow_forward = loss_type in ("flow", "clean_latent_flow") and valid_flow_timestep
+        needs_clean_forward = loss_type in ("clean_latent", "clean_latent_flow")
+        needs_consistency_forward = use_incremental_kv_consistency and valid_consistency_timestep
+        if not (needs_flow_forward or needs_clean_forward or needs_consistency_forward):
+            continue
+        model_output = None
+        if use_prefix_flow or needs_consistency_forward:
+            step_batch = dict(batch)
+            step_batch["scheduled_latents"] = state
+            step_batch["timestep"] = timestep
+            model_output = predict_draft_head_batch(model, step_batch, num_blocks, input_key="scheduled_latents")
+            require_finite(f"teacher_trajectory_model_output ({debug_context})", model_output)
+        incremental_output = None
+        if use_incremental_kv_flow or needs_consistency_forward:
+            incremental_replay_start = time.perf_counter()
+            assert prefix_latents is not None
+            assert prompt_embeds is not None
+            kv_cache, crossattn_cache = initialize_causal_wan_ar_caches(
+                model,
+                batch_size=batch_size,
+                dtype=dtype,
+                device=device,
+                total_frames=prefix_frames + frames,
+                frame_seq_length=frame_seq_length,
+            )
+            cache_init_seconds = debug_elapsed(incremental_replay_start, device) if debug_timing else 0.0
+            inner_model = unwrap_model(model)
+            generator_model = inner_model.generator.model if isinstance(inner_model, CausalWanARDraftHead) else None
+            local_attn_size = int(getattr(generator_model, "local_attn_size", -1))
+            if local_attn_size != -1:
+                committed_prefix_frames = min(prefix_frames, max(local_attn_size - frames, 0))
+            else:
+                committed_prefix_frames = prefix_frames
+            prefix_commit_start = max(0, prefix_frames - committed_prefix_frames)
+            if prefix_commit_start > 0:
+                skipped_tokens = prefix_commit_start * frame_seq_length
+                for cache in kv_cache:
+                    cache["global_end_index"].fill_(skipped_tokens)
+                    cache["local_end_index"].zero_()
+            committed_prefix_frame_counts.append(float(committed_prefix_frames))
+            prefix_chunk_frames = frames
+            prefix_commit_seconds = 0.0
+            actual_prefix_starts = list(range(prefix_commit_start, prefix_frames, prefix_chunk_frames))
+            num_prefix_commit_forwards = torch.tensor([len(actual_prefix_starts)], device=device, dtype=torch.int32)
+            if dist.is_available() and dist.is_initialized():
+                dist.all_reduce(num_prefix_commit_forwards, op=dist.ReduceOp.MAX)
+            max_prefix_commit_forwards = int(num_prefix_commit_forwards.detach().cpu().item())
+            dummy_kv_cache = None
+            dummy_crossattn_cache = None
+            with torch.no_grad():
+                for prefix_slot in range(max_prefix_commit_forwards):
+                    prefix_commit_start_time = time.perf_counter()
+                    is_real_prefix_commit = prefix_slot < len(actual_prefix_starts)
+                    if is_real_prefix_commit:
+                        prefix_start = actual_prefix_starts[prefix_slot]
+                        prefix_chunk = prefix_latents[:, prefix_start:prefix_start + prefix_chunk_frames]
+                        commit_kv_cache = kv_cache
+                        commit_crossattn_cache = crossattn_cache
+                        commit_current_start = prefix_start * frame_seq_length
+                    else:
+                        prefix_start = -1
+                        prefix_chunk = torch.zeros_like(state)
+                        if dummy_kv_cache is None or dummy_crossattn_cache is None:
+                            dummy_kv_cache, dummy_crossattn_cache = initialize_causal_wan_ar_caches(
+                                model,
+                                batch_size=batch_size,
+                                dtype=dtype,
+                                device=device,
+                                total_frames=frames,
+                                frame_seq_length=frame_seq_length,
+                            )
+                        commit_kv_cache = dummy_kv_cache
+                        commit_crossattn_cache = dummy_crossattn_cache
+                        commit_current_start = 0
+                    prefix_timestep = torch.full(
+                        (batch_size, prefix_chunk.shape[1]),
+                        int(incremental_kv_context_noise),
+                        device=device,
+                        dtype=torch.long,
+                    )
+                    prefix_output = model(
+                        noisy_latents=prefix_chunk,
+                        prompt_embeds=prompt_embeds,
+                        timestep=prefix_timestep,
+                        kv_cache=commit_kv_cache,
+                        crossattn_cache=commit_crossattn_cache,
+                        current_start=commit_current_start,
+                    )
+                    if is_real_prefix_commit:
+                        require_finite(
+                            f"teacher_trajectory_incremental_prefix_commit_output "
+                            f"({debug_context} prefix_start={prefix_start})",
+                            prefix_output,
+                        )
+                    if debug_timing:
+                        prefix_chunk_seconds = debug_elapsed(prefix_commit_start_time, device)
+                        prefix_commit_seconds += prefix_chunk_seconds
+                        print_main(
+                            debug_rank,
+                            "[timing] "
+                            f"global_step={debug_global_step} {debug_context} "
+                            f"prefix_commit_start={prefix_start} "
+                            f"prefix_slot={prefix_slot} "
+                            f"real={int(is_real_prefix_commit)} "
+                            f"chunk_frames={prefix_chunk.shape[1]} "
+                            f"seconds={prefix_chunk_seconds:.3f}",
+                            flush=True,
+                        )
+            current_forward_start = time.perf_counter()
+            incremental_output = model(
+                noisy_latents=state,
+                prompt_embeds=prompt_embeds,
+                timestep=timestep,
+                kv_cache=kv_cache,
+                crossattn_cache=crossattn_cache,
+                current_start=prefix_frames * frame_seq_length,
+            )
+            require_finite(f"teacher_trajectory_incremental_output ({debug_context})", incremental_output)
+            if debug_nonfinite_backward and incremental_output.requires_grad:
+                def incremental_output_grad_hook(grad, context=debug_context):
+                    if not torch.isfinite(grad).all().item():
+                        print(
+                            "[nonfinite-backward] "
+                            f"rank={debug_rank} global_step={debug_global_step} "
+                            f"tensor=incremental_output {context} {tensor_finite_summary('grad', grad)}",
+                            flush=True,
+                        )
+                    return grad
 
-        if loss_type in ("flow", "clean_latent_flow"):
-            flow_target = clean_latent_to_flow_prediction(scheduler, clean_target, state, timestep)
-            require_finite(f"teacher_trajectory_flow_target ({debug_context})", flow_target)
-            flow_loss = F.mse_loss(flow_prediction.float(), flow_target.float())
-            require_finite(f"teacher_trajectory_flow_loss ({debug_context})", flow_loss)
-            flow_losses.append(flow_loss.detach())
-            if flow_loss_weight > 0:
-                components.append(flow_loss * flow_loss_weight / max(len(active_step_indices), 1))
-        if loss_type in ("clean_latent", "clean_latent_flow"):
-            clean_loss = F.mse_loss(clean_prediction.float(), clean_target.float())
-            require_finite(f"teacher_trajectory_clean_loss ({debug_context})", clean_loss)
-            clean_losses.append(clean_loss.detach())
-            if clean_latent_loss_weight > 0:
-                components.append(clean_loss * clean_latent_loss_weight / max(len(active_step_indices), 1))
+                incremental_output.register_hook(incremental_output_grad_hook)
+            if debug_timing:
+                current_forward_seconds = debug_elapsed(current_forward_start, device)
+                total_incremental_seconds = debug_elapsed(incremental_replay_start, device)
+                print_main(
+                    debug_rank,
+                    "[timing] "
+                    f"global_step={debug_global_step} {debug_context} "
+                    f"local_attn_size={local_attn_size} "
+                    f"committed_prefix_frames={committed_prefix_frames} "
+                    f"prefix_commit_start={prefix_commit_start} "
+                    f"cache_init_seconds={cache_init_seconds:.3f} "
+                    f"prefix_commit_seconds={prefix_commit_seconds:.3f} "
+                    f"current_forward_seconds={current_forward_seconds:.3f} "
+                    f"incremental_replay_seconds={total_incremental_seconds:.3f}",
+                    flush=True,
+                )
+
+        def add_supervised_components(
+            output: torch.Tensor,
+            *,
+            loss_weight_multiplier: float,
+            metric_prefix: str,
+        ) -> None:
+            if prediction_type == "flow":
+                flow_prediction = output
+                if debug_nonfinite_backward and flow_prediction.requires_grad:
+                    def flow_prediction_grad_hook(grad, prefix=metric_prefix):
+                        if not torch.isfinite(grad).all().item():
+                            print(
+                                "[nonfinite-backward] "
+                                f"rank={debug_rank} global_step={debug_global_step} "
+                                f"tensor={prefix}_flow_prediction {debug_context} "
+                                f"{tensor_finite_summary('grad', grad)}",
+                                flush=True,
+                            )
+                        return grad
+
+                    flow_prediction.register_hook(flow_prediction_grad_hook)
+                clean_prediction = flow_prediction_to_clean_latent(scheduler, flow_prediction, state, timestep)
+            elif prediction_type == "clean_latent":
+                clean_prediction = output
+                flow_prediction = clean_latent_to_flow_prediction(scheduler, clean_prediction, state, timestep)
+                if debug_nonfinite_backward and flow_prediction.requires_grad:
+                    def converted_flow_prediction_grad_hook(grad, prefix=metric_prefix):
+                        if not torch.isfinite(grad).all().item():
+                            print(
+                                "[nonfinite-backward] "
+                                f"rank={debug_rank} global_step={debug_global_step} "
+                                f"tensor={prefix}_converted_flow_prediction {debug_context} "
+                                f"{tensor_finite_summary('grad', grad)}",
+                                flush=True,
+                            )
+                        return grad
+
+                    flow_prediction.register_hook(converted_flow_prediction_grad_hook)
+            else:
+                raise ValueError("--prediction_type must be 'flow' or 'clean_latent'")
+            if needs_flow_forward:
+                flow_target = clean_latent_to_flow_prediction(scheduler, clean_target, state, timestep)
+                require_finite(f"{metric_prefix}_flow_target ({debug_context})", flow_target)
+                flow_diff = (flow_prediction.float() - flow_target.float()).square()
+                valid_flow = (timestep > 0).reshape(*timestep.shape, 1, 1, 1).to(device=device, dtype=flow_diff.dtype)
+                valid_flow_count = valid_flow.expand_as(flow_diff).sum()
+                if valid_flow_count > 0:
+                    flow_loss = (flow_diff * valid_flow).sum() / valid_flow_count.clamp_min(1.0)
+                    require_finite(f"{metric_prefix}_flow_loss ({debug_context})", flow_loss)
+                    flow_losses.append(flow_loss.detach())
+                    if flow_loss_weight > 0 and loss_weight_multiplier > 0:
+                        components.append(
+                            flow_loss
+                            * flow_loss_weight
+                            * float(loss_weight_multiplier)
+                            / max(len(active_step_indices), 1)
+                        )
+            if loss_type in ("clean_latent", "clean_latent_flow"):
+                clean_loss = F.mse_loss(clean_prediction.float(), clean_target.float())
+                require_finite(f"{metric_prefix}_clean_loss ({debug_context})", clean_loss)
+                clean_losses.append(clean_loss.detach())
+                if clean_latent_loss_weight > 0 and loss_weight_multiplier > 0:
+                    components.append(
+                        clean_loss
+                        * clean_latent_loss_weight
+                        * float(loss_weight_multiplier)
+                        / max(len(active_step_indices), 1)
+                    )
+
+        if use_prefix_flow:
+            assert model_output is not None
+            prefix_loss_weight = teacher_trajectory_prefix_loss_weight if use_hybrid_flow else 1.0
+            add_supervised_components(
+                model_output,
+                loss_weight_multiplier=prefix_loss_weight,
+                metric_prefix="teacher_trajectory_prefix",
+            )
+        if use_incremental_kv_flow:
+            assert incremental_output is not None
+            incremental_loss_weight = teacher_trajectory_incremental_kv_loss_weight if use_hybrid_flow else 1.0
+            add_supervised_components(
+                incremental_output,
+                loss_weight_multiplier=incremental_loss_weight,
+                metric_prefix="teacher_trajectory_incremental_kv",
+            )
+
+        if needs_consistency_forward:
+            assert incremental_output is not None
+            assert model_output is not None
+            consistency_loss = F.mse_loss(incremental_output.float(), model_output.detach().float())
+            require_finite(f"teacher_trajectory_incremental_consistency_loss ({debug_context})", consistency_loss)
+            consistency_losses.append(consistency_loss.detach())
+            components.append(
+                consistency_loss * incremental_kv_consistency_weight / max(len(active_step_indices), 1)
+            )
 
     if not components:
         raise ValueError("At least one teacher trajectory loss component must be enabled")
@@ -803,7 +1266,32 @@ def compute_teacher_trajectory_draft_head_losses(
         "teacher_trajectory_flow_mse": float(torch.stack(flow_losses).mean().detach().cpu().item()) if flow_losses else 0.0,
     }
     metrics["causal_prefix_frames"] = float(prefix_frames)
+    metrics["causal_committed_prefix_frames"] = (
+        float(sum(committed_prefix_frame_counts) / len(committed_prefix_frame_counts))
+        if committed_prefix_frame_counts
+        else 0.0
+    )
+    metrics["teacher_trajectory_objective_incremental_kv_flow"] = float(use_incremental_kv_flow)
+    metrics["teacher_trajectory_objective_hybrid_prefix_incremental_kv_flow"] = float(use_hybrid_flow)
+    metrics["teacher_trajectory_prefix_loss_weight"] = float(
+        teacher_trajectory_prefix_loss_weight if use_hybrid_flow else float(use_prefix_flow)
+    )
+    metrics["teacher_trajectory_incremental_kv_loss_weight"] = float(
+        teacher_trajectory_incremental_kv_loss_weight if use_hybrid_flow else float(use_incremental_kv_flow)
+    )
     metrics["teacher_trajectory_num_active_steps"] = float(len(active_step_indices))
+    metrics["teacher_trajectory_num_contributing_steps"] = float(
+        len(clean_losses) if loss_type == "clean_latent" else max(len(flow_losses), len(consistency_losses), len(clean_losses))
+    )
+    metrics["teacher_trajectory_step_mode_sample_one"] = float(step_mode == "sample_one")
+    metrics["teacher_trajectory_step_mode_sequential"] = float(step_mode == "sequential_backward")
+    if consistency_losses:
+        metrics["incremental_kv_consistency_mse"] = float(
+            torch.stack(consistency_losses).mean().detach().cpu().item()
+        )
+        metrics["incremental_kv_consistency_loss"] = (
+            metrics["incremental_kv_consistency_mse"] * float(incremental_kv_consistency_weight)
+        )
     return total_loss, metrics
 
 
@@ -1002,7 +1490,13 @@ def distributed_info() -> tuple[bool, int, int, int]:
     local_rank = int(os.environ.get("LOCAL_RANK", "0"))
     is_distributed = world_size > 1
     if is_distributed and not dist.is_initialized():
-        dist.init_process_group(backend="nccl")
+        timeout_seconds = int(
+            os.environ.get(
+                "TORCH_DISTRIBUTED_TIMEOUT_SECONDS",
+                os.environ.get("NCCL_TIMEOUT", "600"),
+            )
+        )
+        dist.init_process_group(backend="nccl", timeout=timedelta(seconds=timeout_seconds))
     return is_distributed, rank, local_rank, world_size
 
 
@@ -1013,6 +1507,16 @@ def is_main_process(rank: int) -> bool:
 def print_main(rank: int, *args, **kwargs) -> None:
     if is_main_process(rank):
         print(*args, **kwargs)
+
+
+def sync_cuda_for_timing(device: torch.device) -> None:
+    if device.type == "cuda":
+        torch.cuda.synchronize(device)
+
+
+def debug_elapsed(start: float, device: torch.device) -> float:
+    sync_cuda_for_timing(device)
+    return time.perf_counter() - start
 
 
 def set_wan_dflash_copied_modules_trainable(model: torch.nn.Module, trainable: bool) -> dict[str, int]:
@@ -1058,6 +1562,54 @@ def main() -> None:
     parser.add_argument("--timestep_shift", type=float, default=5.0)
     parser.add_argument("--training_mode", choices=["one_step", "unrolled", "teacher_trajectory"], default="one_step")
     parser.add_argument("--teacher_trajectory_step_indices", nargs="+", type=int, default=None)
+    parser.add_argument(
+        "--teacher_trajectory_step_mode",
+        choices=["whole_graph", "sample_one", "sequential_backward"],
+        default="whole_graph",
+        help=(
+            "How teacher_trajectory step_indices are used. whole_graph backprops all selected steps together; "
+            "sample_one randomly chooses one selected step per batch; sequential_backward backprops each selected step "
+            "one at a time before a single optimizer step."
+        ),
+    )
+    parser.add_argument(
+        "--teacher_trajectory_objective",
+        choices=["prefix_flow", "incremental_kv_flow", "hybrid_prefix_incremental_kv_flow"],
+        default="prefix_flow",
+        help=(
+            "Teacher-trajectory objective. prefix_flow uses prefix teacher forcing; "
+            "incremental_kv_flow commits prefix latents into a CausalWanAR KV cache and "
+            "applies the supervised loss to the incremental current-chunk output; "
+            "hybrid_prefix_incremental_kv_flow applies supervised losses to both paths."
+        ),
+    )
+    parser.add_argument(
+        "--teacher_trajectory_prefix_loss_weight",
+        type=float,
+        default=1.0,
+        help="Loss multiplier for the prefix-conditioned path when using hybrid_prefix_incremental_kv_flow.",
+    )
+    parser.add_argument(
+        "--teacher_trajectory_incremental_kv_loss_weight",
+        type=float,
+        default=1.0,
+        help="Loss multiplier for the incremental-KV path when using hybrid_prefix_incremental_kv_flow.",
+    )
+    parser.add_argument(
+        "--incremental_kv_consistency_weight",
+        type=float,
+        default=0.0,
+        help=(
+            "Teacher-trajectory-only consistency weight between prefix teacher-forcing output and "
+            "incremental KV replay output for causal_wan_ar."
+        ),
+    )
+    parser.add_argument(
+        "--incremental_kv_context_noise",
+        type=int,
+        default=0,
+        help="Timestep used when committing clean prefix latents into the incremental drafter KV cache.",
+    )
     parser.add_argument("--unroll_step_weights", nargs="+", type=float, default=None)
     parser.add_argument("--unroll_noise_mode", choices=["fixed", "fresh"], default="fixed")
     parser.add_argument("--amp_dtype", choices=["none", "bf16", "fp16"], default="bf16")
@@ -1096,6 +1648,12 @@ def main() -> None:
     parser.add_argument("--init_draft_head_checkpoint_path", default=None)
     parser.add_argument("--causal_wan_local_attn_size", type=int, default=-1)
     parser.add_argument("--causal_wan_sink_size", type=int, default=0)
+    parser.add_argument(
+        "--causal_wan_prefix_padding",
+        choices=["full", "none"],
+        default="full",
+        help="For causal_wan_ar prefix teacher forcing, pad to num_blocks*chunk_frames or use only prefix+current frames.",
+    )
     parser.add_argument("--model_root", default="/mnt/lanxiangh/models")
     parser.add_argument("--config_path", default="configs/self_forcing_dmd.yaml")
     parser.add_argument("--epochs", type=int, default=20)
@@ -1103,8 +1661,35 @@ def main() -> None:
     parser.add_argument("--lr", type=float, default=1e-4)
     parser.add_argument("--weight_decay", type=float, default=0.0)
     parser.add_argument("--max_grad_norm", type=float, default=1.0)
+    parser.add_argument(
+        "--skip_nonfinite_grad",
+        action="store_true",
+        help="Skip optimizer steps with non-finite gradient norm instead of raising.",
+    )
     parser.add_argument("--val_fraction", type=float, default=0.05)
     parser.add_argument("--log_every", type=int, default=1)
+    parser.add_argument(
+        "--param_finite_check_every",
+        type=int,
+        default=1,
+        help="Check model parameters for NaN/Inf every N optimizer steps; 0 disables.",
+    )
+    parser.add_argument(
+        "--debug_timing_steps",
+        type=int,
+        default=0,
+        help="Synchronize CUDA and print detailed timing for the first N global steps.",
+    )
+    parser.add_argument(
+        "--debug_timing_all_ranks",
+        action="store_true",
+        help="Print debug timing from every distributed rank instead of rank 0 only.",
+    )
+    parser.add_argument(
+        "--debug_nonfinite_backward",
+        action="store_true",
+        help="Print module/tensor hooks when backward first produces non-finite gradients.",
+    )
     parser.add_argument("--seed", type=int, default=0)
     parser.add_argument("--max_records", type=int, default=0)
     parser.add_argument(
@@ -1119,8 +1704,27 @@ def main() -> None:
         raise ValueError("--num_blocks must be positive")
     if args.epochs <= 0:
         raise ValueError("--epochs must be positive")
-    if args.clean_latent_loss_weight < 0 or args.flow_loss_weight < 0 or args.dmd_loss_weight < 0:
+    if (
+        args.clean_latent_loss_weight < 0
+        or args.flow_loss_weight < 0
+        or args.dmd_loss_weight < 0
+        or args.incremental_kv_consistency_weight < 0
+        or args.teacher_trajectory_prefix_loss_weight < 0
+        or args.teacher_trajectory_incremental_kv_loss_weight < 0
+    ):
         raise ValueError("Loss weights must be non-negative")
+    if args.incremental_kv_consistency_weight > 0:
+        if args.training_mode != "teacher_trajectory":
+            raise ValueError("--incremental_kv_consistency_weight is only supported with --training_mode teacher_trajectory")
+        if args.head_type != "causal_wan_ar":
+            raise ValueError("--incremental_kv_consistency_weight requires --head_type causal_wan_ar")
+    if args.teacher_trajectory_objective in ("incremental_kv_flow", "hybrid_prefix_incremental_kv_flow"):
+        if args.training_mode != "teacher_trajectory":
+            raise ValueError("--teacher_trajectory_objective incremental KV objectives require --training_mode teacher_trajectory")
+        if args.head_type != "causal_wan_ar":
+            raise ValueError("--teacher_trajectory_objective incremental KV objectives require --head_type causal_wan_ar")
+        if args.incremental_kv_consistency_weight > 0:
+            raise ValueError("--incremental_kv_consistency_weight is only used with prefix_flow objective")
     if args.head_type == "kv_cache_attention" and args.batch_size != 1:
         raise ValueError("--head_type kv_cache_attention currently requires per-rank --batch_size 1 for online KV replay")
     if args.freeze_copied_wan_epochs < 0:
@@ -1354,6 +1958,19 @@ def main() -> None:
         fsdp_min_num_params=args.fsdp_min_num_params,
         fsdp_mixed_precision=args.fsdp_mixed_precision,
     )
+    debug_backward_state: dict[str, Any] = {
+        "enabled": False,
+        "global_step": 0,
+        "reports": 0,
+        "max_reports": 8,
+    }
+    debug_backward_handles = (
+        register_nonfinite_backward_debug_hooks(raw_model, rank=rank, state=debug_backward_state)
+        if args.debug_nonfinite_backward
+        else []
+    )
+    if debug_backward_handles:
+        print_main(rank, f"Registered {len(debug_backward_handles)} nonfinite backward debug hooks")
     freeze_report = None
     copied_wan_frozen = False
     if args.freeze_copied_wan_epochs > 0:
@@ -1383,8 +2000,14 @@ def main() -> None:
         f"records={len(dataset)} train={len(train_dataset)} val={len(val_indices)} "
         f"layers={list(layer_names)} latent_channels={latent_channels} feature_dim={feature_dim} "
         f"head_type={args.head_type} input_source=scheduled_latents training_mode={args.training_mode} "
+        f"teacher_trajectory_step_mode={args.teacher_trajectory_step_mode} "
+        f"teacher_trajectory_objective={args.teacher_trajectory_objective} "
+        f"teacher_trajectory_prefix_loss_weight={args.teacher_trajectory_prefix_loss_weight} "
+        f"teacher_trajectory_incremental_kv_loss_weight={args.teacher_trajectory_incremental_kv_loss_weight} "
+        f"causal_wan_prefix_padding={args.causal_wan_prefix_padding} "
         f"denoising_steps={args.denoising_step_list} prediction_type={args.prediction_type} loss_type={args.loss_type} "
-        f"dmd_weight={args.dmd_loss_weight} world_size={world_size} "
+        f"dmd_weight={args.dmd_loss_weight} incremental_kv_consistency_weight={args.incremental_kv_consistency_weight} "
+        f"world_size={world_size} "
         f"parallel={args.parallel_strategy if is_distributed else 'none'}"
     )
     if init_report is not None:
@@ -1420,11 +2043,22 @@ def main() -> None:
         total_loss = 0.0
         total_clean_latent_mse = 0.0
         total_batches = 0
+        skipped_batches = 0
         progress = tqdm(train_loader, desc=f"epoch {epoch}", leave=False, disable=not is_main_process(rank))
         for batch in progress:
             step_start = time.perf_counter()
+            debug_timing = args.debug_timing_steps > 0 and (global_step + skipped_batches) < args.debug_timing_steps
+            debug_nonfinite_backward = (
+                args.debug_nonfinite_backward
+                and args.debug_timing_steps > 0
+                and (global_step + skipped_batches) < args.debug_timing_steps
+            )
+            debug_backward_state["enabled"] = debug_nonfinite_backward
+            debug_backward_state["global_step"] = global_step + 1
+            debug_backward_state["reports"] = 0
             model.train()
             optimizer.zero_grad(set_to_none=True)
+            batch_prepare_start = time.perf_counter()
             batch = attach_prompt_embeds_if_needed(
                 batch,
                 model=raw_model,
@@ -1432,67 +2066,246 @@ def main() -> None:
                 device=device,
                 dtype=next(raw_model.parameters()).dtype,
             )
-            with amp_context(device, args.amp_dtype):
-                if args.training_mode == "unrolled":
-                    loss_tensor, loss_metrics = compute_unrolled_draft_head_losses(
-                        model,
-                        batch,
-                        num_blocks=args.num_blocks,
-                        scheduler=scheduler,
-                        denoising_step_list=args.denoising_step_list,
-                        step_weights=unroll_step_weights,
-                        prediction_type=args.prediction_type,
-                        loss_type=args.loss_type,
-                        clean_latent_loss_weight=args.clean_latent_loss_weight,
-                        flow_loss_weight=args.flow_loss_weight,
-                        dmd_loss_weight=args.dmd_loss_weight,
-                        dmd_every=args.dmd_every,
-                        global_step=global_step + 1,
-                        dmd_loss=dmd_loss,
-                        noise_mode=args.unroll_noise_mode,
-                    )
-                elif args.training_mode == "teacher_trajectory":
-                    loss_tensor, loss_metrics = compute_teacher_trajectory_draft_head_losses(
-                        model,
-                        batch,
-                        num_blocks=args.num_blocks,
-                        scheduler=scheduler,
-                        prediction_type=args.prediction_type,
-                        loss_type=args.loss_type,
-                        clean_latent_loss_weight=args.clean_latent_loss_weight,
-                        flow_loss_weight=args.flow_loss_weight,
-                        step_indices=args.teacher_trajectory_step_indices,
-                    )
-                else:
-                    scheduled_batch = add_scheduled_noise(
-                        batch,
-                        scheduler,
-                        args.denoising_step_list,
-                        device=device,
-                        dtype=next(model.parameters()).dtype,
-                    )
-                    loss_tensor, loss_metrics = compute_draft_head_losses(
-                        model,
-                        scheduled_batch,
-                        num_blocks=args.num_blocks,
-                        input_key="scheduled_latents",
-                        scheduler=scheduler,
-                        prediction_type=args.prediction_type,
-                        loss_type=args.loss_type,
-                        clean_latent_loss_weight=args.clean_latent_loss_weight,
-                        flow_loss_weight=args.flow_loss_weight,
-                        dmd_loss_weight=args.dmd_loss_weight,
-                        dmd_every=args.dmd_every,
-                        global_step=global_step + 1,
-                        dmd_loss=dmd_loss,
-                    )
+            if args.head_type == "causal_wan_ar" and args.causal_wan_prefix_padding == "none":
+                batch = dict(batch)
+                batch["causal_wan_pad_to_frames"] = None
+            if debug_timing:
+                debug_print = print if args.debug_timing_all_ranks else lambda *a, **k: print_main(rank, *a, **k)
+                debug_print(
+                    f"[timing] global_step={global_step + 1} batch_prepare_seconds="
+                    f"{debug_elapsed(batch_prepare_start, device):.3f} rank={rank}",
+                    flush=True,
+                )
+            backward_already_done = False
+            loss_forward_start = time.perf_counter()
+            if args.training_mode == "teacher_trajectory" and args.teacher_trajectory_step_mode == "sequential_backward":
+                active_step_indices = teacher_trajectory_active_step_indices(
+                    batch,
+                    args.teacher_trajectory_step_indices,
+                    sample_one=False,
+                )
+                active_step_indices = filter_teacher_trajectory_step_indices_for_loss(
+                    batch,
+                    active_step_indices,
+                    loss_type=args.loss_type,
+                    device=next(model.parameters()).device,
+                )
+                if not active_step_indices:
+                    raise ValueError("No teacher trajectory steps can contribute to the selected loss")
+                step_metric_list = []
+                scaled_loss_total = 0.0
+                for teacher_step_index in active_step_indices:
+                    with amp_context(device, args.amp_dtype):
+                        step_loss_tensor, step_loss_metrics = compute_teacher_trajectory_draft_head_losses(
+                            model,
+                            batch,
+                            num_blocks=args.num_blocks,
+                            scheduler=scheduler,
+                            prediction_type=args.prediction_type,
+                            loss_type=args.loss_type,
+                            clean_latent_loss_weight=args.clean_latent_loss_weight,
+                            flow_loss_weight=args.flow_loss_weight,
+                            step_indices=[teacher_step_index],
+                            step_mode="sequential_backward",
+                            teacher_trajectory_objective=args.teacher_trajectory_objective,
+                            teacher_trajectory_prefix_loss_weight=args.teacher_trajectory_prefix_loss_weight,
+                            teacher_trajectory_incremental_kv_loss_weight=(
+                                args.teacher_trajectory_incremental_kv_loss_weight
+                            ),
+                            incremental_kv_consistency_weight=args.incremental_kv_consistency_weight,
+                            incremental_kv_context_noise=args.incremental_kv_context_noise,
+                            debug_timing=debug_timing,
+                            debug_nonfinite_backward=debug_nonfinite_backward,
+                            debug_rank=rank,
+                            debug_global_step=global_step + 1,
+                        )
+                        scaled_step_loss = step_loss_tensor / max(len(active_step_indices), 1)
+                    require_finite("loss_tensor", scaled_step_loss)
+                    scaled_step_loss.backward()
+                    scaled_loss_total += float(scaled_step_loss.detach().cpu().item())
+                    step_metric_list.append(step_loss_metrics)
+                loss_tensor = torch.tensor(scaled_loss_total, device=device, dtype=torch.float32)
+                loss_metrics = merge_loss_metric_lists(step_metric_list, loss=scaled_loss_total)
+                loss_metrics["teacher_trajectory_num_active_steps"] = float(len(active_step_indices))
+                loss_metrics["teacher_trajectory_step_mode_sequential"] = 1.0
+                backward_already_done = True
+            else:
+                with amp_context(device, args.amp_dtype):
+                    if args.training_mode == "unrolled":
+                        loss_tensor, loss_metrics = compute_unrolled_draft_head_losses(
+                            model,
+                            batch,
+                            num_blocks=args.num_blocks,
+                            scheduler=scheduler,
+                            denoising_step_list=args.denoising_step_list,
+                            step_weights=unroll_step_weights,
+                            prediction_type=args.prediction_type,
+                            loss_type=args.loss_type,
+                            clean_latent_loss_weight=args.clean_latent_loss_weight,
+                            flow_loss_weight=args.flow_loss_weight,
+                            dmd_loss_weight=args.dmd_loss_weight,
+                            dmd_every=args.dmd_every,
+                            global_step=global_step + 1,
+                            dmd_loss=dmd_loss,
+                            noise_mode=args.unroll_noise_mode,
+                        )
+                    elif args.training_mode == "teacher_trajectory":
+                        loss_tensor, loss_metrics = compute_teacher_trajectory_draft_head_losses(
+                            model,
+                            batch,
+                            num_blocks=args.num_blocks,
+                            scheduler=scheduler,
+                            prediction_type=args.prediction_type,
+                            loss_type=args.loss_type,
+                            clean_latent_loss_weight=args.clean_latent_loss_weight,
+                            flow_loss_weight=args.flow_loss_weight,
+                            step_indices=args.teacher_trajectory_step_indices,
+                            step_mode=args.teacher_trajectory_step_mode,
+                            teacher_trajectory_objective=args.teacher_trajectory_objective,
+                            teacher_trajectory_prefix_loss_weight=args.teacher_trajectory_prefix_loss_weight,
+                            teacher_trajectory_incremental_kv_loss_weight=(
+                                args.teacher_trajectory_incremental_kv_loss_weight
+                            ),
+                            incremental_kv_consistency_weight=args.incremental_kv_consistency_weight,
+                            incremental_kv_context_noise=args.incremental_kv_context_noise,
+                            debug_timing=debug_timing,
+                            debug_nonfinite_backward=debug_nonfinite_backward,
+                            debug_rank=rank,
+                            debug_global_step=global_step + 1,
+                        )
+                    else:
+                        scheduled_batch = add_scheduled_noise(
+                            batch,
+                            scheduler,
+                            args.denoising_step_list,
+                            device=device,
+                            dtype=next(model.parameters()).dtype,
+                        )
+                        loss_tensor, loss_metrics = compute_draft_head_losses(
+                            model,
+                            scheduled_batch,
+                            num_blocks=args.num_blocks,
+                            input_key="scheduled_latents",
+                            scheduler=scheduler,
+                            prediction_type=args.prediction_type,
+                            loss_type=args.loss_type,
+                            clean_latent_loss_weight=args.clean_latent_loss_weight,
+                            flow_loss_weight=args.flow_loss_weight,
+                            dmd_loss_weight=args.dmd_loss_weight,
+                            dmd_every=args.dmd_every,
+                            global_step=global_step + 1,
+                            dmd_loss=dmd_loss,
+                        )
+            if debug_timing:
+                metric_summary = " ".join(
+                    f"{key}={value:.6g}" if isinstance(value, float) else f"{key}={value}"
+                    for key, value in sorted(loss_metrics.items())
+                )
+                debug_print = print if args.debug_timing_all_ranks else lambda *a, **k: print_main(rank, *a, **k)
+                debug_print(
+                    f"[timing] global_step={global_step + 1} loss_forward_seconds="
+                    f"{debug_elapsed(loss_forward_start, device):.3f} "
+                    f"rank={rank} loss={float(loss_tensor.detach().cpu().item()):.6g} {metric_summary}",
+                    flush=True,
+                )
             require_finite("loss_tensor", loss_tensor)
-            loss_tensor.backward()
+            if not backward_already_done:
+                backward_start = time.perf_counter()
+                loss_tensor.backward()
+                if debug_timing:
+                    debug_print = print if args.debug_timing_all_ranks else lambda *a, **k: print_main(rank, *a, **k)
+                    debug_print(
+                        f"[timing] global_step={global_step + 1} backward_seconds="
+                        f"{debug_elapsed(backward_start, device):.3f} rank={rank}",
+                        flush=True,
+                    )
             if args.max_grad_norm > 0:
-                grad_norm = torch.nn.utils.clip_grad_norm_(model.parameters(), args.max_grad_norm)
-                require_finite("grad_norm", grad_norm)
+                grad_clip_start = time.perf_counter()
+                grad_norm = None
+                grad_clip_error = None
+                try:
+                    if is_fsdp_model(model):
+                        grad_norm = model.clip_grad_norm_(args.max_grad_norm)
+                        if not torch.isfinite(torch.as_tensor(grad_norm, device=device)):
+                            raise RuntimeError(f"Non-finite FSDP grad norm: {grad_norm}")
+                    else:
+                        grad_norm = torch.nn.utils.clip_grad_norm_(
+                            model.parameters(),
+                            args.max_grad_norm,
+                            error_if_nonfinite=True,
+                        )
+                except RuntimeError as exc:
+                    grad_clip_error = exc
+                    grad_norm = torch.tensor(float("nan"), device=device)
+                if debug_timing:
+                    debug_print = print if args.debug_timing_all_ranks else lambda *a, **k: print_main(rank, *a, **k)
+                    debug_print(
+                        f"[timing] global_step={global_step + 1} grad_clip_seconds="
+                        f"{debug_elapsed(grad_clip_start, device):.3f} rank={rank} "
+                        f"grad_norm={float(torch.as_tensor(grad_norm).detach().cpu().item())}",
+                        flush=True,
+                    )
+                grad_norm_tensor = torch.as_tensor(grad_norm, device=device)
+                grad_norm_is_finite = torch.isfinite(grad_norm_tensor).to(torch.int32)
+                grad_norm_allreduce_start = time.perf_counter()
+                if debug_timing:
+                    debug_print = print if args.debug_timing_all_ranks else lambda *a, **k: print_main(rank, *a, **k)
+                    debug_print(
+                        f"[timing] global_step={global_step + 1} before_grad_finite_sync rank={rank} "
+                        f"fsdp={int(is_fsdp_model(model))}",
+                        flush=True,
+                    )
+                if dist.is_available() and dist.is_initialized() and not is_fsdp_model(model):
+                    dist.all_reduce(grad_norm_is_finite, op=dist.ReduceOp.MIN)
+                if debug_timing:
+                    debug_print = print if args.debug_timing_all_ranks else lambda *a, **k: print_main(rank, *a, **k)
+                    debug_print(
+                        f"[timing] global_step={global_step + 1} grad_finite_allreduce_seconds="
+                        f"{debug_elapsed(grad_norm_allreduce_start, device):.3f} "
+                        f"rank={rank} all_ranks_grad_finite={int(grad_norm_is_finite.detach().cpu().item())} "
+                        f"fsdp={int(is_fsdp_model(model))}",
+                        flush=True,
+                    )
+                if not bool(grad_norm_is_finite.item()):
+                    if not args.skip_nonfinite_grad:
+                        if grad_clip_error is not None:
+                            raise grad_clip_error
+                        require_finite("grad_norm", grad_norm_tensor)
+                    optimizer.zero_grad(set_to_none=True)
+                    skipped_batches += 1
+                    if is_main_process(rank):
+                        print(
+                            f"Skipping optimizer step {global_step + 1}: "
+                            f"non-finite grad_norm={float(grad_norm_tensor.detach().cpu().item())}; "
+                            "lower LR, lower local attention, or fewer timestep indices may be needed",
+                            flush=True,
+                    )
+                    continue
+            optimizer_start = time.perf_counter()
+            if debug_timing:
+                print_main(
+                    rank,
+                    f"[timing] global_step={global_step + 1} optimizer_step_start",
+                    flush=True,
+                )
             optimizer.step()
-            require_model_parameters_finite(model, context=f"after_optimizer_step_{global_step + 1}")
+            if debug_timing:
+                print_main(
+                    rank,
+                    f"[timing] global_step={global_step + 1} optimizer_step_seconds="
+                    f"{debug_elapsed(optimizer_start, device):.3f}",
+                    flush=True,
+                )
+            if args.param_finite_check_every > 0 and (global_step + 1) % args.param_finite_check_every == 0:
+                finite_check_start = time.perf_counter()
+                require_model_parameters_finite(model, context=f"after_optimizer_step_{global_step + 1}")
+                if debug_timing:
+                    print_main(
+                        rank,
+                        f"[timing] global_step={global_step + 1} finite_check_seconds="
+                        f"{debug_elapsed(finite_check_start, device):.3f}",
+                        flush=True,
+                    )
             loss = loss_metrics["loss"]
             step_seconds = time.perf_counter() - step_start
             total_loss += loss
@@ -1542,16 +2355,23 @@ def main() -> None:
                     "timestep_shift": args.timestep_shift,
                     "prediction_type": args.prediction_type,
                     "loss_type": args.loss_type,
+                    "teacher_trajectory_step_mode": args.teacher_trajectory_step_mode,
+                    "teacher_trajectory_objective": args.teacher_trajectory_objective,
+                    "teacher_trajectory_prefix_loss_weight": args.teacher_trajectory_prefix_loss_weight,
+                    "teacher_trajectory_incremental_kv_loss_weight": args.teacher_trajectory_incremental_kv_loss_weight,
                     "training_mode": args.training_mode,
                     "unroll_step_weights": unroll_step_weights,
                     "unroll_noise_mode": args.unroll_noise_mode,
                     "amp_dtype": args.amp_dtype,
                     "gradient_checkpointing": args.gradient_checkpointing,
                     "freeze_copied_wan_epochs": args.freeze_copied_wan_epochs,
+                    "causal_wan_prefix_padding": args.causal_wan_prefix_padding,
                     "copied_wan_frozen": copied_wan_frozen,
                     "clean_latent_loss_weight": args.clean_latent_loss_weight,
                     "flow_loss_weight": args.flow_loss_weight,
                     "dmd_loss_weight": args.dmd_loss_weight,
+                    "incremental_kv_consistency_weight": args.incremental_kv_consistency_weight,
+                    "incremental_kv_context_noise": args.incremental_kv_context_noise,
                     "target_init_report": init_report,
                     "init_draft_head_report": init_draft_head_report,
                     "status": "running",
@@ -1602,16 +2422,23 @@ def main() -> None:
                 "timestep_shift": args.timestep_shift,
                 "prediction_type": args.prediction_type,
                 "loss_type": args.loss_type,
+                "teacher_trajectory_step_mode": args.teacher_trajectory_step_mode,
+                "teacher_trajectory_objective": args.teacher_trajectory_objective,
+                "teacher_trajectory_prefix_loss_weight": args.teacher_trajectory_prefix_loss_weight,
+                "teacher_trajectory_incremental_kv_loss_weight": args.teacher_trajectory_incremental_kv_loss_weight,
                 "training_mode": args.training_mode,
                 "unroll_step_weights": unroll_step_weights,
                 "unroll_noise_mode": args.unroll_noise_mode,
                 "amp_dtype": args.amp_dtype,
                 "gradient_checkpointing": args.gradient_checkpointing,
                 "freeze_copied_wan_epochs": args.freeze_copied_wan_epochs,
+                "causal_wan_prefix_padding": args.causal_wan_prefix_padding,
                 "copied_wan_frozen": copied_wan_frozen,
                 "clean_latent_loss_weight": args.clean_latent_loss_weight,
                 "flow_loss_weight": args.flow_loss_weight,
                 "dmd_loss_weight": args.dmd_loss_weight,
+                "incremental_kv_consistency_weight": args.incremental_kv_consistency_weight,
+                "incremental_kv_context_noise": args.incremental_kv_context_noise,
                 "target_init_report": init_report,
                 "init_draft_head_report": init_draft_head_report,
                 "status": "running",
@@ -1651,16 +2478,23 @@ def main() -> None:
                 "timestep_shift": args.timestep_shift,
                 "prediction_type": args.prediction_type,
                 "loss_type": args.loss_type,
+                "teacher_trajectory_step_mode": args.teacher_trajectory_step_mode,
+                "teacher_trajectory_objective": args.teacher_trajectory_objective,
+                "teacher_trajectory_prefix_loss_weight": args.teacher_trajectory_prefix_loss_weight,
+                "teacher_trajectory_incremental_kv_loss_weight": args.teacher_trajectory_incremental_kv_loss_weight,
                 "training_mode": args.training_mode,
                 "unroll_step_weights": unroll_step_weights,
                 "unroll_noise_mode": args.unroll_noise_mode,
                 "amp_dtype": args.amp_dtype,
                 "gradient_checkpointing": args.gradient_checkpointing,
                 "freeze_copied_wan_epochs": args.freeze_copied_wan_epochs,
+                "causal_wan_prefix_padding": args.causal_wan_prefix_padding,
                 "copied_wan_frozen": copied_wan_frozen,
                 "clean_latent_loss_weight": args.clean_latent_loss_weight,
                 "flow_loss_weight": args.flow_loss_weight,
                 "dmd_loss_weight": args.dmd_loss_weight,
+                "incremental_kv_consistency_weight": args.incremental_kv_consistency_weight,
+                "incremental_kv_context_noise": args.incremental_kv_context_noise,
                 "target_init_report": init_report,
                 "init_draft_head_report": init_draft_head_report,
                 "status": "running",
@@ -1729,15 +2563,22 @@ def main() -> None:
         "timestep_shift": args.timestep_shift,
         "prediction_type": args.prediction_type,
         "loss_type": args.loss_type,
+        "teacher_trajectory_step_mode": args.teacher_trajectory_step_mode,
+        "teacher_trajectory_objective": args.teacher_trajectory_objective,
+        "teacher_trajectory_prefix_loss_weight": args.teacher_trajectory_prefix_loss_weight,
+        "teacher_trajectory_incremental_kv_loss_weight": args.teacher_trajectory_incremental_kv_loss_weight,
         "training_mode": args.training_mode,
         "unroll_step_weights": unroll_step_weights,
         "unroll_noise_mode": args.unroll_noise_mode,
         "amp_dtype": args.amp_dtype,
         "gradient_checkpointing": args.gradient_checkpointing,
         "freeze_copied_wan_epochs": args.freeze_copied_wan_epochs,
+        "causal_wan_prefix_padding": args.causal_wan_prefix_padding,
         "clean_latent_loss_weight": args.clean_latent_loss_weight,
         "flow_loss_weight": args.flow_loss_weight,
         "dmd_loss_weight": args.dmd_loss_weight,
+        "incremental_kv_consistency_weight": args.incremental_kv_consistency_weight,
+        "incremental_kv_context_noise": args.incremental_kv_context_noise,
         "target_init_report": init_report,
         "init_draft_head_report": init_draft_head_report,
         "final_val": final_val_metrics,

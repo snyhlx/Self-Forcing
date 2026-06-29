@@ -550,6 +550,7 @@ def denoise_block_with_draft_head(
     causal_kv_cache: list[dict] | None = None,
     causal_crossattn_cache: list[dict] | None = None,
     causal_current_start: int | None = None,
+    causal_use_incremental_kv: bool = False,
     overhead_profile: dict[str, Any] | None = None,
 ) -> torch.Tensor:
     if isinstance(draft_head, BidirectionalPromptAnchorDraftHead):
@@ -662,6 +663,9 @@ def denoise_block_with_draft_head(
                 timestep=timestep,
                 clean_prefix_latents=clean_prefix_latents,
                 pad_to_frames=pad_to_frames,
+                kv_cache=causal_kv_cache if causal_use_incremental_kv else None,
+                crossattn_cache=causal_crossattn_cache if causal_use_incremental_kv else None,
+                current_start=causal_current_start if causal_use_incremental_kv else None,
             )
             record_profile_ms(step_profile, "forward_ms", t_profile)
             t_profile = sync_time() if overhead_profile is not None else 0.0
@@ -1180,6 +1184,7 @@ def run_mode(
                 causal_kv_cache=draft_head_kv_cache if use_draft_head_incremental_kv else target_pipeline.kv_cache1,
                 causal_crossattn_cache=draft_head_crossattn_cache if use_draft_head_incremental_kv else target_pipeline.crossattn_cache,
                 causal_current_start=start * target_pipeline.frame_seq_length,
+                causal_use_incremental_kv=use_draft_head_incremental_kv,
                 overhead_profile=draft_head_overhead_profile,
             )
             profile.draft_ms = (sync_time() - t0) * 1000.0

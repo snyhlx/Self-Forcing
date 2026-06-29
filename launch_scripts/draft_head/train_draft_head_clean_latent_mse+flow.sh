@@ -27,6 +27,12 @@ TIMESTEP_SHIFT="${TIMESTEP_SHIFT:-5.0}"
 #TRAINING_MODE="${TRAINING_MODE:-unrolled}"
 TRAINING_MODE="${TRAINING_MODE:-one_step}"
 TEACHER_TRAJECTORY_STEP_INDICES="${TEACHER_TRAJECTORY_STEP_INDICES:-}"
+TEACHER_TRAJECTORY_STEP_MODE="${TEACHER_TRAJECTORY_STEP_MODE:-whole_graph}"
+TEACHER_TRAJECTORY_OBJECTIVE="${TEACHER_TRAJECTORY_OBJECTIVE:-prefix_flow}"
+TEACHER_TRAJECTORY_PREFIX_LOSS_WEIGHT="${TEACHER_TRAJECTORY_PREFIX_LOSS_WEIGHT:-1.0}"
+TEACHER_TRAJECTORY_INCREMENTAL_KV_LOSS_WEIGHT="${TEACHER_TRAJECTORY_INCREMENTAL_KV_LOSS_WEIGHT:-1.0}"
+INCREMENTAL_KV_CONSISTENCY_WEIGHT="${INCREMENTAL_KV_CONSISTENCY_WEIGHT:-0.0}"
+INCREMENTAL_KV_CONTEXT_NOISE="${INCREMENTAL_KV_CONTEXT_NOISE:-0}"
 UNROLL_STEP_WEIGHTS="${UNROLL_STEP_WEIGHTS:-}"
 UNROLL_NOISE_MODE="${UNROLL_NOISE_MODE:-fixed}"
 #AMP_DTYPE="${AMP_DTYPE:-none}"
@@ -59,6 +65,7 @@ KV_CACHE_TARGET_CHECKPOINT_PATH="${KV_CACHE_TARGET_CHECKPOINT_PATH:-/mnt/lanxian
 ONLINE_KV_NOISE_SEED="${ONLINE_KV_NOISE_SEED:-42}"
 CAUSAL_WAN_LOCAL_ATTN_SIZE="${CAUSAL_WAN_LOCAL_ATTN_SIZE:--1}"
 CAUSAL_WAN_SINK_SIZE="${CAUSAL_WAN_SINK_SIZE:-0}"
+CAUSAL_WAN_PREFIX_PADDING="${CAUSAL_WAN_PREFIX_PADDING:-full}"
 MODEL_ROOT="${MODEL_ROOT:-/mnt/lanxiangh/models}"
 CONFIG_PATH="${CONFIG_PATH:-$PROJECT_ROOT/configs/self_forcing_dmd.yaml}"
 EPOCHS="${EPOCHS:-5}"
@@ -66,8 +73,14 @@ BATCH_SIZE="${BATCH_SIZE:-1}"
 LR="${LR:-5e-5}"
 WEIGHT_DECAY="${WEIGHT_DECAY:-0.0}"
 MAX_GRAD_NORM="${MAX_GRAD_NORM:-1.0}"
+SKIP_NONFINITE_GRAD="${SKIP_NONFINITE_GRAD:-0}"
 VAL_FRACTION="${VAL_FRACTION:-0.05}"
 MAX_RECORDS="${MAX_RECORDS:-0}"
+LOG_EVERY="${LOG_EVERY:-1}"
+PARAM_FINITE_CHECK_EVERY="${PARAM_FINITE_CHECK_EVERY:-1}"
+DEBUG_TIMING_STEPS="${DEBUG_TIMING_STEPS:-0}"
+DEBUG_TIMING_ALL_RANKS="${DEBUG_TIMING_ALL_RANKS:-0}"
+DEBUG_NONFINITE_BACKWARD="${DEBUG_NONFINITE_BACKWARD:-0}"
 NUM_GPUS="${NUM_GPUS:-1}"
 if [[ -z "${CUDA_VISIBLE_DEVICES:-}" && "$NUM_GPUS" -gt 1 ]]; then
   CUDA_DEVICE="$(seq -s, 0 $((NUM_GPUS - 1)))"
@@ -108,6 +121,15 @@ if [[ "$TRAINING_MODE" == "unrolled" ]]; then
     FULL_CONFIG_TAG="${FULL_CONFIG_TAG}_uwauto"
   fi
 fi
+if [[ "$INCREMENTAL_KV_CONSISTENCY_WEIGHT" != "0" && "$INCREMENTAL_KV_CONSISTENCY_WEIGHT" != "0.0" ]]; then
+  FULL_CONFIG_TAG="${FULL_CONFIG_TAG}_ikvcw$(tag_slug "$INCREMENTAL_KV_CONSISTENCY_WEIGHT")_ikvcn${INCREMENTAL_KV_CONTEXT_NOISE}"
+fi
+if [[ "$TRAINING_MODE" == "teacher_trajectory" ]]; then
+  FULL_CONFIG_TAG="${FULL_CONFIG_TAG}_ttmode$(tag_slug "$TEACHER_TRAJECTORY_STEP_MODE")_ttobj$(tag_slug "$TEACHER_TRAJECTORY_OBJECTIVE")"
+  if [[ "$TEACHER_TRAJECTORY_OBJECTIVE" == "hybrid_prefix_incremental_kv_flow" ]]; then
+    FULL_CONFIG_TAG="${FULL_CONFIG_TAG}_tplw$(tag_slug "$TEACHER_TRAJECTORY_PREFIX_LOSS_WEIGHT")_tikvlw$(tag_slug "$TEACHER_TRAJECTORY_INCREMENTAL_KV_LOSS_WEIGHT")"
+  fi
+fi
 if [[ -n "$INIT_TARGET_BLOCKS" ]]; then
   FULL_CONFIG_TAG="${FULL_CONFIG_TAG}_tinit$(tag_slug "$INIT_TARGET_BLOCKS")"
 fi
@@ -120,6 +142,7 @@ if [[ "$HEAD_TYPE" == "kv_cache_attention" ]]; then
 fi
 if [[ "$HEAD_TYPE" == "causal_wan_ar" ]]; then
   FULL_CONFIG_TAG="${FULL_CONFIG_TAG}_prefixtokens_local${CAUSAL_WAN_LOCAL_ATTN_SIZE}_sink${CAUSAL_WAN_SINK_SIZE}"
+  FULL_CONFIG_TAG="${FULL_CONFIG_TAG}_pad$(tag_slug "$CAUSAL_WAN_PREFIX_PADDING")"
 fi
 if [[ "$DMD_LOSS_WEIGHT" != "0" && "$DMD_LOSS_WEIGHT" != "0.0" ]]; then
   FULL_CONFIG_TAG="${FULL_CONFIG_TAG}_dgs$(tag_slug "$DMD_GUIDANCE_SCALE")_dt${DMD_MIN_TIMESTEP}-${DMD_MAX_TIMESTEP}_dm$(tag_slug "$DMD_MODEL_NAME")"
@@ -182,11 +205,17 @@ fi
 # shellcheck disable=SC2206
 DENOISING_STEP_ARRAY=($DENOISING_STEP_LIST)
 UNROLL_ARGS=(--training_mode "$TRAINING_MODE" --unroll_noise_mode "$UNROLL_NOISE_MODE")
+UNROLL_ARGS+=(--teacher_trajectory_step_mode "$TEACHER_TRAJECTORY_STEP_MODE")
+UNROLL_ARGS+=(--teacher_trajectory_objective "$TEACHER_TRAJECTORY_OBJECTIVE")
+UNROLL_ARGS+=(--teacher_trajectory_prefix_loss_weight "$TEACHER_TRAJECTORY_PREFIX_LOSS_WEIGHT")
+UNROLL_ARGS+=(--teacher_trajectory_incremental_kv_loss_weight "$TEACHER_TRAJECTORY_INCREMENTAL_KV_LOSS_WEIGHT")
 if [[ -n "$TEACHER_TRAJECTORY_STEP_INDICES" ]]; then
   # shellcheck disable=SC2206
   TEACHER_TRAJECTORY_STEP_INDEX_ARRAY=($TEACHER_TRAJECTORY_STEP_INDICES)
   UNROLL_ARGS+=(--teacher_trajectory_step_indices "${TEACHER_TRAJECTORY_STEP_INDEX_ARRAY[@]}")
 fi
+UNROLL_ARGS+=(--incremental_kv_consistency_weight "$INCREMENTAL_KV_CONSISTENCY_WEIGHT")
+UNROLL_ARGS+=(--incremental_kv_context_noise "$INCREMENTAL_KV_CONTEXT_NOISE")
 if [[ -n "$UNROLL_STEP_WEIGHTS" ]]; then
   # shellcheck disable=SC2206
   UNROLL_STEP_WEIGHT_ARRAY=($UNROLL_STEP_WEIGHTS)
@@ -195,6 +224,15 @@ fi
 MEMORY_ARGS=(--amp_dtype "$AMP_DTYPE")
 if [[ "$GRADIENT_CHECKPOINTING" == "1" || "$GRADIENT_CHECKPOINTING" == "true" ]]; then
   MEMORY_ARGS+=(--gradient_checkpointing)
+fi
+if [[ "$SKIP_NONFINITE_GRAD" == "1" || "$SKIP_NONFINITE_GRAD" == "true" ]]; then
+  MEMORY_ARGS+=(--skip_nonfinite_grad)
+fi
+if [[ "$DEBUG_NONFINITE_BACKWARD" == "1" || "$DEBUG_NONFINITE_BACKWARD" == "true" ]]; then
+  MEMORY_ARGS+=(--debug_nonfinite_backward)
+fi
+if [[ "$DEBUG_TIMING_ALL_RANKS" == "1" || "$DEBUG_TIMING_ALL_RANKS" == "true" ]]; then
+  MEMORY_ARGS+=(--debug_timing_all_ranks)
 fi
 DRAFT_INIT_ARGS=()
 if [[ -n "$INIT_DRAFT_HEAD_CHECKPOINT_PATH" ]]; then
@@ -210,6 +248,7 @@ fi
 if [[ "$HEAD_TYPE" == "causal_wan_ar" ]]; then
   KV_CACHE_ARGS+=(--causal_wan_local_attn_size "$CAUSAL_WAN_LOCAL_ATTN_SIZE")
   KV_CACHE_ARGS+=(--causal_wan_sink_size "$CAUSAL_WAN_SINK_SIZE")
+  KV_CACHE_ARGS+=(--causal_wan_prefix_padding "$CAUSAL_WAN_PREFIX_PADDING")
 fi
 
 TARGET_INIT_ARGS=()
@@ -239,7 +278,7 @@ log "Config hash: $CONFIG_HASH"
 log "Layers:   ${LAYER_NAMES:-infer from manifest records}"
 log "Head:     $HEAD_TYPE input_source=scheduled_latents hidden=$HIDDEN_CHANNELS layers=$NUM_LAYERS heads=$NUM_HEADS ffn_dim=$FFN_DIM"
 log "Loss:     type=$LOSS_TYPE clean_latent=$CLEAN_LATENT_LOSS_WEIGHT flow=$FLOW_LOSS_WEIGHT dmd=$DMD_LOSS_WEIGHT every=$DMD_EVERY"
-log "Training: mode=$TRAINING_MODE unroll_noise=$UNROLL_NOISE_MODE weights=${UNROLL_STEP_WEIGHTS:-auto}"
+log "Training: mode=$TRAINING_MODE teacher_step_mode=$TEACHER_TRAJECTORY_STEP_MODE teacher_objective=$TEACHER_TRAJECTORY_OBJECTIVE prefix_loss_weight=$TEACHER_TRAJECTORY_PREFIX_LOSS_WEIGHT incremental_kv_loss_weight=$TEACHER_TRAJECTORY_INCREMENTAL_KV_LOSS_WEIGHT unroll_noise=$UNROLL_NOISE_MODE weights=${UNROLL_STEP_WEIGHTS:-auto} incremental_kv_consistency=$INCREMENTAL_KV_CONSISTENCY_WEIGHT context_noise=$INCREMENTAL_KV_CONTEXT_NOISE"
 log "Teacher trajectory steps: ${TEACHER_TRAJECTORY_STEP_INDICES:-all}"
 log "Memory:   amp_dtype=$AMP_DTYPE gradient_checkpointing=$GRADIENT_CHECKPOINTING freeze_copied_wan_epochs=$FREEZE_COPIED_WAN_EPOCHS"
 log "Parallel: strategy=$PARALLEL_STRATEGY fsdp_min_num_params=$FSDP_MIN_NUM_PARAMS fsdp_mixed_precision=$FSDP_MIXED_PRECISION"
@@ -250,7 +289,7 @@ if [[ "$HEAD_TYPE" == "kv_cache_attention" ]]; then
   log "Online KV: target_model=$KV_CACHE_TARGET_MODEL_NAME checkpoint=$KV_CACHE_TARGET_CHECKPOINT_PATH noise_seed=$ONLINE_KV_NOISE_SEED"
 fi
 if [[ "$HEAD_TYPE" == "causal_wan_ar" ]]; then
-  log "Causal Wan conditioning: mode=prefix_tokens local_attn_size=$CAUSAL_WAN_LOCAL_ATTN_SIZE sink_size=$CAUSAL_WAN_SINK_SIZE"
+  log "Causal Wan conditioning: mode=prefix_tokens local_attn_size=$CAUSAL_WAN_LOCAL_ATTN_SIZE sink_size=$CAUSAL_WAN_SINK_SIZE prefix_padding=$CAUSAL_WAN_PREFIX_PADDING"
 fi
 log "GPUs:     $NUM_GPUS visible=$CUDA_VISIBLE_DEVICES"
 log "Epochs:   $EPOCHS batch_size=$BATCH_SIZE lr=$LR max_grad_norm=$MAX_GRAD_NORM"
@@ -298,6 +337,9 @@ fi
   --weight_decay "$WEIGHT_DECAY" \
   --max_grad_norm "$MAX_GRAD_NORM" \
   --val_fraction "$VAL_FRACTION" \
+  --log_every "$LOG_EVERY" \
+  --param_finite_check_every "$PARAM_FINITE_CHECK_EVERY" \
+  --debug_timing_steps "$DEBUG_TIMING_STEPS" \
   "${MAX_RECORD_ARGS[@]}" \
   "${DRAFT_INIT_ARGS[@]}" \
   "${KV_CACHE_ARGS[@]}" \

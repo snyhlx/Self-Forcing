@@ -15,13 +15,16 @@ from diffusers.models.modeling_utils import ModelMixin
 import torch.nn as nn
 import torch
 import math
+import os
 import torch.distributed as dist
 
 # wan 1.3B model has a weird channel / head configurations and require max-autotune to work with flexattention
 # see https://github.com/pytorch/pytorch/issues/133254
 # change to default for other models
-flex_attention = torch.compile(
-    flex_attention, dynamic=False, mode="max-autotune-no-cudagraphs")
+_flex_compile_mode = os.environ.get("CAUSAL_WAN_FLEX_COMPILE_MODE", "max-autotune-no-cudagraphs").strip().lower()
+if _flex_compile_mode not in ("none", "eager", "off"):
+    flex_attention = torch.compile(
+        flex_attention, dynamic=False, mode=_flex_compile_mode)
 
 
 def causal_rope_apply(x, grid_sizes, freqs, start_frame=0):

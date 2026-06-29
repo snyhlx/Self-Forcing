@@ -1,4 +1,6 @@
 # Copyright 2024-2025 The Alibaba Wan Team Authors. All rights reserved.
+import os
+
 import torch
 
 try:
@@ -19,7 +21,10 @@ try:
 except ModuleNotFoundError:
     FLASH_ATTN_2_AVAILABLE = False
 
-# FLASH_ATTN_3_AVAILABLE = False
+_flash_attn_version = os.environ.get("WAN_FLASH_ATTN_VERSION", "").strip()
+if _flash_attn_version == "2":
+    FLASH_ATTN_3_AVAILABLE = False
+_attention_backend = os.environ.get("WAN_ATTENTION_BACKEND", "flash").strip().lower()
 
 import warnings
 
@@ -58,6 +63,31 @@ def flash_attention(
     dtype:          torch.dtype. Apply when dtype of q/k/v is not float16/bfloat16.
     """
     half_dtypes = (torch.float16, torch.bfloat16)
+    if _attention_backend in ("sdpa", "torch_sdpa"):
+        if q_lens is not None or k_lens is not None:
+            warnings.warn("WAN_ATTENTION_BACKEND=sdpa ignores q_lens/k_lens padding lengths.")
+        out_dtype = q.dtype
+        q = q.transpose(1, 2)
+        k = k.transpose(1, 2)
+        v = v.transpose(1, 2)
+        if q.dtype not in half_dtypes:
+            q = q.to(dtype)
+        if k.dtype not in half_dtypes:
+            k = k.to(dtype)
+        if v.dtype not in half_dtypes:
+            v = v.to(dtype)
+        if q_scale is not None:
+            q = q * q_scale
+        x = torch.nn.functional.scaled_dot_product_attention(
+            q,
+            k,
+            v,
+            attn_mask=None,
+            dropout_p=dropout_p,
+            is_causal=causal,
+            scale=softmax_scale,
+        )
+        return x.transpose(1, 2).contiguous().type(out_dtype)
     assert dtype in half_dtypes
     assert q.device.type == 'cuda' and q.size(-1) <= 256
 
