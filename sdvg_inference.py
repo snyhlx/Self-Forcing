@@ -1682,6 +1682,14 @@ def main():
         ),
     )
     parser.add_argument(
+        "--also_save_target_video",
+        action="store_true",
+        help=(
+            "When running a non-compare candidate mode, also run target_only on the same prompt/noise "
+            "and save the target video in the same output directory."
+        ),
+    )
+    parser.add_argument(
         "--agreement_metric",
         choices=["mse", "rmse", "l1", "cosine"],
         default="rmse",
@@ -1875,7 +1883,14 @@ def main():
     )
     prompts = load_prompts(args.prompt, args.prompt_file, args.start_index, args.max_prompts)
 
-    modes = ["target_only", args.compare_mode] if args.mode == "compare" else [args.mode]
+    if args.also_save_target_video and args.mode == "draft_only":
+        raise ValueError("--also_save_target_video is not supported with --mode draft_only")
+    if args.mode == "compare":
+        modes = ["target_only", args.compare_mode]
+    elif args.also_save_target_video and args.mode != "target_only":
+        modes = ["target_only", args.mode]
+    else:
+        modes = [args.mode]
     summaries = []
     target_regen_pairs: list[dict] | None = [] if args.target_regen_pairs_path else None
     draft_head_writer = None
