@@ -1487,6 +1487,36 @@ def collate_draft_head_records(
             [record["teacher_trajectory_timesteps"] for record in records],
             dim=0,
         )
+    if all(record.get("self_conditioning_clean_latents") is not None for record in records):
+        batch["self_conditioning_clean_latents"] = torch.stack(
+            [record["self_conditioning_clean_latents"] for record in records],
+            dim=0,
+        )
+    if all(record.get("self_conditioning_noisy_latents") is not None for record in records):
+        batch["self_conditioning_noisy_latents"] = torch.stack(
+            [record["self_conditioning_noisy_latents"] for record in records],
+            dim=0,
+        )
+    if all(record.get("self_conditioning_timesteps") is not None for record in records):
+        batch["self_conditioning_timesteps"] = torch.stack(
+            [record["self_conditioning_timesteps"] for record in records],
+            dim=0,
+        )
+    if all(record.get("self_conditioning_target_latents") is not None for record in records):
+        batch["self_conditioning_target_latents"] = torch.stack(
+            [record["self_conditioning_target_latents"] for record in records],
+            dim=0,
+        )
+    if all(record.get("self_conditioning_anchor_index") is not None for record in records):
+        batch["self_conditioning_anchor_index"] = torch.tensor(
+            [int(record["self_conditioning_anchor_index"]) for record in records],
+            dtype=torch.long,
+        )
+    if all(record.get("self_conditioning_first_block_index") is not None for record in records):
+        batch["self_conditioning_first_block_index"] = torch.tensor(
+            [int(record["self_conditioning_first_block_index"]) for record in records],
+            dtype=torch.long,
+        )
     return batch
 
 

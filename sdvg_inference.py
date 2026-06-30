@@ -1,4 +1,5 @@
 import argparse
+import gc
 import json
 import os
 import sys
@@ -86,6 +87,23 @@ def restore_vae_cache(vae: WanVAEWrapper, cache):
         item.clone() if isinstance(item, torch.Tensor) else item
         for item in cache
     ]
+
+
+def cleanup_cuda_runtime_state(*pipelines: CausalInferencePipeline | None) -> None:
+    for pipeline in pipelines:
+        if pipeline is None:
+            continue
+        if hasattr(pipeline, "kv_cache1"):
+            pipeline.kv_cache1 = []
+        if hasattr(pipeline, "crossattn_cache"):
+            pipeline.crossattn_cache = []
+        vae_model = getattr(getattr(pipeline, "vae", None), "model", None)
+        clear_cache = getattr(vae_model, "clear_cache", None)
+        if callable(clear_cache):
+            clear_cache()
+    gc.collect()
+    if torch.cuda.is_available():
+        torch.cuda.empty_cache()
 
 
 def snapshot_current_block_cache(
@@ -315,6 +333,7 @@ def denoise_block(
     conditional_dict: dict,
     current_start_frame: int,
     overhead_profile: dict[str, Any] | None = None,
+    stochastic_generator: torch.Generator | None = None,
 ) -> torch.Tensor:
     batch_size, current_num_frames = noisy_input.shape[:2]
     current = noisy_input
@@ -345,7 +364,7 @@ def denoise_block(
         if index < len(pipeline.denoising_step_list) - 1:
             next_timestep = pipeline.denoising_step_list[index + 1]
             t_profile = sync_time() if overhead_profile is not None else 0.0
-            next_noise = torch.randn_like(denoised_pred.flatten(0, 1))
+            next_noise = torch.randn_like(denoised_pred.flatten(0, 1), generator=stochastic_generator)
             record_profile_ms(step_profile, "next_noise_ms", t_profile)
             t_profile = sync_time() if overhead_profile is not None else 0.0
             next_timestep_tensor = next_timestep * torch.ones(
@@ -552,6 +571,7 @@ def denoise_block_with_draft_head(
     causal_current_start: int | None = None,
     causal_use_incremental_kv: bool = False,
     overhead_profile: dict[str, Any] | None = None,
+    stochastic_generator: torch.Generator | None = None,
 ) -> torch.Tensor:
     if isinstance(draft_head, BidirectionalPromptAnchorDraftHead):
         if conditional_dict is None or "prompt_embeds" not in conditional_dict:
@@ -608,7 +628,7 @@ def denoise_block_with_draft_head(
                 )
                 record_profile_ms(step_profile, "next_timestep_alloc_ms", t_profile)
                 t_profile = sync_time() if overhead_profile is not None else 0.0
-                next_noise = torch.randn_like(prediction)
+                next_noise = torch.randn_like(prediction, generator=stochastic_generator)
                 record_profile_ms(step_profile, "next_noise_ms", t_profile)
                 t_profile = sync_time() if overhead_profile is not None else 0.0
                 current = draft_flow_step(
@@ -687,7 +707,7 @@ def denoise_block_with_draft_head(
                 )
                 record_profile_ms(step_profile, "next_timestep_alloc_ms", t_profile)
                 t_profile = sync_time() if overhead_profile is not None else 0.0
-                next_noise = torch.randn_like(prediction)
+                next_noise = torch.randn_like(prediction, generator=stochastic_generator)
                 record_profile_ms(step_profile, "next_noise_ms", t_profile)
                 t_profile = sync_time() if overhead_profile is not None else 0.0
                 current = draft_flow_step(
@@ -754,7 +774,7 @@ def denoise_block_with_draft_head(
                         current_timestep=timestep,
                         next_timestep=next_timestep_tensor,
                         clean_prediction=prediction,
-                        next_noise=torch.randn_like(prediction),
+                        next_noise=torch.randn_like(prediction, generator=stochastic_generator),
                     )
             return prediction
         return draft_head(block_latents, kv_cache, block_index=block_index, num_blocks=num_blocks)
@@ -802,7 +822,7 @@ def denoise_block_with_draft_head(
                         current_timestep=timestep,
                         next_timestep=next_timestep_tensor,
                         clean_prediction=prediction,
-                        next_noise=torch.randn_like(prediction),
+                        next_noise=torch.randn_like(prediction, generator=stochastic_generator),
                     )
             return prediction
         return draft_head(block_latents, features, block_index=block_index, num_blocks=num_blocks)
@@ -958,6 +978,7 @@ def run_mode(
     draft_head_oracle_context: bool,
     draft_head_inference_mode: str,
     profile_overheads: bool,
+    stochastic_generator: torch.Generator | None = None,
 ) -> dict:
     batch_size, num_frames = noise.shape[:2]
     current_num_frames = target_pipeline.num_frame_per_block
@@ -1034,7 +1055,13 @@ def run_mode(
             target_cache_before = snapshot_current_block_cache(target_pipeline, current_num_frames)
 
             t0 = sync_time()
-            draft_latents = denoise_block(draft_pipeline, block_noise, draft_cond, start)
+            draft_latents = denoise_block(
+                draft_pipeline,
+                block_noise,
+                draft_cond,
+                start,
+                stochastic_generator=stochastic_generator,
+            )
             profile.draft_ms = (sync_time() - t0) * 1000.0
             restore_current_block_cache(draft_pipeline, draft_cache_before)
 
@@ -1050,6 +1077,7 @@ def run_mode(
                 target_cond,
                 start,
                 overhead_profile=target_denoise_profile,
+                stochastic_generator=stochastic_generator,
             )
             profile.target_ms = (sync_time() - t0) * 1000.0
             if block_overhead_profile is not None:
@@ -1186,6 +1214,7 @@ def run_mode(
                 causal_current_start=start * target_pipeline.frame_seq_length,
                 causal_use_incremental_kv=use_draft_head_incremental_kv,
                 overhead_profile=draft_head_overhead_profile,
+                stochastic_generator=stochastic_generator,
             )
             profile.draft_ms = (sync_time() - t0) * 1000.0
             if block_overhead_profile is not None:
@@ -1208,6 +1237,7 @@ def run_mode(
                     target_cond,
                     start,
                     overhead_profile=target_denoise_profile,
+                    stochastic_generator=stochastic_generator,
                 )
                 profile.target_ms = (sync_time() - t0) * 1000.0
                 if block_overhead_profile is not None:
@@ -1230,7 +1260,13 @@ def run_mode(
             commit_latents = target_latents if draft_head_oracle_context and target_latents is not None else draft_head_latents
             if draft_head_oracle_context and target_latents is None:
                 target_cache_before = snapshot_current_block_cache(target_pipeline, current_num_frames)
-                target_latents = denoise_block(target_pipeline, block_noise, target_cond, start)
+                target_latents = denoise_block(
+                    target_pipeline,
+                    block_noise,
+                    target_cond,
+                    start,
+                    stochastic_generator=stochastic_generator,
+                )
                 restore_current_block_cache(target_pipeline, target_cache_before)
                 commit_latents = target_latents
             if draft_head_context_source == "target_features":
@@ -1289,7 +1325,13 @@ def run_mode(
 
         elif mode in ("draft_only", "sdvg") and draft_pipeline is not None and not use_target:
             t0 = sync_time()
-            draft_latents = denoise_block(draft_pipeline, block_noise, draft_cond, start)
+            draft_latents = denoise_block(
+                draft_pipeline,
+                block_noise,
+                draft_cond,
+                start,
+                stochastic_generator=stochastic_generator,
+            )
             profile.draft_ms = (sync_time() - t0) * 1000.0
             commit_clean_block(draft_pipeline, draft_latents, draft_cond, start)
 
@@ -1354,6 +1396,7 @@ def run_mode(
                 target_cond,
                 start,
                 overhead_profile=target_denoise_profile,
+                stochastic_generator=stochastic_generator,
             )
             profile.target_ms = (sync_time() - t0) * 1000.0
             if block_overhead_profile is not None:
@@ -1738,6 +1781,14 @@ def main():
     if uses_draft_head:
         if args.draft_head_checkpoint_path is None:
             raise ValueError("--draft_head_checkpoint_path is required for draft_head mode")
+
+    def ensure_draft_head_loaded() -> None:
+        nonlocal draft_head_model
+        nonlocal draft_head_capture_layers
+        nonlocal draft_head_context_source
+        nonlocal draft_head_prediction_type
+        if draft_head_model is not None:
+            return
         print("Loading draft head:", args.draft_head_checkpoint_path)
         draft_head_model, draft_head_metadata = load_draft_head_checkpoint(args.draft_head_checkpoint_path)
         draft_head_prediction_type = str(draft_head_metadata.get("metadata", {}).get("prediction_type", "clean_latent"))
@@ -1759,6 +1810,11 @@ def main():
             draft_head_capture_layers = checkpoint_layers
         draft_head_model.to(device=device, dtype=dtype).eval().requires_grad_(False)
 
+    def unload_draft_head_model() -> None:
+        nonlocal draft_head_model
+        draft_head_model = None
+        cleanup_cuda_runtime_state()
+
     router = Router(
         args.router_mode,
         args.tau,
@@ -1775,6 +1831,8 @@ def main():
     target_regen_pairs: list[dict] | None = [] if args.target_regen_pairs_path else None
     draft_head_writer = None
     if args.draft_head_dataset_dir is not None:
+        if uses_draft_head:
+            ensure_draft_head_loaded()
         if not draft_head_capture_layers:
             raise ValueError("--draft_head_capture_layers is required with --draft_head_dataset_dir")
         if args.draft_head_context_source == "kv_cache":
@@ -1791,7 +1849,12 @@ def main():
         )
         output_stem = f"prompt_{prompt_index:04d}" if prompt_index is not None else "prompt_single"
         for mode in modes:
+            if mode == "draft_head":
+                ensure_draft_head_loaded()
             mode_target_pipeline = draft_pipeline if mode == "draft_only" else target_pipeline
+            stochastic_generator = torch.Generator(device=device).manual_seed(
+                args.seed + (prompt_index or 0) + 1_000_000
+            )
             summary = run_mode(
                 mode=mode,
                 prompt=prompt_text,
@@ -1819,8 +1882,14 @@ def main():
                 draft_head_oracle_context=args.draft_head_oracle_context if mode == "draft_head" else False,
                 draft_head_inference_mode=args.draft_head_inference_mode,
                 profile_overheads=args.profile_overheads,
+                stochastic_generator=stochastic_generator,
             )
             summaries.append(summary)
+            cleanup_cuda_runtime_state(target_pipeline, draft_pipeline)
+            if args.mode == "compare" and mode == "draft_head" and draft_head_writer is None:
+                unload_draft_head_model()
+        del noise
+        cleanup_cuda_runtime_state(target_pipeline, draft_pipeline)
 
     aggregate = add_aggregate_metrics(summaries)
     if "sdvg" in aggregate and "speedup_vs_target" in aggregate["sdvg"]:

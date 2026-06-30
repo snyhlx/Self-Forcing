@@ -14,7 +14,7 @@ from typing import Any
 import torch
 import torch.distributed as dist
 import torch.nn.functional as F
-from torch.utils.data import DataLoader, Subset
+from torch.utils.data import DataLoader, Dataset, Subset
 from torch.utils.data.distributed import DistributedSampler
 from tqdm import tqdm
 
@@ -526,6 +526,105 @@ def distributed_sample_teacher_trajectory_step(step_indices: list[int], device: 
     if dist.is_available() and dist.is_initialized():
         dist.broadcast(choice, src=0)
     return int(choice.detach().cpu().item())
+
+
+class StopGradientSelfConditioningDataset(Dataset):
+    """Group adjacent AR teacher-trajectory records for short self-conditioning."""
+
+    def __init__(
+        self,
+        base: Dataset,
+        *,
+        num_blocks: int,
+        lookahead_chunks: int,
+        anchor_policy: str,
+        fixed_anchor_index: int,
+    ) -> None:
+        if lookahead_chunks <= 0:
+            raise ValueError("--self_conditioning_lookahead_chunks must be positive")
+        if anchor_policy not in ("random_valid", "early_bias", "late_bias", "fixed"):
+            raise ValueError("--self_conditioning_anchor_policy must be random_valid, early_bias, late_bias, or fixed")
+        self.base = base
+        self.num_blocks = int(num_blocks)
+        self.lookahead_chunks = int(lookahead_chunks)
+        self.anchor_policy = anchor_policy
+        self.fixed_anchor_index = int(fixed_anchor_index)
+        self._records: list[dict[str, Any]] = [base[index] for index in range(len(base))]
+        self._by_prompt_block: dict[tuple[int, str, int], int] = {}
+        for index, record in enumerate(self._records):
+            prompt_index = -1 if record.get("prompt_index") is None else int(record["prompt_index"])
+            prompt = str(record.get("prompt", ""))
+            block_index = int(record["block_index"])
+            self._by_prompt_block[(prompt_index, prompt, block_index)] = index
+
+        self.examples: list[tuple[tuple[int, str], int, list[int]]] = []
+        for key_prompt_index, key_prompt, first_block in sorted(self._by_prompt_block):
+            if first_block <= 0:
+                continue
+            anchor_index = first_block - 1
+            if first_block + self.lookahead_chunks > self.num_blocks:
+                continue
+            record_indices = []
+            for block_index in range(first_block, first_block + self.lookahead_chunks):
+                pointer = self._by_prompt_block.get((key_prompt_index, key_prompt, block_index))
+                if pointer is None:
+                    break
+                record_indices.append(pointer)
+            if len(record_indices) == self.lookahead_chunks:
+                self.examples.append(((key_prompt_index, key_prompt), anchor_index, record_indices))
+        if not self.examples:
+            raise ValueError(
+                "No valid stop-gradient self-conditioning examples. "
+                "Expected adjacent AR records with first future block >= 1."
+            )
+
+    def __len__(self) -> int:
+        return len(self.examples)
+
+    def _sample_example_index(self, index: int) -> int:
+        if self.anchor_policy == "fixed":
+            valid = [
+                example_index
+                for example_index, (_prompt_key, anchor_index, _record_indices) in enumerate(self.examples)
+                if anchor_index == self.fixed_anchor_index
+            ]
+            if not valid:
+                raise ValueError(
+                    f"No self-conditioning examples for fixed anchor index {self.fixed_anchor_index}"
+                )
+            return valid[index % len(valid)]
+        if self.anchor_policy == "random_valid":
+            return random.randrange(len(self.examples))
+        anchors = [anchor_index for _prompt_key, anchor_index, _record_indices in self.examples]
+        if self.anchor_policy == "early_bias":
+            weights = [float(self.num_blocks - anchor_index) for anchor_index in anchors]
+        else:
+            weights = [float(anchor_index + 1) for anchor_index in anchors]
+        return random.choices(range(len(self.examples)), weights=weights, k=1)[0]
+
+    def __getitem__(self, index: int) -> dict[str, Any]:
+        _prompt_key, anchor_index, record_indices = self.examples[self._sample_example_index(index)]
+        future_records = [self._records[pointer] for pointer in record_indices]
+        record = dict(future_records[0])
+        record["self_conditioning_anchor_index"] = anchor_index
+        record["self_conditioning_first_block_index"] = int(future_records[0]["block_index"])
+        record["self_conditioning_clean_latents"] = torch.stack(
+            [future_record["teacher_trajectory_latents"] for future_record in future_records],
+            dim=0,
+        )
+        record["self_conditioning_noisy_latents"] = torch.stack(
+            [future_record["teacher_trajectory_noisy_latents"] for future_record in future_records],
+            dim=0,
+        )
+        record["self_conditioning_timesteps"] = torch.stack(
+            [future_record["teacher_trajectory_timesteps"] for future_record in future_records],
+            dim=0,
+        )
+        record["self_conditioning_target_latents"] = torch.cat(
+            [future_record["target_latents"] for future_record in future_records],
+            dim=0,
+        )
+        return record
 
 
 def filter_teacher_trajectory_step_indices_for_loss(
@@ -1295,6 +1394,407 @@ def compute_teacher_trajectory_draft_head_losses(
     return total_loss, metrics
 
 
+def compute_stop_gradient_self_conditioning_losses(
+    model: torch.nn.Module,
+    batch: dict[str, Any],
+    *,
+    num_blocks: int,
+    scheduler: FlowMatchScheduler,
+    prediction_type: str,
+    loss_type: str,
+    clean_latent_loss_weight: float,
+    flow_loss_weight: float,
+    step_indices: list[int] | None = None,
+    step_mode: str = "whole_graph",
+    incremental_kv_context_noise: int = 0,
+    self_conditioning_mix_ratio: float = 0.25,
+    self_conditioning_consistency_weight: float = 0.0,
+    self_conditioning_loss_on: str = "all_predicted_chunks",
+    self_conditioning_intermediate_loss_weight: float = 0.5,
+    debug_timing: bool = False,
+    debug_rank: int = 0,
+    debug_global_step: int = 0,
+) -> tuple[torch.Tensor, dict[str, float]]:
+    if step_mode not in ("whole_graph", "sample_one", "sequential_backward"):
+        raise ValueError("--teacher_trajectory_step_mode must be whole_graph, sample_one, or sequential_backward")
+    if self_conditioning_loss_on not in ("all_predicted_chunks", "final_chunk_only"):
+        raise ValueError("--self_conditioning_loss_on must be all_predicted_chunks or final_chunk_only")
+    required_keys = (
+        "self_conditioning_noisy_latents",
+        "self_conditioning_clean_latents",
+        "self_conditioning_timesteps",
+        "self_conditioning_target_latents",
+        "context_latents",
+        "prompt_embeds",
+    )
+    missing = [key for key in required_keys if key not in batch or batch.get(key) is None]
+    if missing:
+        raise ValueError(f"stop-gradient self-conditioning requires grouped batch keys: {missing}")
+    if not is_causal_wan_ar_head(model):
+        raise ValueError("stop-gradient self-conditioning requires --head_type causal_wan_ar")
+
+    parameter = next(model.parameters())
+    device = parameter.device
+    dtype = parameter.dtype
+    noisy_states = batch["self_conditioning_noisy_latents"].to(device=device, dtype=dtype)
+    clean_targets = batch["self_conditioning_clean_latents"].to(device=device, dtype=dtype)
+    timesteps = batch["self_conditioning_timesteps"].to(device=device)
+    target_latents = batch["self_conditioning_target_latents"].to(device=device, dtype=dtype)
+    prefix_latents = batch["context_latents"].to(device=device, dtype=dtype)
+    prompt_embeds = batch["prompt_embeds"].to(device=device, dtype=dtype)
+    require_finite("self_conditioning_noisy_latents", noisy_states)
+    require_finite("self_conditioning_clean_latents", clean_targets)
+    require_finite("self_conditioning_target_latents", target_latents)
+    require_finite("self_conditioning_context_latents", prefix_latents)
+    require_finite("self_conditioning_prompt_embeds", prompt_embeds)
+    if noisy_states.ndim != 7 or clean_targets.ndim != 7:
+        raise ValueError("self-conditioning tensors must have shape [B, K, S, T, C, H, W]")
+    if noisy_states.shape != clean_targets.shape:
+        raise ValueError("self-conditioning noisy/clean tensor shape mismatch")
+    batch_size, lookahead_chunks, num_steps, frames = noisy_states.shape[:4]
+    if timesteps.shape[:3] != noisy_states.shape[:3]:
+        raise ValueError("self-conditioning timesteps must have shape [B, K, S]")
+    if target_latents.shape[:3] != (batch_size, lookahead_chunks, frames):
+        raise ValueError("self-conditioning target latents must have shape [B, K, T, C, H, W]")
+
+    active_step_indices = teacher_trajectory_active_step_indices(
+        {"teacher_trajectory_noisy_latents": noisy_states[:, 0]},
+        step_indices,
+        sample_one=False,
+    )
+    active_step_indices = filter_teacher_trajectory_step_indices_for_loss(
+        {"teacher_trajectory_timesteps": timesteps[:, 0]},
+        active_step_indices,
+        loss_type=loss_type,
+        device=device,
+    )
+    if step_mode == "sample_one" and len(active_step_indices) > 1:
+        active_step_indices = [distributed_sample_teacher_trajectory_step(active_step_indices, device)]
+    if not active_step_indices:
+        raise ValueError("No self-conditioning teacher trajectory steps can contribute to the selected loss")
+
+    frame_seq_length = causal_wan_frame_seq_length(model, noisy_states[:, 0, 0])
+    prefix_frames = int(prefix_latents.shape[1])
+    inner_model = unwrap_model(model)
+    generator_model = inner_model.generator.model if isinstance(inner_model, CausalWanARDraftHead) else None
+    local_attn_size = int(getattr(generator_model, "local_attn_size", -1))
+    if local_attn_size != -1:
+        committed_prefix_frames = min(prefix_frames, max(local_attn_size - frames, 0))
+    else:
+        committed_prefix_frames = prefix_frames
+    prefix_commit_start = max(0, prefix_frames - committed_prefix_frames)
+
+    components: list[torch.Tensor] = []
+    flow_losses = []
+    clean_losses = []
+    consistency_losses = []
+    student_prefix_commits = 0
+    target_prefix_commits = 0
+    if self_conditioning_loss_on == "final_chunk_only":
+        loss_weight_normalizer = 1.0
+    else:
+        loss_weight_normalizer = (
+            float(max(lookahead_chunks - 1, 0)) * float(self_conditioning_intermediate_loss_weight)
+            + 1.0
+        )
+
+    for step_index in active_step_indices:
+        replay_start = time.perf_counter()
+        kv_cache, crossattn_cache = initialize_causal_wan_ar_caches(
+            model,
+            batch_size=batch_size,
+            dtype=dtype,
+            device=device,
+            total_frames=prefix_frames + lookahead_chunks * frames,
+            frame_seq_length=frame_seq_length,
+        )
+        target_kv_cache = None
+        target_crossattn_cache = None
+        if self_conditioning_consistency_weight > 0:
+            target_kv_cache, target_crossattn_cache = initialize_causal_wan_ar_caches(
+                model,
+                batch_size=batch_size,
+                dtype=dtype,
+                device=device,
+                total_frames=prefix_frames + lookahead_chunks * frames,
+                frame_seq_length=frame_seq_length,
+            )
+        if prefix_commit_start > 0:
+            skipped_tokens = prefix_commit_start * frame_seq_length
+            for cache in kv_cache:
+                cache["global_end_index"].fill_(skipped_tokens)
+                cache["local_end_index"].zero_()
+            if target_kv_cache is not None:
+                for cache in target_kv_cache:
+                    cache["global_end_index"].fill_(skipped_tokens)
+                    cache["local_end_index"].zero_()
+
+        actual_prefix_starts = list(range(prefix_commit_start, prefix_frames, frames))
+        num_prefix_commit_forwards = torch.tensor([len(actual_prefix_starts)], device=device, dtype=torch.int32)
+        if dist.is_available() and dist.is_initialized():
+            dist.all_reduce(num_prefix_commit_forwards, op=dist.ReduceOp.MAX)
+        max_prefix_commit_forwards = int(num_prefix_commit_forwards.detach().cpu().item())
+        dummy_kv_cache = None
+        dummy_crossattn_cache = None
+        dummy_target_kv_cache = None
+        dummy_target_crossattn_cache = None
+        with torch.no_grad():
+            for prefix_slot in range(max_prefix_commit_forwards):
+                is_real_prefix_commit = prefix_slot < len(actual_prefix_starts)
+                if is_real_prefix_commit:
+                    prefix_start = actual_prefix_starts[prefix_slot]
+                    prefix_chunk = prefix_latents[:, prefix_start:prefix_start + frames]
+                    commit_current_start = prefix_start * frame_seq_length
+                    commit_targets = [(kv_cache, crossattn_cache)]
+                    if target_kv_cache is not None and target_crossattn_cache is not None:
+                        commit_targets.append((target_kv_cache, target_crossattn_cache))
+                else:
+                    prefix_start = -1
+                    prefix_chunk = torch.zeros_like(noisy_states[:, 0, step_index])
+                    commit_current_start = 0
+                    if dummy_kv_cache is None or dummy_crossattn_cache is None:
+                        dummy_kv_cache, dummy_crossattn_cache = initialize_causal_wan_ar_caches(
+                            model,
+                            batch_size=batch_size,
+                            dtype=dtype,
+                            device=device,
+                            total_frames=frames,
+                            frame_seq_length=frame_seq_length,
+                        )
+                    commit_targets = [(dummy_kv_cache, dummy_crossattn_cache)]
+                    if target_kv_cache is not None and target_crossattn_cache is not None:
+                        if dummy_target_kv_cache is None or dummy_target_crossattn_cache is None:
+                            dummy_target_kv_cache, dummy_target_crossattn_cache = initialize_causal_wan_ar_caches(
+                                model,
+                                batch_size=batch_size,
+                                dtype=dtype,
+                                device=device,
+                                total_frames=frames,
+                                frame_seq_length=frame_seq_length,
+                            )
+                        commit_targets.append((dummy_target_kv_cache, dummy_target_crossattn_cache))
+                prefix_timestep = torch.full(
+                    (batch_size, prefix_chunk.shape[1]),
+                    int(incremental_kv_context_noise),
+                    device=device,
+                    dtype=torch.long,
+                )
+                for commit_kv_cache, commit_crossattn_cache in commit_targets:
+                    prefix_output = model(
+                        noisy_latents=prefix_chunk,
+                        prompt_embeds=prompt_embeds,
+                        timestep=prefix_timestep,
+                        kv_cache=commit_kv_cache,
+                        crossattn_cache=commit_crossattn_cache,
+                        current_start=commit_current_start,
+                    )
+                    if is_real_prefix_commit:
+                        require_finite(
+                            f"self_conditioning_prefix_commit_output "
+                            f"(step={step_index} prefix_start={prefix_start})",
+                            prefix_output,
+                        )
+
+        for chunk_offset in range(lookahead_chunks):
+            state = noisy_states[:, chunk_offset, step_index]
+            clean_target = clean_targets[:, chunk_offset, step_index]
+            timestep = timesteps[:, chunk_offset, step_index].round().long().reshape(batch_size, 1).expand(
+                batch_size,
+                frames,
+            )
+            current_start = (prefix_frames + chunk_offset * frames) * frame_seq_length
+            valid_flow_timestep = bool((timestep > 0).any().detach().cpu().item())
+            needs_flow_forward = loss_type in ("flow", "clean_latent_flow") and valid_flow_timestep
+            if not needs_flow_forward and loss_type not in ("clean_latent", "clean_latent_flow"):
+                continue
+
+            output = model(
+                noisy_latents=state,
+                prompt_embeds=prompt_embeds,
+                timestep=timestep,
+                kv_cache=kv_cache,
+                crossattn_cache=crossattn_cache,
+                current_start=current_start,
+            )
+            require_finite(
+                f"self_conditioning_output "
+                f"(step={step_index} chunk_offset={chunk_offset} prefix_frames={prefix_frames})",
+                output,
+            )
+            if prediction_type == "flow":
+                flow_prediction = output
+                clean_prediction = flow_prediction_to_clean_latent(scheduler, flow_prediction, state, timestep)
+            elif prediction_type == "clean_latent":
+                clean_prediction = output
+                flow_prediction = clean_latent_to_flow_prediction(scheduler, clean_prediction, state, timestep)
+            else:
+                raise ValueError("--prediction_type must be 'flow' or 'clean_latent'")
+
+            if self_conditioning_consistency_weight > 0:
+                assert target_kv_cache is not None
+                assert target_crossattn_cache is not None
+                target_output = model(
+                    noisy_latents=state,
+                    prompt_embeds=prompt_embeds,
+                    timestep=timestep,
+                    kv_cache=target_kv_cache,
+                    crossattn_cache=target_crossattn_cache,
+                    current_start=current_start,
+                )
+                require_finite(
+                    f"self_conditioning_target_prefix_output "
+                    f"(step={step_index} chunk_offset={chunk_offset})",
+                    target_output,
+                )
+                consistency_loss = F.mse_loss(output.float(), target_output.detach().float())
+                require_finite(
+                    f"self_conditioning_consistency_loss "
+                    f"(step={step_index} chunk_offset={chunk_offset})",
+                    consistency_loss,
+                )
+                consistency_losses.append(consistency_loss.detach())
+                components.append(
+                    consistency_loss
+                    * float(self_conditioning_consistency_weight)
+                    / max(len(active_step_indices), 1)
+                    / max(lookahead_chunks, 1)
+                )
+
+            loss_weight = 1.0
+            if self_conditioning_loss_on == "final_chunk_only" and chunk_offset != lookahead_chunks - 1:
+                loss_weight = 0.0
+            elif chunk_offset != lookahead_chunks - 1:
+                loss_weight = float(self_conditioning_intermediate_loss_weight)
+
+            if needs_flow_forward:
+                flow_target = clean_latent_to_flow_prediction(scheduler, clean_target, state, timestep)
+                require_finite(
+                    f"self_conditioning_flow_target (step={step_index} chunk_offset={chunk_offset})",
+                    flow_target,
+                )
+                flow_diff = (flow_prediction.float() - flow_target.float()).square()
+                valid_flow = (timestep > 0).reshape(*timestep.shape, 1, 1, 1).to(device=device, dtype=flow_diff.dtype)
+                valid_flow_count = valid_flow.expand_as(flow_diff).sum()
+                if valid_flow_count > 0:
+                    flow_loss = (flow_diff * valid_flow).sum() / valid_flow_count.clamp_min(1.0)
+                    require_finite(
+                        f"self_conditioning_flow_loss (step={step_index} chunk_offset={chunk_offset})",
+                        flow_loss,
+                    )
+                    flow_losses.append(flow_loss.detach())
+                    if flow_loss_weight > 0 and loss_weight > 0:
+                        components.append(
+                            flow_loss
+                            * flow_loss_weight
+                            * loss_weight
+                            / max(len(active_step_indices), 1)
+                            / max(loss_weight_normalizer, 1e-8)
+                        )
+            if loss_type in ("clean_latent", "clean_latent_flow"):
+                clean_loss = F.mse_loss(clean_prediction.float(), clean_target.float())
+                require_finite(
+                    f"self_conditioning_clean_loss (step={step_index} chunk_offset={chunk_offset})",
+                    clean_loss,
+                )
+                clean_losses.append(clean_loss.detach())
+                if clean_latent_loss_weight > 0 and loss_weight > 0:
+                    components.append(
+                        clean_loss
+                        * clean_latent_loss_weight
+                        * loss_weight
+                        / max(len(active_step_indices), 1)
+                        / max(loss_weight_normalizer, 1e-8)
+                    )
+
+            if chunk_offset < lookahead_chunks - 1:
+                use_student_prefix = random.random() < float(self_conditioning_mix_ratio)
+                commit_latents = clean_prediction.detach() if use_student_prefix else target_latents[:, chunk_offset]
+                if use_student_prefix:
+                    student_prefix_commits += 1
+                else:
+                    target_prefix_commits += 1
+                with torch.no_grad():
+                    commit_timestep = torch.full(
+                        (batch_size, frames),
+                        int(incremental_kv_context_noise),
+                        device=device,
+                        dtype=torch.long,
+                    )
+                    commit_output = model(
+                        noisy_latents=commit_latents,
+                        prompt_embeds=prompt_embeds,
+                        timestep=commit_timestep,
+                        kv_cache=kv_cache,
+                        crossattn_cache=crossattn_cache,
+                        current_start=current_start,
+                    )
+                    require_finite(
+                        f"self_conditioning_detached_prefix_commit_output "
+                        f"(step={step_index} chunk_offset={chunk_offset} student={int(use_student_prefix)})",
+                        commit_output,
+                    )
+                    if target_kv_cache is not None and target_crossattn_cache is not None:
+                        target_commit_output = model(
+                            noisy_latents=target_latents[:, chunk_offset],
+                            prompt_embeds=prompt_embeds,
+                            timestep=commit_timestep,
+                            kv_cache=target_kv_cache,
+                            crossattn_cache=target_crossattn_cache,
+                            current_start=current_start,
+                        )
+                        require_finite(
+                            f"self_conditioning_target_prefix_commit_output "
+                            f"(step={step_index} chunk_offset={chunk_offset})",
+                            target_commit_output,
+                        )
+
+        if debug_timing:
+            print_main(
+                debug_rank,
+                "[timing] "
+                f"global_step={debug_global_step} "
+                f"self_conditioning step={step_index} "
+                f"anchor_index={batch_scalar(batch, 'self_conditioning_anchor_index')} "
+                f"first_block={batch_scalar(batch, 'self_conditioning_first_block_index')} "
+                f"lookahead_chunks={lookahead_chunks} "
+                f"local_attn_size={local_attn_size} "
+                f"prefix_frames={prefix_frames} "
+                f"committed_prefix_frames={committed_prefix_frames} "
+                f"seconds={debug_elapsed(replay_start, device):.3f}",
+                flush=True,
+            )
+
+    if not components:
+        raise ValueError("At least one self-conditioning loss component must be enabled")
+    total_loss = sum(components)
+    metrics = {
+        "loss": float(total_loss.detach().cpu().item()),
+        "clean_latent_mse": float(torch.stack(clean_losses).mean().detach().cpu().item()) if clean_losses else 0.0,
+        "teacher_trajectory_flow_mse": float(torch.stack(flow_losses).mean().detach().cpu().item()) if flow_losses else 0.0,
+        "teacher_trajectory_objective_stop_gradient_self_conditioning_flow": 1.0,
+        "self_conditioning_lookahead_chunks": float(lookahead_chunks),
+        "self_conditioning_mix_ratio": float(self_conditioning_mix_ratio),
+        "self_conditioning_student_prefix_commits": float(student_prefix_commits),
+        "self_conditioning_target_prefix_commits": float(target_prefix_commits),
+        "self_conditioning_anchor_index": float(batch_scalar(batch, "self_conditioning_anchor_index", 0)),
+        "self_conditioning_first_block_index": float(batch_scalar(batch, "self_conditioning_first_block_index", 0)),
+        "causal_prefix_frames": float(prefix_frames),
+        "causal_committed_prefix_frames": float(committed_prefix_frames),
+        "teacher_trajectory_num_active_steps": float(len(active_step_indices)),
+        "teacher_trajectory_num_contributing_steps": float(max(len(flow_losses), len(clean_losses))),
+        "teacher_trajectory_step_mode_sample_one": float(step_mode == "sample_one"),
+        "teacher_trajectory_step_mode_sequential": float(step_mode == "sequential_backward"),
+    }
+    if consistency_losses:
+        metrics["self_conditioning_consistency_mse"] = float(
+            torch.stack(consistency_losses).mean().detach().cpu().item()
+        )
+        metrics["self_conditioning_consistency_loss"] = (
+            metrics["self_conditioning_consistency_mse"] * float(self_conditioning_consistency_weight)
+        )
+    return total_loss, metrics
+
+
 def predict_unrolled_draft_head_batch(
     model: torch.nn.Module,
     batch: dict[str, Any],
@@ -1574,13 +2074,19 @@ def main() -> None:
     )
     parser.add_argument(
         "--teacher_trajectory_objective",
-        choices=["prefix_flow", "incremental_kv_flow", "hybrid_prefix_incremental_kv_flow"],
+        choices=[
+            "prefix_flow",
+            "incremental_kv_flow",
+            "hybrid_prefix_incremental_kv_flow",
+            "stop_gradient_self_conditioning_flow",
+        ],
         default="prefix_flow",
         help=(
             "Teacher-trajectory objective. prefix_flow uses prefix teacher forcing; "
             "incremental_kv_flow commits prefix latents into a CausalWanAR KV cache and "
             "applies the supervised loss to the incremental current-chunk output; "
-            "hybrid_prefix_incremental_kv_flow applies supervised losses to both paths."
+            "hybrid_prefix_incremental_kv_flow applies supervised losses to both paths; "
+            "stop_gradient_self_conditioning_flow trains a short detached student-prefix rollout."
         ),
     )
     parser.add_argument(
@@ -1610,6 +2116,21 @@ def main() -> None:
         default=0,
         help="Timestep used when committing clean prefix latents into the incremental drafter KV cache.",
     )
+    parser.add_argument("--self_conditioning_lookahead_chunks", type=int, default=2)
+    parser.add_argument(
+        "--self_conditioning_anchor_policy",
+        choices=["random_valid", "early_bias", "late_bias", "fixed"],
+        default="random_valid",
+    )
+    parser.add_argument("--self_conditioning_fixed_anchor_index", type=int, default=0)
+    parser.add_argument("--self_conditioning_mix_ratio", type=float, default=0.25)
+    parser.add_argument("--self_conditioning_consistency_weight", type=float, default=0.0)
+    parser.add_argument(
+        "--self_conditioning_loss_on",
+        choices=["all_predicted_chunks", "final_chunk_only"],
+        default="all_predicted_chunks",
+    )
+    parser.add_argument("--self_conditioning_intermediate_loss_weight", type=float, default=0.5)
     parser.add_argument("--unroll_step_weights", nargs="+", type=float, default=None)
     parser.add_argument("--unroll_noise_mode", choices=["fixed", "fresh"], default="fixed")
     parser.add_argument("--amp_dtype", choices=["none", "bf16", "fp16"], default="bf16")
@@ -1711,20 +2232,37 @@ def main() -> None:
         or args.incremental_kv_consistency_weight < 0
         or args.teacher_trajectory_prefix_loss_weight < 0
         or args.teacher_trajectory_incremental_kv_loss_weight < 0
+        or args.self_conditioning_consistency_weight < 0
+        or args.self_conditioning_intermediate_loss_weight < 0
     ):
         raise ValueError("Loss weights must be non-negative")
+    if args.self_conditioning_lookahead_chunks <= 0:
+        raise ValueError("--self_conditioning_lookahead_chunks must be positive")
+    if args.self_conditioning_lookahead_chunks >= args.num_blocks:
+        raise ValueError("--self_conditioning_lookahead_chunks must be smaller than --num_blocks")
+    if args.self_conditioning_mix_ratio < 0 or args.self_conditioning_mix_ratio > 1:
+        raise ValueError("--self_conditioning_mix_ratio must be in [0, 1]")
     if args.incremental_kv_consistency_weight > 0:
         if args.training_mode != "teacher_trajectory":
             raise ValueError("--incremental_kv_consistency_weight is only supported with --training_mode teacher_trajectory")
         if args.head_type != "causal_wan_ar":
             raise ValueError("--incremental_kv_consistency_weight requires --head_type causal_wan_ar")
-    if args.teacher_trajectory_objective in ("incremental_kv_flow", "hybrid_prefix_incremental_kv_flow"):
+    if args.teacher_trajectory_objective in (
+        "incremental_kv_flow",
+        "hybrid_prefix_incremental_kv_flow",
+        "stop_gradient_self_conditioning_flow",
+    ):
         if args.training_mode != "teacher_trajectory":
             raise ValueError("--teacher_trajectory_objective incremental KV objectives require --training_mode teacher_trajectory")
         if args.head_type != "causal_wan_ar":
             raise ValueError("--teacher_trajectory_objective incremental KV objectives require --head_type causal_wan_ar")
         if args.incremental_kv_consistency_weight > 0:
             raise ValueError("--incremental_kv_consistency_weight is only used with prefix_flow objective")
+    if (
+        args.teacher_trajectory_objective == "stop_gradient_self_conditioning_flow"
+        and args.teacher_trajectory_step_mode == "sequential_backward"
+    ):
+        raise ValueError("stop_gradient_self_conditioning_flow currently supports whole_graph or sample_one step mode")
     if args.head_type == "kv_cache_attention" and args.batch_size != 1:
         raise ValueError("--head_type kv_cache_attention currently requires per-rank --batch_size 1 for online KV replay")
     if args.freeze_copied_wan_epochs < 0:
@@ -1749,6 +2287,14 @@ def main() -> None:
         raise ValueError(f"No draft-head records found in {args.manifest_path}")
     if args.max_records > 0:
         dataset = Subset(dataset, list(range(min(args.max_records, len(dataset)))))
+    if args.teacher_trajectory_objective == "stop_gradient_self_conditioning_flow":
+        dataset = StopGradientSelfConditioningDataset(
+            dataset,
+            num_blocks=args.num_blocks,
+            lookahead_chunks=args.self_conditioning_lookahead_chunks,
+            anchor_policy=args.self_conditioning_anchor_policy,
+            fixed_anchor_index=args.self_conditioning_fixed_anchor_index,
+        )
 
     sample = dataset[0]
     layer_names = parse_layer_names(args.layer_names, sample)
@@ -2004,6 +2550,10 @@ def main() -> None:
         f"teacher_trajectory_objective={args.teacher_trajectory_objective} "
         f"teacher_trajectory_prefix_loss_weight={args.teacher_trajectory_prefix_loss_weight} "
         f"teacher_trajectory_incremental_kv_loss_weight={args.teacher_trajectory_incremental_kv_loss_weight} "
+        f"self_conditioning_lookahead={args.self_conditioning_lookahead_chunks} "
+        f"self_conditioning_anchor_policy={args.self_conditioning_anchor_policy} "
+        f"self_conditioning_mix_ratio={args.self_conditioning_mix_ratio} "
+        f"self_conditioning_consistency_weight={args.self_conditioning_consistency_weight} "
         f"causal_wan_prefix_padding={args.causal_wan_prefix_padding} "
         f"denoising_steps={args.denoising_step_list} prediction_type={args.prediction_type} loss_type={args.loss_type} "
         f"dmd_weight={args.dmd_loss_weight} incremental_kv_consistency_weight={args.incremental_kv_consistency_weight} "
@@ -2150,29 +2700,53 @@ def main() -> None:
                             noise_mode=args.unroll_noise_mode,
                         )
                     elif args.training_mode == "teacher_trajectory":
-                        loss_tensor, loss_metrics = compute_teacher_trajectory_draft_head_losses(
-                            model,
-                            batch,
-                            num_blocks=args.num_blocks,
-                            scheduler=scheduler,
-                            prediction_type=args.prediction_type,
-                            loss_type=args.loss_type,
-                            clean_latent_loss_weight=args.clean_latent_loss_weight,
-                            flow_loss_weight=args.flow_loss_weight,
-                            step_indices=args.teacher_trajectory_step_indices,
-                            step_mode=args.teacher_trajectory_step_mode,
-                            teacher_trajectory_objective=args.teacher_trajectory_objective,
-                            teacher_trajectory_prefix_loss_weight=args.teacher_trajectory_prefix_loss_weight,
-                            teacher_trajectory_incremental_kv_loss_weight=(
-                                args.teacher_trajectory_incremental_kv_loss_weight
-                            ),
-                            incremental_kv_consistency_weight=args.incremental_kv_consistency_weight,
-                            incremental_kv_context_noise=args.incremental_kv_context_noise,
-                            debug_timing=debug_timing,
-                            debug_nonfinite_backward=debug_nonfinite_backward,
-                            debug_rank=rank,
-                            debug_global_step=global_step + 1,
-                        )
+                        if args.teacher_trajectory_objective == "stop_gradient_self_conditioning_flow":
+                            loss_tensor, loss_metrics = compute_stop_gradient_self_conditioning_losses(
+                                model,
+                                batch,
+                                num_blocks=args.num_blocks,
+                                scheduler=scheduler,
+                                prediction_type=args.prediction_type,
+                                loss_type=args.loss_type,
+                                clean_latent_loss_weight=args.clean_latent_loss_weight,
+                                flow_loss_weight=args.flow_loss_weight,
+                                step_indices=args.teacher_trajectory_step_indices,
+                                step_mode=args.teacher_trajectory_step_mode,
+                                incremental_kv_context_noise=args.incremental_kv_context_noise,
+                                self_conditioning_mix_ratio=args.self_conditioning_mix_ratio,
+                                self_conditioning_consistency_weight=args.self_conditioning_consistency_weight,
+                                self_conditioning_loss_on=args.self_conditioning_loss_on,
+                                self_conditioning_intermediate_loss_weight=(
+                                    args.self_conditioning_intermediate_loss_weight
+                                ),
+                                debug_timing=debug_timing,
+                                debug_rank=rank,
+                                debug_global_step=global_step + 1,
+                            )
+                        else:
+                            loss_tensor, loss_metrics = compute_teacher_trajectory_draft_head_losses(
+                                model,
+                                batch,
+                                num_blocks=args.num_blocks,
+                                scheduler=scheduler,
+                                prediction_type=args.prediction_type,
+                                loss_type=args.loss_type,
+                                clean_latent_loss_weight=args.clean_latent_loss_weight,
+                                flow_loss_weight=args.flow_loss_weight,
+                                step_indices=args.teacher_trajectory_step_indices,
+                                step_mode=args.teacher_trajectory_step_mode,
+                                teacher_trajectory_objective=args.teacher_trajectory_objective,
+                                teacher_trajectory_prefix_loss_weight=args.teacher_trajectory_prefix_loss_weight,
+                                teacher_trajectory_incremental_kv_loss_weight=(
+                                    args.teacher_trajectory_incremental_kv_loss_weight
+                                ),
+                                incremental_kv_consistency_weight=args.incremental_kv_consistency_weight,
+                                incremental_kv_context_noise=args.incremental_kv_context_noise,
+                                debug_timing=debug_timing,
+                                debug_nonfinite_backward=debug_nonfinite_backward,
+                                debug_rank=rank,
+                                debug_global_step=global_step + 1,
+                            )
                     else:
                         scheduled_batch = add_scheduled_noise(
                             batch,
@@ -2372,6 +2946,13 @@ def main() -> None:
                     "dmd_loss_weight": args.dmd_loss_weight,
                     "incremental_kv_consistency_weight": args.incremental_kv_consistency_weight,
                     "incremental_kv_context_noise": args.incremental_kv_context_noise,
+                    "self_conditioning_lookahead_chunks": args.self_conditioning_lookahead_chunks,
+                    "self_conditioning_anchor_policy": args.self_conditioning_anchor_policy,
+                    "self_conditioning_fixed_anchor_index": args.self_conditioning_fixed_anchor_index,
+                    "self_conditioning_mix_ratio": args.self_conditioning_mix_ratio,
+                    "self_conditioning_consistency_weight": args.self_conditioning_consistency_weight,
+                    "self_conditioning_loss_on": args.self_conditioning_loss_on,
+                    "self_conditioning_intermediate_loss_weight": args.self_conditioning_intermediate_loss_weight,
                     "target_init_report": init_report,
                     "init_draft_head_report": init_draft_head_report,
                     "status": "running",
@@ -2439,6 +3020,13 @@ def main() -> None:
                 "dmd_loss_weight": args.dmd_loss_weight,
                 "incremental_kv_consistency_weight": args.incremental_kv_consistency_weight,
                 "incremental_kv_context_noise": args.incremental_kv_context_noise,
+                "self_conditioning_lookahead_chunks": args.self_conditioning_lookahead_chunks,
+                "self_conditioning_anchor_policy": args.self_conditioning_anchor_policy,
+                "self_conditioning_fixed_anchor_index": args.self_conditioning_fixed_anchor_index,
+                "self_conditioning_mix_ratio": args.self_conditioning_mix_ratio,
+                "self_conditioning_consistency_weight": args.self_conditioning_consistency_weight,
+                "self_conditioning_loss_on": args.self_conditioning_loss_on,
+                "self_conditioning_intermediate_loss_weight": args.self_conditioning_intermediate_loss_weight,
                 "target_init_report": init_report,
                 "init_draft_head_report": init_draft_head_report,
                 "status": "running",
@@ -2495,6 +3083,13 @@ def main() -> None:
                 "dmd_loss_weight": args.dmd_loss_weight,
                 "incremental_kv_consistency_weight": args.incremental_kv_consistency_weight,
                 "incremental_kv_context_noise": args.incremental_kv_context_noise,
+                "self_conditioning_lookahead_chunks": args.self_conditioning_lookahead_chunks,
+                "self_conditioning_anchor_policy": args.self_conditioning_anchor_policy,
+                "self_conditioning_fixed_anchor_index": args.self_conditioning_fixed_anchor_index,
+                "self_conditioning_mix_ratio": args.self_conditioning_mix_ratio,
+                "self_conditioning_consistency_weight": args.self_conditioning_consistency_weight,
+                "self_conditioning_loss_on": args.self_conditioning_loss_on,
+                "self_conditioning_intermediate_loss_weight": args.self_conditioning_intermediate_loss_weight,
                 "target_init_report": init_report,
                 "init_draft_head_report": init_draft_head_report,
                 "status": "running",
@@ -2579,6 +3174,13 @@ def main() -> None:
         "dmd_loss_weight": args.dmd_loss_weight,
         "incremental_kv_consistency_weight": args.incremental_kv_consistency_weight,
         "incremental_kv_context_noise": args.incremental_kv_context_noise,
+        "self_conditioning_lookahead_chunks": args.self_conditioning_lookahead_chunks,
+        "self_conditioning_anchor_policy": args.self_conditioning_anchor_policy,
+        "self_conditioning_fixed_anchor_index": args.self_conditioning_fixed_anchor_index,
+        "self_conditioning_mix_ratio": args.self_conditioning_mix_ratio,
+        "self_conditioning_consistency_weight": args.self_conditioning_consistency_weight,
+        "self_conditioning_loss_on": args.self_conditioning_loss_on,
+        "self_conditioning_intermediate_loss_weight": args.self_conditioning_intermediate_loss_weight,
         "target_init_report": init_report,
         "init_draft_head_report": init_draft_head_report,
         "final_val": final_val_metrics,
