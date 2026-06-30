@@ -72,6 +72,28 @@ def write_video(output_path: str | Path, video: torch.Tensor, fps: int = 16):
     iio.imwrite(output_path, video, fps=fps, codec="libx264", pixelformat="yuv420p")
 
 
+def normalize_video(video: torch.Tensor) -> torch.Tensor:
+    return (video * 0.5 + 0.5).clamp(0, 1)
+
+
+def decode_latents_by_chunk(
+    vae: WanVAEWrapper,
+    latents: torch.Tensor,
+    chunk_frames: int,
+    *,
+    use_cache: bool,
+) -> torch.Tensor:
+    if use_cache:
+        vae.model.clear_cache()
+    chunks = []
+    for start in range(0, latents.shape[1], chunk_frames):
+        chunk = latents[:, start:start + chunk_frames]
+        chunks.append(normalize_video(vae.decode_to_pixel(chunk, use_cache=use_cache)).detach())
+    if use_cache:
+        vae.model.clear_cache()
+    return torch.cat(chunks, dim=1)
+
+
 def clone_vae_cache(vae: WanVAEWrapper):
     cache = []
     for item in vae.model._feat_map:
@@ -978,6 +1000,7 @@ def run_mode(
     draft_head_oracle_context: bool,
     draft_head_inference_mode: str,
     profile_overheads: bool,
+    output_decode_mode: str,
     stochastic_generator: torch.Generator | None = None,
 ) -> dict:
     batch_size, num_frames = noise.shape[:2]
@@ -1004,7 +1027,10 @@ def run_mode(
     output = torch.zeros_like(noise)
     profiles: list[BlockProfile] = []
     accepted = 0
-    use_streamed_output = reuse_scoring_decodes_for_output and mode in ("sdvg", "target_regen", "draft_head")
+    use_streamed_output = (
+        output_decode_mode == "chunk_streaming"
+        or (reuse_scoring_decodes_for_output and mode in ("sdvg", "target_regen", "draft_head"))
+    )
     output_chunks: list[torch.Tensor] = []
     latest_target_context: dict | None = None
     draft_head_kv_cache: list[dict] | None = None
@@ -1170,8 +1196,7 @@ def run_mode(
 
             if use_streamed_output:
                 t0 = sync_time()
-                block_video = target_pipeline.vae.decode_to_pixel(chosen_latents, use_cache=True)
-                block_video = (block_video * 0.5 + 0.5).clamp(0, 1)
+                block_video = normalize_video(target_pipeline.vae.decode_to_pixel(chosen_latents, use_cache=True))
                 profile.output_decode_ms += (sync_time() - t0) * 1000.0
                 output_chunks.append(block_video.detach().cpu())
 
@@ -1318,8 +1343,7 @@ def run_mode(
 
             if use_streamed_output:
                 t0 = sync_time()
-                block_video = target_pipeline.vae.decode_to_pixel(draft_head_latents, use_cache=True)
-                block_video = (block_video * 0.5 + 0.5).clamp(0, 1)
+                block_video = normalize_video(target_pipeline.vae.decode_to_pixel(draft_head_latents, use_cache=True))
                 profile.output_decode_ms += (sync_time() - t0) * 1000.0
                 output_chunks.append(block_video.detach().cpu())
 
@@ -1340,6 +1364,11 @@ def run_mode(
             profile.source = "draft"
             profile.accepted = True
             accepted += 1
+            if use_streamed_output:
+                t0 = sync_time()
+                block_video = normalize_video(target_pipeline.vae.decode_to_pixel(draft_latents, use_cache=True))
+                profile.output_decode_ms += (sync_time() - t0) * 1000.0
+                output_chunks.append(block_video.detach().cpu())
         elif mode == "sdvg" and not use_target:
             t0 = sync_time()
             if router.mode == "latent_verifier":
@@ -1352,7 +1381,7 @@ def run_mode(
                     draft_video = target_pipeline.vae.decode_to_pixel(draft_latents, use_cache=True)
                 else:
                     draft_video = draft_pipeline.vae.decode_to_pixel(draft_latents, use_cache=False)
-                draft_video = (draft_video * 0.5 + 0.5).clamp(0, 1)
+                draft_video = normalize_video(draft_video)
                 profile.decode_ms = (sync_time() - t_decode) * 1000.0
                 frames = draft_video[0]
                 score = router.score(frames, prompt)
@@ -1371,8 +1400,7 @@ def run_mode(
                 if use_streamed_output:
                     if draft_video is None:
                         t0 = sync_time()
-                        draft_video = target_pipeline.vae.decode_to_pixel(draft_latents, use_cache=True)
-                        draft_video = (draft_video * 0.5 + 0.5).clamp(0, 1)
+                        draft_video = normalize_video(target_pipeline.vae.decode_to_pixel(draft_latents, use_cache=True))
                         profile.output_decode_ms += (sync_time() - t0) * 1000.0
                     output_chunks.append(draft_video.detach().cpu())
                 t0 = sync_time()
@@ -1469,8 +1497,7 @@ def run_mode(
                 record_profile_ms(block_overhead_profile, "draft_head_context_commit_ms", t_profile)
             if use_streamed_output:
                 t0 = sync_time()
-                target_video = target_pipeline.vae.decode_to_pixel(target_latents, use_cache=True)
-                target_video = (target_video * 0.5 + 0.5).clamp(0, 1)
+                target_video = normalize_video(target_pipeline.vae.decode_to_pixel(target_latents, use_cache=True))
                 profile.output_decode_ms += (sync_time() - t0) * 1000.0
                 output_chunks.append(target_video.detach().cpu())
 
@@ -1484,10 +1511,20 @@ def run_mode(
         video = torch.cat(output_chunks, dim=1)
         vae_decode_ms = 0.0
         target_pipeline.vae.model.clear_cache()
+    elif output_decode_mode == "chunk_independent":
+        t0 = sync_time()
+        video = decode_latents_by_chunk(
+            target_pipeline.vae,
+            output,
+            current_num_frames,
+            use_cache=False,
+        )
+        vae_decode_ms = (sync_time() - t0) * 1000.0
+        if run_overhead_profile is not None:
+            run_overhead_profile["final_vae_decode_ms"] = vae_decode_ms
     else:
         t0 = sync_time()
-        video = target_pipeline.vae.decode_to_pixel(output, use_cache=False)
-        video = (video * 0.5 + 0.5).clamp(0, 1)
+        video = normalize_video(target_pipeline.vae.decode_to_pixel(output, use_cache=False))
         vae_decode_ms = (sync_time() - t0) * 1000.0
         if run_overhead_profile is not None:
             run_overhead_profile["final_vae_decode_ms"] = vae_decode_ms
@@ -1516,7 +1553,9 @@ def run_mode(
         "score_ms": sum(p.score_ms for p in profiles),
         "commit_ms": sum(p.commit_ms for p in profiles),
         "output_decode_ms": sum(p.output_decode_ms for p in profiles),
-        "reuse_scoring_decodes_for_output": use_streamed_output,
+        "output_decode_mode": output_decode_mode,
+        "streamed_output": use_streamed_output,
+        "reuse_scoring_decodes_for_output": reuse_scoring_decodes_for_output,
         "blocks": profile_dicts,
     }
     if run_overhead_profile is not None:
@@ -1631,6 +1670,16 @@ def main():
         "--reuse_scoring_decodes_for_output",
         action="store_true",
         help="For SDVG/target_regen, reuse streamed block VAE decodes as output and skip final full-sequence VAE decode.",
+    )
+    parser.add_argument(
+        "--output_decode_mode",
+        choices=["full", "chunk_streaming", "chunk_independent"],
+        default="full",
+        help=(
+            "How to decode final latents. 'full' decodes the whole sequence at once; "
+            "'chunk_streaming' decodes committed chunks in order with VAE cache; "
+            "'chunk_independent' decodes each chunk separately without VAE cache."
+        ),
     )
     parser.add_argument(
         "--agreement_metric",
@@ -1882,6 +1931,7 @@ def main():
                 draft_head_oracle_context=args.draft_head_oracle_context if mode == "draft_head" else False,
                 draft_head_inference_mode=args.draft_head_inference_mode,
                 profile_overheads=args.profile_overheads,
+                output_decode_mode=args.output_decode_mode,
                 stochastic_generator=stochastic_generator,
             )
             summaries.append(summary)
