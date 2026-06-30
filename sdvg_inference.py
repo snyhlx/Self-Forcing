@@ -2,6 +2,7 @@ import argparse
 import gc
 import json
 import os
+import random
 import sys
 import time
 from dataclasses import asdict, dataclass
@@ -19,6 +20,7 @@ from tqdm import tqdm
 from pipeline import CausalInferencePipeline
 from sdvg_draft_head import (
     DraftHeadDatasetWriter,
+    DraftHeadRecordDataset,
     CausalWanARDraftHead,
     FeatureCaptureConfig,
     KVCacheInjectedLatentDraftHead,
@@ -1563,6 +1565,77 @@ def run_mode(
     return summary
 
 
+def split_indices(num_records: int, val_fraction: float, seed: int) -> tuple[list[int], list[int]]:
+    indices = list(range(num_records))
+    random.Random(seed).shuffle(indices)
+    if val_fraction <= 0:
+        return sorted(indices), []
+    val_count = max(1, int(round(num_records * val_fraction)))
+    val_count = min(val_count, num_records - 1)
+    return sorted(indices[val_count:]), sorted(indices[:val_count])
+
+
+def load_manifest_split_prompts(
+    manifest_path: str | Path,
+    *,
+    video_dataset_index: int | None,
+    video_prompt_index: int | None,
+    video_split: str,
+    video_split_index: int,
+    val_fraction: float,
+    seed: int,
+    max_prompts: int,
+) -> list[tuple[int | None, str]]:
+    dataset = DraftHeadRecordDataset(manifest_path)
+    if video_prompt_index is not None:
+        for dataset_index in range(len(dataset)):
+            record = dataset[dataset_index]
+            if int(record["prompt_index"]) == int(video_prompt_index):
+                return [(int(record["prompt_index"]), str(record["prompt"]))]
+        raise ValueError(f"video_prompt_index={video_prompt_index} not found in {manifest_path}")
+
+    if video_dataset_index is not None:
+        if not 0 <= video_dataset_index < len(dataset):
+            raise ValueError(f"video_dataset_index={video_dataset_index} out of range for dataset length {len(dataset)}")
+        record = dataset[video_dataset_index]
+        prompt_index = record.get("prompt_index")
+        return [(None if prompt_index is None else int(prompt_index), str(record["prompt"]))]
+
+    if video_split == "all":
+        indices = list(range(len(dataset)))
+    else:
+        train_indices, val_indices = split_indices(len(dataset), val_fraction, seed)
+        indices = train_indices if video_split == "train" else val_indices
+        if not indices:
+            raise ValueError(f"Requested split {video_split!r} is empty")
+    if not 0 <= video_split_index < len(indices):
+        raise ValueError(
+            f"video_split_index={video_split_index} out of range for {video_split} split length {len(indices)}"
+        )
+
+    prompts: list[tuple[int | None, str]] = []
+    seen_prompt_indices: set[int] = set()
+    seen_prompts: set[str] = set()
+    for dataset_index in indices[video_split_index:]:
+        record = dataset[dataset_index]
+        prompt_text = str(record["prompt"])
+        raw_prompt_index = record.get("prompt_index")
+        prompt_index = None if raw_prompt_index is None else int(raw_prompt_index)
+        if prompt_index is not None:
+            if prompt_index in seen_prompt_indices:
+                continue
+            seen_prompt_indices.add(prompt_index)
+        elif prompt_text in seen_prompts:
+            continue
+        seen_prompts.add(prompt_text)
+        prompts.append((prompt_index, prompt_text))
+        if max_prompts > 0 and len(prompts) >= max_prompts:
+            break
+    if not prompts:
+        raise ValueError(f"No prompts selected from {manifest_path} split={video_split}")
+    return prompts
+
+
 def load_prompts(prompt: str, prompt_file: str | None, start_index: int, max_prompts: int) -> list[tuple[int | None, str]]:
     if prompt_file is None:
         return [(None, prompt)]
@@ -1641,6 +1714,24 @@ def main():
     parser.add_argument("--prompt_file", default=None)
     parser.add_argument("--start_index", type=int, default=0)
     parser.add_argument("--max_prompts", type=int, default=0)
+    parser.add_argument(
+        "--video_manifest_path",
+        default=None,
+        help=(
+            "Optional draft-head/teacher-trajectory manifest to select prompts by dataset split. "
+            "Mutually exclusive with --prompt_file."
+        ),
+    )
+    parser.add_argument("--video_dataset_index", type=int, default=None)
+    parser.add_argument("--video_prompt_index", type=int, default=None)
+    parser.add_argument("--video_split", choices=["all", "train", "val"], default="all")
+    parser.add_argument(
+        "--video_split_index",
+        type=int,
+        default=0,
+        help="Start offset within --video_split when selecting prompts from --video_manifest_path.",
+    )
+    parser.add_argument("--val_fraction", type=float, default=0.05)
     parser.add_argument("--output_dir", default="outputs/sdvg")
     parser.add_argument(
         "--mode",
@@ -1881,7 +1972,32 @@ def main():
         args.verifier_checkpoint_path,
         args.verifier_device,
     )
-    prompts = load_prompts(args.prompt, args.prompt_file, args.start_index, args.max_prompts)
+    if args.video_manifest_path and args.prompt_file:
+        raise ValueError("--prompt_file and --video_manifest_path are mutually exclusive")
+    if args.video_manifest_path and args.start_index != 0:
+        raise ValueError("--start_index is only supported with --prompt_file; use --video_split_index for manifests")
+    if args.video_dataset_index is not None and args.video_dataset_index < 0:
+        raise ValueError("--video_dataset_index must be >= 0")
+    if args.video_prompt_index is not None and args.video_prompt_index < 0:
+        raise ValueError("--video_prompt_index must be >= 0")
+    if args.video_split_index < 0:
+        raise ValueError("--video_split_index must be >= 0")
+    if args.val_fraction < 0:
+        raise ValueError("--val_fraction must be >= 0")
+
+    if args.video_manifest_path:
+        prompts = load_manifest_split_prompts(
+            args.video_manifest_path,
+            video_dataset_index=args.video_dataset_index,
+            video_prompt_index=args.video_prompt_index,
+            video_split=args.video_split,
+            video_split_index=args.video_split_index,
+            val_fraction=args.val_fraction,
+            seed=args.seed,
+            max_prompts=args.max_prompts,
+        )
+    else:
+        prompts = load_prompts(args.prompt, args.prompt_file, args.start_index, args.max_prompts)
 
     if args.also_save_target_video and args.mode == "draft_only":
         raise ValueError("--also_save_target_video is not supported with --mode draft_only")

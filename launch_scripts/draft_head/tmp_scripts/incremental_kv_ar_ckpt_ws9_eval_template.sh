@@ -11,7 +11,7 @@ CAUSAL_WAN_FLEX_COMPILE_MODE=none \
   --draft_checkpoint_path /mnt/lanxiangh/models/Self-Forcing/checkpoints/self_forcing_dmd.pt \
   --target_model_name Wan2.1-T2V-14B \
   --target_checkpoint_path /mnt/lanxiangh/models/realtime-video/checkpoints/krea-realtime-video-14b.safetensors \
-  --draft_head_checkpoint_path /mnt/lanxiangh/checkpoints/specgen/20260623_103259_causal_wan_ar_prefixtokens_krea14b_unipc5_shift8_flow_ep3_lr1e-6_bf16_fulldata_dh_causal_wan_ar_flow_teacher_trajectory_h5120_ctx4680_p1x1x1_st999_969_922_841_666_bs1_g8_lr1e-6_fl1_0_ampbf16_gc1_fw0_cfg495f0fd7/final.pt \
+  --draft_head_checkpoint_path /mnt/lanxiangh/checkpoints/specgen/20260623_103259_causal_wan_ar_prefixtokens_krea14b_unipc5_shift8_flow_ep3_lr1e-6_bf16_fulldata_dh_causal_wan_ar_flow_teacher_trajectory_h5120_ctx4680_p1x1x1_st999_969_922_841_666_bs1_g8_lr1e-6_fl1_0_ampbf16_gc1_fw0_cfg495f0fd7__allspan_ep3_bf16/final.pt \
   --mode draft_head \
   --draft_head_inference_mode incremental_kv \
   --output_decode_mode chunk_streaming \

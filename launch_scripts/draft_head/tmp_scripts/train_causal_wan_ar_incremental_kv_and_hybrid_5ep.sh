@@ -33,7 +33,7 @@ for TEACHER_TRAJECTORY_OBJECTIVE in incremental_kv_flow hybrid_prefix_incrementa
   NCCL_TIMEOUT=3600 \
   WAN_FLASH_ATTN_VERSION=2 \
   WAN_ATTENTION_BACKEND=flash \
-  CAUSAL_WAN_FLEX_COMPILE_MODE=none \
+  CAUSAL_WAN_FLEX_COMPILE_MODE=default \
   CHECKPOINT_ROOT=/mnt/lanxiangh/checkpoints/specgen \
   HEAD_TYPE=causal_wan_ar \
   TRAINING_MODE=teacher_trajectory \
