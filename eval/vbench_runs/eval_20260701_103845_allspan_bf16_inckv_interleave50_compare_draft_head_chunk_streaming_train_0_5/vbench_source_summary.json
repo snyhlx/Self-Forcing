@@ -1,0 +1,46 @@
+{
+  "by_source": {
+    "draft_head": {
+      "mean_excluding_raw_scale_metrics": 0.8386317250084236,
+      "metrics": {
+        "aesthetic_quality": 0.6946491241455078,
+        "background_consistency": 0.9545874962439903,
+        "dynamic_degree": 0.6,
+        "imaging_quality": 67.26799660818918,
+        "motion_smoothness": 0.9879119242371506,
+        "subject_consistency": 0.956010080415469
+      },
+      "raw_scale_metrics": [
+        "imaging_quality"
+      ],
+      "video_count": 5
+    },
+    "target_only": {
+      "mean_excluding_raw_scale_metrics": 0.8790518068620428,
+      "metrics": {
+        "aesthetic_quality": 0.6960476875305176,
+        "background_consistency": 0.9534700833834135,
+        "dynamic_degree": 0.8,
+        "imaging_quality": 67.1699921308245,
+        "motion_smoothness": 0.9890515191828293,
+        "subject_consistency": 0.9566897442134528
+      },
+      "raw_scale_metrics": [
+        "imaging_quality"
+      ],
+      "video_count": 5
+    }
+  },
+  "metrics": [
+    "subject_consistency",
+    "background_consistency",
+    "motion_smoothness",
+    "dynamic_degree",
+    "aesthetic_quality",
+    "imaging_quality"
+  ],
+  "raw_scale_metrics": [
+    "imaging_quality"
+  ],
+  "result_path": "/root/Self-Forcing/eval/vbench_runs/eval_20260701_103845_allspan_bf16_inckv_interleave50_compare_draft_head_chunk_streaming_train_0_5/vbench_outputs/results_2026-07-02-06:05:25_eval_results.json"
+}

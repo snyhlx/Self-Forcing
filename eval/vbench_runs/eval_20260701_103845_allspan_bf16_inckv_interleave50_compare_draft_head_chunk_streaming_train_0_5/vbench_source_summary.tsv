@@ -1,0 +1,3 @@
+run	source	video_count	mean_excluding_raw_scale_metrics	subject_consistency	background_consistency	motion_smoothness	dynamic_degree	aesthetic_quality	imaging_quality_raw
+eval_20260701_103845_allspan_bf16_inckv_interleave50_compare_draft_head_chunk_streaming_train_0_5	draft_head	5	0.838632	0.956010	0.954587	0.987912	0.600000	0.694649	67.267997
+eval_20260701_103845_allspan_bf16_inckv_interleave50_compare_draft_head_chunk_streaming_train_0_5	target_only	5	0.879052	0.956690	0.953470	0.989052	0.800000	0.696048	67.169992

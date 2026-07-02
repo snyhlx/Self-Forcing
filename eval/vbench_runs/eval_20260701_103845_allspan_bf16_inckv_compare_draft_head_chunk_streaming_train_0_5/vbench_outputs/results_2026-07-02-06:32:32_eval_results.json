@@ -1,0 +1,292 @@
+{
+    "subject_consistency": [
+        0.953534256781523,
+        [
+            {
+                "video_path": "/root/Self-Forcing/outputs/draft_head/test_runs/eval_20260701_103845_allspan_bf16_inckv_compare_draft_head_chunk_streaming_train_0_5/prompt_0003_draft_head.mp4",
+                "video_results": 0.938827206309025
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/draft_head/test_runs/eval_20260701_103845_allspan_bf16_inckv_compare_draft_head_chunk_streaming_train_0_5/prompt_0000_target_only.mp4",
+                "video_results": 0.9501539763922875
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/draft_head/test_runs/eval_20260701_103845_allspan_bf16_inckv_compare_draft_head_chunk_streaming_train_0_5/prompt_0000_draft_head.mp4",
+                "video_results": 0.9507603344435875
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/draft_head/test_runs/eval_20260701_103845_allspan_bf16_inckv_compare_draft_head_chunk_streaming_train_0_5/prompt_0004_target_only.mp4",
+                "video_results": 0.9739732286677911
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/draft_head/test_runs/eval_20260701_103845_allspan_bf16_inckv_compare_draft_head_chunk_streaming_train_0_5/prompt_0003_target_only.mp4",
+                "video_results": 0.9532454392084708
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/draft_head/test_runs/eval_20260701_103845_allspan_bf16_inckv_compare_draft_head_chunk_streaming_train_0_5/prompt_0004_draft_head.mp4",
+                "video_results": 0.9591853853601676
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/draft_head/test_runs/eval_20260701_103845_allspan_bf16_inckv_compare_draft_head_chunk_streaming_train_0_5/prompt_0001_draft_head.mp4",
+                "video_results": 0.9397914721988715
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/draft_head/test_runs/eval_20260701_103845_allspan_bf16_inckv_compare_draft_head_chunk_streaming_train_0_5/prompt_0002_target_only.mp4",
+                "video_results": 0.9684654336709243
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/draft_head/test_runs/eval_20260701_103845_allspan_bf16_inckv_compare_draft_head_chunk_streaming_train_0_5/prompt_0001_target_only.mp4",
+                "video_results": 0.9376106431277899
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/draft_head/test_runs/eval_20260701_103845_allspan_bf16_inckv_compare_draft_head_chunk_streaming_train_0_5/prompt_0002_draft_head.mp4",
+                "video_results": 0.9633294484363153
+            }
+        ]
+    ],
+    "background_consistency": [
+        0.9532743013822116,
+        [
+            {
+                "video_path": "/root/Self-Forcing/outputs/draft_head/test_runs/eval_20260701_103845_allspan_bf16_inckv_compare_draft_head_chunk_streaming_train_0_5/prompt_0003_draft_head.mp4",
+                "video_results": 0.9355938251201923,
+                "video_sim": 97.3017578125,
+                "cnt_per_video": 104
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/draft_head/test_runs/eval_20260701_103845_allspan_bf16_inckv_compare_draft_head_chunk_streaming_train_0_5/prompt_0000_target_only.mp4",
+                "video_results": 0.9301710862379807,
+                "video_sim": 96.73779296875,
+                "cnt_per_video": 104
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/draft_head/test_runs/eval_20260701_103845_allspan_bf16_inckv_compare_draft_head_chunk_streaming_train_0_5/prompt_0000_draft_head.mp4",
+                "video_results": 0.9528033916766827,
+                "video_sim": 99.091552734375,
+                "cnt_per_video": 104
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/draft_head/test_runs/eval_20260701_103845_allspan_bf16_inckv_compare_draft_head_chunk_streaming_train_0_5/prompt_0004_target_only.mp4",
+                "video_results": 0.9846848707932693,
+                "video_sim": 102.4072265625,
+                "cnt_per_video": 104
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/draft_head/test_runs/eval_20260701_103845_allspan_bf16_inckv_compare_draft_head_chunk_streaming_train_0_5/prompt_0003_target_only.mp4",
+                "video_results": 0.9388498159555289,
+                "video_sim": 97.640380859375,
+                "cnt_per_video": 104
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/draft_head/test_runs/eval_20260701_103845_allspan_bf16_inckv_compare_draft_head_chunk_streaming_train_0_5/prompt_0004_draft_head.mp4",
+                "video_results": 0.9751516488882211,
+                "video_sim": 101.415771484375,
+                "cnt_per_video": 104
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/draft_head/test_runs/eval_20260701_103845_allspan_bf16_inckv_compare_draft_head_chunk_streaming_train_0_5/prompt_0001_draft_head.mp4",
+                "video_results": 0.9457984337439904,
+                "video_sim": 98.363037109375,
+                "cnt_per_video": 104
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/draft_head/test_runs/eval_20260701_103845_allspan_bf16_inckv_compare_draft_head_chunk_streaming_train_0_5/prompt_0002_target_only.mp4",
+                "video_results": 0.9640925480769231,
+                "video_sim": 100.265625,
+                "cnt_per_video": 104
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/draft_head/test_runs/eval_20260701_103845_allspan_bf16_inckv_compare_draft_head_chunk_streaming_train_0_5/prompt_0001_target_only.mp4",
+                "video_results": 0.9495520958533654,
+                "video_sim": 98.75341796875,
+                "cnt_per_video": 104
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/draft_head/test_runs/eval_20260701_103845_allspan_bf16_inckv_compare_draft_head_chunk_streaming_train_0_5/prompt_0002_draft_head.mp4",
+                "video_results": 0.9560452974759616,
+                "video_sim": 99.4287109375,
+                "cnt_per_video": 104
+            }
+        ]
+    ],
+    "motion_smoothness": [
+        0.9871865705717383,
+        [
+            {
+                "video_path": "/root/Self-Forcing/outputs/draft_head/test_runs/eval_20260701_103845_allspan_bf16_inckv_compare_draft_head_chunk_streaming_train_0_5/prompt_0003_draft_head.mp4",
+                "video_results": 0.9860489585624581
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/draft_head/test_runs/eval_20260701_103845_allspan_bf16_inckv_compare_draft_head_chunk_streaming_train_0_5/prompt_0000_target_only.mp4",
+                "video_results": 0.9866926935409375
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/draft_head/test_runs/eval_20260701_103845_allspan_bf16_inckv_compare_draft_head_chunk_streaming_train_0_5/prompt_0000_draft_head.mp4",
+                "video_results": 0.9843593027501619
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/draft_head/test_runs/eval_20260701_103845_allspan_bf16_inckv_compare_draft_head_chunk_streaming_train_0_5/prompt_0004_target_only.mp4",
+                "video_results": 0.993306212765966
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/draft_head/test_runs/eval_20260701_103845_allspan_bf16_inckv_compare_draft_head_chunk_streaming_train_0_5/prompt_0003_target_only.mp4",
+                "video_results": 0.9876499039992394
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/draft_head/test_runs/eval_20260701_103845_allspan_bf16_inckv_compare_draft_head_chunk_streaming_train_0_5/prompt_0004_draft_head.mp4",
+                "video_results": 0.9883941084896216
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/draft_head/test_runs/eval_20260701_103845_allspan_bf16_inckv_compare_draft_head_chunk_streaming_train_0_5/prompt_0001_draft_head.mp4",
+                "video_results": 0.9818384816661913
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/draft_head/test_runs/eval_20260701_103845_allspan_bf16_inckv_compare_draft_head_chunk_streaming_train_0_5/prompt_0002_target_only.mp4",
+                "video_results": 0.9928709848527881
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/draft_head/test_runs/eval_20260701_103845_allspan_bf16_inckv_compare_draft_head_chunk_streaming_train_0_5/prompt_0001_target_only.mp4",
+                "video_results": 0.984737774317742
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/draft_head/test_runs/eval_20260701_103845_allspan_bf16_inckv_compare_draft_head_chunk_streaming_train_0_5/prompt_0002_draft_head.mp4",
+                "video_results": 0.9859672847722771
+            }
+        ]
+    ],
+    "dynamic_degree": [
+        0.7,
+        [
+            {
+                "video_path": "/root/Self-Forcing/outputs/draft_head/test_runs/eval_20260701_103845_allspan_bf16_inckv_compare_draft_head_chunk_streaming_train_0_5/prompt_0003_draft_head.mp4",
+                "video_results": true
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/draft_head/test_runs/eval_20260701_103845_allspan_bf16_inckv_compare_draft_head_chunk_streaming_train_0_5/prompt_0000_target_only.mp4",
+                "video_results": true
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/draft_head/test_runs/eval_20260701_103845_allspan_bf16_inckv_compare_draft_head_chunk_streaming_train_0_5/prompt_0000_draft_head.mp4",
+                "video_results": false
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/draft_head/test_runs/eval_20260701_103845_allspan_bf16_inckv_compare_draft_head_chunk_streaming_train_0_5/prompt_0004_target_only.mp4",
+                "video_results": false
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/draft_head/test_runs/eval_20260701_103845_allspan_bf16_inckv_compare_draft_head_chunk_streaming_train_0_5/prompt_0003_target_only.mp4",
+                "video_results": true
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/draft_head/test_runs/eval_20260701_103845_allspan_bf16_inckv_compare_draft_head_chunk_streaming_train_0_5/prompt_0004_draft_head.mp4",
+                "video_results": false
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/draft_head/test_runs/eval_20260701_103845_allspan_bf16_inckv_compare_draft_head_chunk_streaming_train_0_5/prompt_0001_draft_head.mp4",
+                "video_results": true
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/draft_head/test_runs/eval_20260701_103845_allspan_bf16_inckv_compare_draft_head_chunk_streaming_train_0_5/prompt_0002_target_only.mp4",
+                "video_results": true
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/draft_head/test_runs/eval_20260701_103845_allspan_bf16_inckv_compare_draft_head_chunk_streaming_train_0_5/prompt_0001_target_only.mp4",
+                "video_results": true
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/draft_head/test_runs/eval_20260701_103845_allspan_bf16_inckv_compare_draft_head_chunk_streaming_train_0_5/prompt_0002_draft_head.mp4",
+                "video_results": true
+            }
+        ]
+    ],
+    "aesthetic_quality": [
+        0.6921412169933319,
+        [
+            {
+                "video_path": "/root/Self-Forcing/outputs/draft_head/test_runs/eval_20260701_103845_allspan_bf16_inckv_compare_draft_head_chunk_streaming_train_0_5/prompt_0003_draft_head.mp4",
+                "video_results": 0.6791457533836365
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/draft_head/test_runs/eval_20260701_103845_allspan_bf16_inckv_compare_draft_head_chunk_streaming_train_0_5/prompt_0000_target_only.mp4",
+                "video_results": 0.6527748107910156
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/draft_head/test_runs/eval_20260701_103845_allspan_bf16_inckv_compare_draft_head_chunk_streaming_train_0_5/prompt_0000_draft_head.mp4",
+                "video_results": 0.6465200781822205
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/draft_head/test_runs/eval_20260701_103845_allspan_bf16_inckv_compare_draft_head_chunk_streaming_train_0_5/prompt_0004_target_only.mp4",
+                "video_results": 0.7128469347953796
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/draft_head/test_runs/eval_20260701_103845_allspan_bf16_inckv_compare_draft_head_chunk_streaming_train_0_5/prompt_0003_target_only.mp4",
+                "video_results": 0.6638938188552856
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/draft_head/test_runs/eval_20260701_103845_allspan_bf16_inckv_compare_draft_head_chunk_streaming_train_0_5/prompt_0004_draft_head.mp4",
+                "video_results": 0.7315762639045715
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/draft_head/test_runs/eval_20260701_103845_allspan_bf16_inckv_compare_draft_head_chunk_streaming_train_0_5/prompt_0001_draft_head.mp4",
+                "video_results": 0.6812957525253296
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/draft_head/test_runs/eval_20260701_103845_allspan_bf16_inckv_compare_draft_head_chunk_streaming_train_0_5/prompt_0002_target_only.mp4",
+                "video_results": 0.7434391975402832
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/draft_head/test_runs/eval_20260701_103845_allspan_bf16_inckv_compare_draft_head_chunk_streaming_train_0_5/prompt_0001_target_only.mp4",
+                "video_results": 0.7072836756706238
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/draft_head/test_runs/eval_20260701_103845_allspan_bf16_inckv_compare_draft_head_chunk_streaming_train_0_5/prompt_0002_draft_head.mp4",
+                "video_results": 0.7026358842849731
+            }
+        ]
+    ],
+    "imaging_quality": [
+        0.6747962113879976,
+        [
+            {
+                "video_path": "/root/Self-Forcing/outputs/draft_head/test_runs/eval_20260701_103845_allspan_bf16_inckv_compare_draft_head_chunk_streaming_train_0_5/prompt_0003_draft_head.mp4",
+                "video_results": 74.2310791015625
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/draft_head/test_runs/eval_20260701_103845_allspan_bf16_inckv_compare_draft_head_chunk_streaming_train_0_5/prompt_0000_target_only.mp4",
+                "video_results": 53.41699091593424
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/draft_head/test_runs/eval_20260701_103845_allspan_bf16_inckv_compare_draft_head_chunk_streaming_train_0_5/prompt_0000_draft_head.mp4",
+                "video_results": 59.88382292247954
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/draft_head/test_runs/eval_20260701_103845_allspan_bf16_inckv_compare_draft_head_chunk_streaming_train_0_5/prompt_0004_target_only.mp4",
+                "video_results": 61.26344655354818
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/draft_head/test_runs/eval_20260701_103845_allspan_bf16_inckv_compare_draft_head_chunk_streaming_train_0_5/prompt_0003_target_only.mp4",
+                "video_results": 76.31951475597563
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/draft_head/test_runs/eval_20260701_103845_allspan_bf16_inckv_compare_draft_head_chunk_streaming_train_0_5/prompt_0004_draft_head.mp4",
+                "video_results": 59.968396759033205
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/draft_head/test_runs/eval_20260701_103845_allspan_bf16_inckv_compare_draft_head_chunk_streaming_train_0_5/prompt_0001_draft_head.mp4",
+                "video_results": 74.62761542910621
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/draft_head/test_runs/eval_20260701_103845_allspan_bf16_inckv_compare_draft_head_chunk_streaming_train_0_5/prompt_0002_target_only.mp4",
+                "video_results": 72.24690813337054
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/draft_head/test_runs/eval_20260701_103845_allspan_bf16_inckv_compare_draft_head_chunk_streaming_train_0_5/prompt_0001_target_only.mp4",
+                "video_results": 72.6031002952939
+            },
+            {
+                "video_path": "/root/Self-Forcing/outputs/draft_head/test_runs/eval_20260701_103845_allspan_bf16_inckv_compare_draft_head_chunk_streaming_train_0_5/prompt_0002_draft_head.mp4",
+                "video_results": 70.23533652169364
+            }
+        ]
+    ]
+}

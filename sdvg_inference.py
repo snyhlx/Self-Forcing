@@ -54,6 +54,8 @@ class BlockProfile:
     score_ms: float = 0.0
     commit_ms: float = 0.0
     output_decode_ms: float = 0.0
+    interleave_target_probability: float | None = None
+    interleave_random_value: float | None = None
     overhead_profile: dict[str, Any] | None = None
 
 
@@ -1001,9 +1003,12 @@ def run_mode(
     draft_head_log_target_delta: bool,
     draft_head_oracle_context: bool,
     draft_head_inference_mode: str,
+    draft_head_denoising_step_list: list[int] | None,
     profile_overheads: bool,
     output_decode_mode: str,
+    draft_head_interleave_target_probability: float = 0.0,
     stochastic_generator: torch.Generator | None = None,
+    interleave_generator: torch.Generator | None = None,
 ) -> dict:
     batch_size, num_frames = noise.shape[:2]
     current_num_frames = target_pipeline.num_frame_per_block
@@ -1042,6 +1047,11 @@ def run_mode(
         and draft_head_inference_mode == "incremental_kv"
         and isinstance(draft_head_model, CausalWanARDraftHead)
     )
+    effective_draft_head_steps = (
+        list(draft_head_denoising_step_list)
+        if draft_head_denoising_step_list is not None
+        else [int(step.item() if torch.is_tensor(step) else step) for step in target_pipeline.denoising_step_list]
+    )
     if use_draft_head_incremental_kv:
         t_profile = sync_time() if run_overhead_profile is not None else 0.0
         draft_head_kv_cache, draft_head_crossattn_cache = initialize_causal_generator_caches(
@@ -1071,6 +1081,16 @@ def run_mode(
         ) or (
             mode == "draft_head" and block_index == 0
         )
+        if mode == "draft_head" and block_index > 0 and draft_head_interleave_target_probability > 0:
+            if interleave_generator is None:
+                raise ValueError("draft-head interleaving requires an interleave generator")
+            random_value = float(torch.rand((), device=device, generator=interleave_generator).item())
+            profile.interleave_target_probability = float(draft_head_interleave_target_probability)
+            profile.interleave_random_value = random_value
+            if block_overhead_profile is not None:
+                block_overhead_profile["interleave_target_probability"] = float(draft_head_interleave_target_probability)
+                block_overhead_profile["interleave_random_value"] = random_value
+            use_target = random_value < draft_head_interleave_target_probability
         draft_latents = None
         draft_video = None
         vae_cache_before_draft = None
@@ -1219,7 +1239,8 @@ def run_mode(
                     "type": type(draft_head_model).__name__,
                     "prediction_type": draft_head_prediction_type,
                     "inference_mode": "incremental_kv" if use_draft_head_incremental_kv else "prefix",
-                    "num_steps": len(target_pipeline.denoising_step_list),
+                    "num_steps": len(effective_draft_head_steps),
+                    "denoising_step_list": list(effective_draft_head_steps),
                 }
                 if block_overhead_profile is not None
                 else None
@@ -1232,7 +1253,7 @@ def run_mode(
                 block_index,
                 num_blocks,
                 scheduler=target_pipeline.scheduler,
-                denoising_step_list=list(target_pipeline.denoising_step_list),
+                denoising_step_list=effective_draft_head_steps,
                 prediction_type=draft_head_prediction_type,
                 context_latents=context_latents,
                 conditional_dict=target_cond,
@@ -1556,6 +1577,10 @@ def run_mode(
         "commit_ms": sum(p.commit_ms for p in profiles),
         "output_decode_ms": sum(p.output_decode_ms for p in profiles),
         "output_decode_mode": output_decode_mode,
+        "target_denoising_step_list": [
+            int(step.item() if torch.is_tensor(step) else step) for step in target_pipeline.denoising_step_list
+        ],
+        "draft_head_denoising_step_list": list(effective_draft_head_steps) if mode == "draft_head" else None,
         "streamed_output": use_streamed_output,
         "reuse_scoring_decodes_for_output": reuse_scoring_decodes_for_output,
         "blocks": profile_dicts,
@@ -1748,6 +1773,14 @@ def main():
     parser.add_argument("--tau", type=float, default=-0.7)
     parser.add_argument("--num_blocks", type=int, default=3)
     parser.add_argument("--denoising_step_list", default="1000 750 500 250 0")
+    parser.add_argument(
+        "--draft_head_denoising_step_list",
+        default=None,
+        help=(
+            "Optional denoising timesteps for draft-head/student chunks. "
+            "When set, every timestep must be present in --denoising_step_list."
+        ),
+    )
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--fps", type=int, default=16)
     parser.add_argument("--use_ema", action="store_true", default=True)
@@ -1855,6 +1888,20 @@ def main():
         ),
     )
     parser.add_argument(
+        "--draft_head_interleave",
+        action="store_true",
+        help=(
+            "In draft_head mode, keep block 0 target-generated, then randomly choose target "
+            "or draft-head generation for later blocks."
+        ),
+    )
+    parser.add_argument(
+        "--draft_head_interleave_target_probability",
+        type=float,
+        default=0.5,
+        help="Probability of choosing target generation for each post-block-0 chunk when --draft_head_interleave is set.",
+    )
+    parser.add_argument(
         "--profile_overheads",
         action="store_true",
         help=(
@@ -1885,6 +1932,19 @@ def main():
     dtype = torch.bfloat16
 
     config.denoising_step_list = parse_timestep_list(args.denoising_step_list)
+    draft_head_denoising_step_list = (
+        parse_timestep_list(args.draft_head_denoising_step_list)
+        if args.draft_head_denoising_step_list is not None
+        else None
+    )
+    if draft_head_denoising_step_list is not None:
+        target_steps = [int(step.item() if torch.is_tensor(step) else step) for step in config.denoising_step_list]
+        missing_steps = [step for step in draft_head_denoising_step_list if step not in target_steps]
+        if missing_steps:
+            raise ValueError(
+                "--draft_head_denoising_step_list must be a subset of --denoising_step_list; "
+                f"missing {missing_steps} from target steps {target_steps}"
+            )
     config.warp_denoising_step = False
     config.num_frame_per_block = 3
 
@@ -1984,6 +2044,12 @@ def main():
         raise ValueError("--video_split_index must be >= 0")
     if args.val_fraction < 0:
         raise ValueError("--val_fraction must be >= 0")
+    if not 0.0 <= args.draft_head_interleave_target_probability <= 1.0:
+        raise ValueError("--draft_head_interleave_target_probability must be in [0, 1]")
+    if args.draft_head_interleave and args.mode not in ("draft_head", "compare"):
+        raise ValueError("--draft_head_interleave is only supported with --mode draft_head or --mode compare")
+    if args.draft_head_interleave and args.mode == "compare" and args.compare_mode != "draft_head":
+        raise ValueError("--draft_head_interleave with --mode compare requires --compare_mode draft_head")
 
     if args.video_manifest_path:
         prompts = load_manifest_split_prompts(
@@ -2035,6 +2101,9 @@ def main():
             stochastic_generator = torch.Generator(device=device).manual_seed(
                 args.seed + (prompt_index or 0) + 1_000_000
             )
+            interleave_generator = torch.Generator(device=device).manual_seed(
+                args.seed + (prompt_index or 0) + 2_000_000
+            )
             summary = run_mode(
                 mode=mode,
                 prompt=prompt_text,
@@ -2061,9 +2130,16 @@ def main():
                 draft_head_log_target_delta=args.draft_head_log_target_delta if mode == "draft_head" else False,
                 draft_head_oracle_context=args.draft_head_oracle_context if mode == "draft_head" else False,
                 draft_head_inference_mode=args.draft_head_inference_mode,
+                draft_head_denoising_step_list=draft_head_denoising_step_list if mode == "draft_head" else None,
                 profile_overheads=args.profile_overheads,
                 output_decode_mode=args.output_decode_mode,
+                draft_head_interleave_target_probability=(
+                    args.draft_head_interleave_target_probability
+                    if mode == "draft_head" and args.draft_head_interleave
+                    else 0.0
+                ),
                 stochastic_generator=stochastic_generator,
+                interleave_generator=interleave_generator,
             )
             summaries.append(summary)
             cleanup_cuda_runtime_state(target_pipeline, draft_pipeline)

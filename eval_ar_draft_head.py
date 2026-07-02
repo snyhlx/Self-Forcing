@@ -134,6 +134,7 @@ def run_sdvg(
     seed: int,
     prompt_override: str | None = None,
     denoising_step_list: list[int],
+    draft_head_denoising_step_list: list[int] | None = None,
 ) -> dict[str, Any]:
     command = [
         sys.executable,
@@ -164,6 +165,13 @@ def run_sdvg(
         str(args.fps),
         *prompt_args(args, prompt_override=prompt_override),
     ]
+    if mode == "draft_head" and draft_head_denoising_step_list is not None:
+        command.extend(
+            [
+                "--draft_head_denoising_step_list",
+                " ".join(str(timestep) for timestep in draft_head_denoising_step_list),
+            ]
+        )
     if args.no_force_target_first_block:
         command.append("--no_force_target_first_block")
     if args.draft_head_log_target_delta and mode == "draft_head":
@@ -219,6 +227,14 @@ def main() -> None:
     parser.add_argument("--dataset_cache_wait_seconds", type=int, default=3600)
     parser.add_argument("--num_blocks", type=int, default=7)
     parser.add_argument("--denoising_step_list", default="999 969 922 841 666")
+    parser.add_argument(
+        "--draft_head_denoising_step_list",
+        default=None,
+        help=(
+            "Optional draft-head/student denoising timesteps. "
+            "Each timestep must be present in the resolved target denoising step list."
+        ),
+    )
     parser.add_argument("--denoising_step_solver", choices=["list", "unipc", "euler"], default="list")
     parser.add_argument("--denoising_sampling_steps", type=int, default=None)
     parser.add_argument("--denoising_shift", type=float, default=8.0)
@@ -257,11 +273,29 @@ def main() -> None:
     manifest_selection = select_manifest_prompt(args)
     prompt_override = manifest_selection["prompt"] if manifest_selection is not None else None
     denoising_step_list = resolve_denoising_step_list(args)
+    draft_head_denoising_step_list = (
+        parse_timestep_list(args.draft_head_denoising_step_list)
+        if args.draft_head_denoising_step_list is not None
+        else None
+    )
+    if draft_head_denoising_step_list is not None:
+        missing_steps = [step for step in draft_head_denoising_step_list if step not in denoising_step_list]
+        if missing_steps:
+            raise ValueError(
+                "--draft_head_denoising_step_list must be a subset of the target denoising schedule; "
+                f"missing {missing_steps} from target steps {denoising_step_list}"
+            )
     print(
         f"Using denoising steps ({args.denoising_step_solver}, shift={args.denoising_shift}): "
         f"{' '.join(str(timestep) for timestep in denoising_step_list)}",
         flush=True,
     )
+    if draft_head_denoising_step_list is not None:
+        print(
+            "Using draft-head denoising steps: "
+            f"{' '.join(str(timestep) for timestep in draft_head_denoising_step_list)}",
+            flush=True,
+        )
 
     drafter_jobs = [("draft_head", output_dir / "draft_head", args.seed)]
     for mode, run_output_dir, seed in tqdm(drafter_jobs, desc="AR drafter eval", unit="run"):
@@ -273,6 +307,7 @@ def main() -> None:
                 seed=seed,
                 prompt_override=prompt_override,
                 denoising_step_list=denoising_step_list,
+                draft_head_denoising_step_list=draft_head_denoising_step_list,
             )
         )
     target_reference_jobs = [
@@ -299,6 +334,7 @@ def main() -> None:
         "args": vars(args),
         "manifest_selection": manifest_selection,
         "denoising_step_list": denoising_step_list,
+        "draft_head_denoising_step_list": draft_head_denoising_step_list,
         "runs": summaries,
     }
     summary_path = output_dir / "profile.json"
