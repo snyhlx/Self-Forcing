@@ -357,6 +357,19 @@ def flow_prediction_to_clean_latent(
     return noisy_latents - sigma * flow_prediction
 
 
+def renoise_clean_latents(
+    scheduler: FlowMatchScheduler,
+    clean_latents: torch.Tensor,
+    timestep: torch.Tensor,
+) -> torch.Tensor:
+    noise = torch.randn_like(clean_latents)
+    return scheduler.add_noise(
+        clean_latents.flatten(0, 1),
+        noise.flatten(0, 1),
+        timestep.flatten(0, 1),
+    ).unflatten(0, clean_latents.shape[:2])
+
+
 def flow_prediction_step(
     scheduler: FlowMatchScheduler,
     flow_prediction: torch.Tensor,
@@ -1408,6 +1421,7 @@ def compute_stop_gradient_self_conditioning_losses(
     step_mode: str = "whole_graph",
     incremental_kv_context_noise: int = 0,
     self_conditioning_mix_ratio: float = 0.25,
+    self_conditioning_current_noise_mode: str = "teacher_cached",
     self_conditioning_consistency_weight: float = 0.0,
     self_conditioning_loss_on: str = "all_predicted_chunks",
     self_conditioning_intermediate_loss_weight: float = 0.5,
@@ -1417,6 +1431,16 @@ def compute_stop_gradient_self_conditioning_losses(
 ) -> tuple[torch.Tensor, dict[str, float]]:
     if step_mode not in ("whole_graph", "sample_one", "sequential_backward"):
         raise ValueError("--teacher_trajectory_step_mode must be whole_graph, sample_one, or sequential_backward")
+    if self_conditioning_current_noise_mode not in (
+        "teacher_cached",
+        "teacher_renoised",
+        "student_renoised",
+        "random_gaussian",
+    ):
+        raise ValueError(
+            "--self_conditioning_current_noise_mode must be teacher_cached, teacher_renoised, "
+            "student_renoised, or random_gaussian"
+        )
     if self_conditioning_loss_on not in ("all_predicted_chunks", "final_chunk_only"):
         raise ValueError("--self_conditioning_loss_on must be all_predicted_chunks or final_chunk_only")
     required_keys = (
@@ -1490,6 +1514,12 @@ def compute_stop_gradient_self_conditioning_losses(
     consistency_losses = []
     student_prefix_commits = 0
     target_prefix_commits = 0
+    current_noise_mode_counts = {
+        "teacher_cached": 0,
+        "teacher_renoised": 0,
+        "student_renoised": 0,
+        "random_gaussian": 0,
+    }
     if self_conditioning_loss_on == "final_chunk_only":
         loss_weight_normalizer = 1.0
     else:
@@ -1595,12 +1625,38 @@ def compute_stop_gradient_self_conditioning_losses(
                             prefix_output,
                         )
 
+        previous_student_clean_prediction = None
         for chunk_offset in range(lookahead_chunks):
-            state = noisy_states[:, chunk_offset, step_index]
+            cached_state = noisy_states[:, chunk_offset, step_index]
             clean_target = clean_targets[:, chunk_offset, step_index]
             timestep = timesteps[:, chunk_offset, step_index].round().long().reshape(batch_size, 1).expand(
                 batch_size,
                 frames,
+            )
+            effective_current_noise_mode = self_conditioning_current_noise_mode
+            if effective_current_noise_mode == "teacher_cached":
+                state = cached_state
+            elif effective_current_noise_mode == "teacher_renoised":
+                state = renoise_clean_latents(scheduler, clean_target, timestep).to(dtype=dtype)
+            elif effective_current_noise_mode == "student_renoised":
+                if previous_student_clean_prediction is None:
+                    effective_current_noise_mode = "teacher_renoised"
+                    state = renoise_clean_latents(scheduler, clean_target, timestep).to(dtype=dtype)
+                else:
+                    state = renoise_clean_latents(
+                        scheduler,
+                        previous_student_clean_prediction,
+                        timestep,
+                    ).to(dtype=dtype)
+            elif effective_current_noise_mode == "random_gaussian":
+                state = torch.randn_like(clean_target)
+            else:
+                raise AssertionError(f"Unexpected self-conditioning current noise mode: {effective_current_noise_mode}")
+            current_noise_mode_counts[effective_current_noise_mode] += 1
+            require_finite(
+                f"self_conditioning_current_state "
+                f"(mode={effective_current_noise_mode} step={step_index} chunk_offset={chunk_offset})",
+                state,
             )
             current_start = (prefix_frames + chunk_offset * frames) * frame_seq_length
             valid_flow_timestep = bool((timestep > 0).any().detach().cpu().item())
@@ -1629,6 +1685,7 @@ def compute_stop_gradient_self_conditioning_losses(
                 flow_prediction = clean_latent_to_flow_prediction(scheduler, clean_prediction, state, timestep)
             else:
                 raise ValueError("--prediction_type must be 'flow' or 'clean_latent'")
+            previous_student_clean_prediction = clean_prediction.detach()
 
             if self_conditioning_consistency_weight > 0:
                 assert target_kv_cache is not None
@@ -1774,6 +1831,10 @@ def compute_stop_gradient_self_conditioning_losses(
         "teacher_trajectory_objective_stop_gradient_self_conditioning_flow": 1.0,
         "self_conditioning_lookahead_chunks": float(lookahead_chunks),
         "self_conditioning_mix_ratio": float(self_conditioning_mix_ratio),
+        "self_conditioning_current_noise_mode_teacher_cached": float(current_noise_mode_counts["teacher_cached"]),
+        "self_conditioning_current_noise_mode_teacher_renoised": float(current_noise_mode_counts["teacher_renoised"]),
+        "self_conditioning_current_noise_mode_student_renoised": float(current_noise_mode_counts["student_renoised"]),
+        "self_conditioning_current_noise_mode_random_gaussian": float(current_noise_mode_counts["random_gaussian"]),
         "self_conditioning_student_prefix_commits": float(student_prefix_commits),
         "self_conditioning_target_prefix_commits": float(target_prefix_commits),
         "self_conditioning_anchor_index": float(batch_scalar(batch, "self_conditioning_anchor_index", 0)),
@@ -2124,6 +2185,17 @@ def main() -> None:
     )
     parser.add_argument("--self_conditioning_fixed_anchor_index", type=int, default=0)
     parser.add_argument("--self_conditioning_mix_ratio", type=float, default=0.25)
+    parser.add_argument(
+        "--self_conditioning_current_noise_mode",
+        choices=["teacher_cached", "teacher_renoised", "student_renoised", "random_gaussian"],
+        default="teacher_cached",
+        help=(
+            "How the current noisy chunk is initialized in stop-gradient self-conditioning. "
+            "teacher_cached uses offline cached noisy latents; teacher_renoised re-noises the clean target; "
+            "student_renoised re-noises the previous detached student clean prediction after the first chunk; "
+            "random_gaussian samples pure Gaussian current latents."
+        ),
+    )
     parser.add_argument("--self_conditioning_consistency_weight", type=float, default=0.0)
     parser.add_argument(
         "--self_conditioning_loss_on",
@@ -2553,6 +2625,7 @@ def main() -> None:
         f"self_conditioning_lookahead={args.self_conditioning_lookahead_chunks} "
         f"self_conditioning_anchor_policy={args.self_conditioning_anchor_policy} "
         f"self_conditioning_mix_ratio={args.self_conditioning_mix_ratio} "
+        f"self_conditioning_current_noise_mode={args.self_conditioning_current_noise_mode} "
         f"self_conditioning_consistency_weight={args.self_conditioning_consistency_weight} "
         f"causal_wan_prefix_padding={args.causal_wan_prefix_padding} "
         f"denoising_steps={args.denoising_step_list} prediction_type={args.prediction_type} loss_type={args.loss_type} "
@@ -2714,6 +2787,7 @@ def main() -> None:
                                 step_mode=args.teacher_trajectory_step_mode,
                                 incremental_kv_context_noise=args.incremental_kv_context_noise,
                                 self_conditioning_mix_ratio=args.self_conditioning_mix_ratio,
+                                self_conditioning_current_noise_mode=args.self_conditioning_current_noise_mode,
                                 self_conditioning_consistency_weight=args.self_conditioning_consistency_weight,
                                 self_conditioning_loss_on=args.self_conditioning_loss_on,
                                 self_conditioning_intermediate_loss_weight=(
@@ -2950,6 +3024,7 @@ def main() -> None:
                     "self_conditioning_anchor_policy": args.self_conditioning_anchor_policy,
                     "self_conditioning_fixed_anchor_index": args.self_conditioning_fixed_anchor_index,
                     "self_conditioning_mix_ratio": args.self_conditioning_mix_ratio,
+                    "self_conditioning_current_noise_mode": args.self_conditioning_current_noise_mode,
                     "self_conditioning_consistency_weight": args.self_conditioning_consistency_weight,
                     "self_conditioning_loss_on": args.self_conditioning_loss_on,
                     "self_conditioning_intermediate_loss_weight": args.self_conditioning_intermediate_loss_weight,
@@ -3024,6 +3099,7 @@ def main() -> None:
                 "self_conditioning_anchor_policy": args.self_conditioning_anchor_policy,
                 "self_conditioning_fixed_anchor_index": args.self_conditioning_fixed_anchor_index,
                 "self_conditioning_mix_ratio": args.self_conditioning_mix_ratio,
+        "self_conditioning_current_noise_mode": args.self_conditioning_current_noise_mode,
                 "self_conditioning_consistency_weight": args.self_conditioning_consistency_weight,
                 "self_conditioning_loss_on": args.self_conditioning_loss_on,
                 "self_conditioning_intermediate_loss_weight": args.self_conditioning_intermediate_loss_weight,
@@ -3087,6 +3163,7 @@ def main() -> None:
                 "self_conditioning_anchor_policy": args.self_conditioning_anchor_policy,
                 "self_conditioning_fixed_anchor_index": args.self_conditioning_fixed_anchor_index,
                 "self_conditioning_mix_ratio": args.self_conditioning_mix_ratio,
+                "self_conditioning_current_noise_mode": args.self_conditioning_current_noise_mode,
                 "self_conditioning_consistency_weight": args.self_conditioning_consistency_weight,
                 "self_conditioning_loss_on": args.self_conditioning_loss_on,
                 "self_conditioning_intermediate_loss_weight": args.self_conditioning_intermediate_loss_weight,
@@ -3178,6 +3255,7 @@ def main() -> None:
         "self_conditioning_anchor_policy": args.self_conditioning_anchor_policy,
         "self_conditioning_fixed_anchor_index": args.self_conditioning_fixed_anchor_index,
         "self_conditioning_mix_ratio": args.self_conditioning_mix_ratio,
+                "self_conditioning_current_noise_mode": args.self_conditioning_current_noise_mode,
         "self_conditioning_consistency_weight": args.self_conditioning_consistency_weight,
         "self_conditioning_loss_on": args.self_conditioning_loss_on,
         "self_conditioning_intermediate_loss_weight": args.self_conditioning_intermediate_loss_weight,
